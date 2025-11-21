@@ -45,13 +45,26 @@
             overflow: hidden; /* Prevent bounce on mobile */
             touch-action: none; /* Prevent pull-to-refresh etc. */
         }
+
+        /* Hide number input spin buttons */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+        
+        .cursor-grab { cursor: grab; }
+        .cursor-grabbing { cursor: grabbing; }
     </style>
 </head>
 <body class="bg-slate-950 text-white">
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect, useRef } = React;
+        const { useState, useEffect, useRef, useMemo } = React;
 
         // --- Icons (Inline SVG to avoid CDN dependency issues) ---
         const Icon = ({ children, size = 24, className = "", ...props }) => (
@@ -93,9 +106,11 @@
         const FileJson = (props) => <Icon {...props}><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" /><polyline points="14 2 14 8 20 8" /></Icon>;
         const Hand = (props) => <Icon {...props}><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0" /><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2" /><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8" /><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15" /></Icon>;
         const Globe = (props) => <Icon {...props}><circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></Icon>;
-        const GitCommit = (props) => <Icon {...props}><circle cx="12" cy="12" r="4" /><line x1="1.05" y1="12" x2="7" y2="12" /><line x1="17.01" y1="12" x2="22.96" y2="12" /></Icon>;
+        const Users = (props) => <Icon {...props}><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></Icon>;
+        const RotateCw = (props) => <Icon {...props}><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></Icon>;
 
-        // --- Translations ---
+        // --- Constants & Helper Functions ---
+
         const TRANSLATIONS = {
             'zh-TW': {
                 title: 'GRID FLOW',
@@ -152,118 +167,14 @@
                 importFail: '匯入失敗',
                 fk: '正向運動 (FK)',
                 ik: '反向運動 (IK)',
-            },
-            'ja': {
-                title: 'GRID FLOW',
-                subtitle: 'タッティング・シミュレーター V2.6',
-                timeline: 'タイムライン',
-                bpm: 'BPM',
-                ai: 'AI生成',
-                delete: '削除',
-                update: '更新',
-                manage: '管理',
-                presets: 'プリセット',
-                selectPreset: 'プリセットを選択',
-                export: '出力',
-                import: '入力',
-                savePreset: 'ポーズ保存',
-                enterName: 'ポーズ名',
-                save: '保存',
-                custom: 'カスタム',
-                saveSuccess: '保存しました！',
-                nameEmpty: '名前を入力してください',
-                body: '体 (BODY)',
-                waist: '腰',
-                bodyX: '水平移動',
-                bodyY: '垂直移動',
-                head: '頭 (HEAD)',
-                headTilt: '傾き',
-                headSlide: 'スライド',
-                rArm: '右腕 (R ARM)',
-                lArm: '左腕 (L ARM)',
-                rLeg: '右脚 (R LEG)',
-                lLeg: '左脚 (L LEG)',
-                shoulder: '肩',
-                elbow: '肘',
-                wrist: '手首',
-                hip: '股関節',
-                knee: '膝',
-                ankle: '足首',
-                easing: 'イージング',
-                p_idle: '待機',
-                p_box: 'ボックス',
-                p_prayer: '祈り',
-                p_tutting_l: 'L字',
-                p_cobra: 'コブラ',
-                p_pharaoh: 'ファラオ',
-                p_diamond: 'ダイヤモンド',
-                p_stairs: '階段',
-                p_frame: 'フレーム',
-                p_wings: '翼',
-                p_zig_zag: 'ジグザグ',
-                dragModeOn: 'ドラッグ',
-                dragModeOff: 'ドラッグ',
-                importSuccess: 'インポート成功！',
-                importError: 'ファイル形式エラー',
-                importFail: 'インポート失敗',
-                fk: 'FK (順運動学)',
-                ik: 'IK (逆運動学)',
-            },
-            'ko': {
-                title: 'GRID FLOW',
-                subtitle: '터팅 시뮬레이터 V2.6',
-                timeline: '타임라인',
-                bpm: 'BPM',
-                ai: 'AI 생성',
-                delete: '삭제',
-                update: '갱신',
-                manage: '관리',
-                presets: '프리셋',
-                selectPreset: '프리셋 선택',
-                export: '내보내기',
-                import: '가져오기',
-                savePreset: '포즈 저장',
-                enterName: '포즈 이름',
-                save: '저장',
-                custom: '사용자 지정',
-                saveSuccess: '저장되었습니다!',
-                nameEmpty: '이름을 입력하세요',
-                body: '몸통 (BODY)',
-                waist: '허리',
-                bodyX: '수평 이동',
-                bodyY: '수직 이동',
-                head: '머리 (HEAD)',
-                headTilt: '기울기',
-                headSlide: '슬라이드',
-                rArm: '오른팔 (R ARM)',
-                lArm: '왼팔 (L ARM)',
-                rLeg: '오른다리 (R LEG)',
-                lLeg: '왼다리 (L LEG)',
-                shoulder: '어깨',
-                elbow: '팔꿈치',
-                wrist: '손목',
-                hip: '골반',
-                knee: '무릎',
-                ankle: '발목',
-                easing: '이징 (Easing)',
-                p_idle: '대기',
-                p_box: '박스',
-                p_prayer: '기도',
-                p_tutting_l: 'L자',
-                p_cobra: '코브라',
-                p_pharaoh: '파라오',
-                p_diamond: '다이아몬드',
-                p_stairs: '계단',
-                p_frame: '프레임',
-                p_wings: '날개',
-                p_zig_zag: '지그재그',
-                dragModeOn: '드래그 모드',
-                dragModeOff: '드래그 모드',
-                importSuccess: '가져오기 성공!',
-                importError: '파일 형식 오류',
-                importFail: '가져오기 실패',
-                fk: 'FK 모드',
-                ik: 'IK 모드',
+                formation: '隊形',
+                f_single: '單人',
+                f_duo: '雙人',
+                f_trio: '三人',
+                f_triangle: '三角',
+                f_row: '一排',
+                f_grid: '九宮格',
+                resetView: '重置視角',
             },
             'en': {
                 title: 'GRID FLOW',
@@ -320,6 +231,142 @@
                 importFail: 'Import Failed',
                 fk: 'FK Mode',
                 ik: 'IK Mode',
+                formation: 'Formation',
+                f_single: 'Single',
+                f_duo: 'Duo',
+                f_trio: 'Trio',
+                f_triangle: 'Triangle',
+                f_row: 'Row',
+                f_grid: 'Grid 3x3',
+                resetView: 'Reset View',
+            },
+            'ja': {
+                title: 'GRID FLOW',
+                subtitle: 'タッティング・シミュレーター V2.6',
+                timeline: 'タイムライン',
+                bpm: 'BPM',
+                ai: 'AI生成',
+                delete: '削除',
+                update: '更新',
+                manage: '管理',
+                presets: 'プリセット',
+                selectPreset: 'プリセットを選択',
+                export: '出力',
+                import: '入力',
+                savePreset: 'ポーズ保存',
+                enterName: 'ポーズ名',
+                save: '保存',
+                custom: 'カスタム',
+                saveSuccess: '保存しました！',
+                nameEmpty: '名前を入力してください',
+                body: '体 (BODY)',
+                waist: '腰',
+                bodyX: '水平移動',
+                bodyY: '垂直移動',
+                head: '頭 (HEAD)',
+                headTilt: '傾き',
+                headSlide: 'スライド',
+                rArm: '右腕 (R ARM)',
+                lArm: '左腕 (L ARM)',
+                rLeg: '右脚 (R LEG)',
+                lLeg: '左脚 (L LEG)',
+                shoulder: '肩',
+                elbow: '肘',
+                wrist: '手首',
+                hip: '股関節',
+                knee: '膝',
+                ankle: '足首',
+                easing: 'イージング',
+                p_idle: '待機',
+                p_box: 'ボックス',
+                p_prayer: '祈り',
+                p_tutting_l: 'L字',
+                p_cobra: 'コブラ',
+                p_pharaoh: 'ファラオ',
+                p_diamond: 'ダイヤモンド',
+                p_stairs: '階段',
+                p_frame: 'フレーム',
+                p_wings: '翼',
+                p_zig_zag: 'ジグザグ',
+                dragModeOn: 'ドラッグ',
+                dragModeOff: 'ドラッグ',
+                importSuccess: 'インポート成功！',
+                importError: 'ファイル形式エラー',
+                importFail: 'インポート失敗',
+                fk: 'FK (順運動学)',
+                ik: 'IK (逆運動学)',
+                formation: 'フォーメーション',
+                f_single: 'シングル',
+                f_duo: 'デュオ',
+                f_trio: 'トリオ',
+                f_triangle: 'トライアングル',
+                f_row: '列',
+                f_grid: 'グリッド',
+                resetView: '視点リセット',
+            },
+            'ko': {
+                title: 'GRID FLOW',
+                subtitle: '터팅 시뮬레이터 V2.6',
+                timeline: '타임라인',
+                bpm: 'BPM',
+                ai: 'AI 생성',
+                delete: '삭제',
+                update: '갱신',
+                manage: '관리',
+                presets: '프리셋',
+                selectPreset: '프리셋 선택',
+                export: '내보내기',
+                import: '가져오기',
+                savePreset: '포즈 저장',
+                enterName: '포즈 이름',
+                save: '저장',
+                custom: '사용자 지정',
+                saveSuccess: '저장되었습니다!',
+                nameEmpty: '이름을 입력하세요',
+                body: '몸통 (BODY)',
+                waist: '허리',
+                bodyX: '수평 이동',
+                bodyY: '수직 이동',
+                head: '머리 (HEAD)',
+                headTilt: '기울기',
+                headSlide: '슬라이드',
+                rArm: '오른팔 (R ARM)',
+                lArm: '왼팔 (L ARM)',
+                rLeg: '오른다리 (R LEG)',
+                lLeg: '왼다리 (L LEG)',
+                shoulder: '어깨',
+                elbow: '팔꿈치',
+                wrist: '손목',
+                hip: '골반',
+                knee: '무릎',
+                ankle: '발목',
+                easing: '이징 (Easing)',
+                p_idle: '대기',
+                p_box: '박스',
+                p_prayer: '기도',
+                p_tutting_l: 'L자',
+                p_cobra: '코브라',
+                p_pharaoh: '파라오',
+                p_diamond: '다이아몬드',
+                p_stairs: '계단',
+                p_frame: '프레임',
+                p_wings: '날개',
+                p_zig_zag: '지그재그',
+                dragModeOn: '드래그 모드',
+                dragModeOff: '드래그 모드',
+                importSuccess: '가져오기 성공!',
+                importError: '파일 형식 오류',
+                importFail: '가져오기 실패',
+                fk: 'FK 모드',
+                ik: 'IK 모드',
+                formation: '대형',
+                f_single: '싱글',
+                f_duo: '듀오',
+                f_trio: '트리오',
+                f_triangle: '삼각형',
+                f_row: '일렬',
+                f_grid: '그리드',
+                resetView: '뷰 초기화',
             },
             'es': {
                 title: 'GRID FLOW',
@@ -376,6 +423,14 @@
                 importFail: 'Fallo al importar',
                 fk: 'Modo FK',
                 ik: 'Modo IK',
+                formation: 'Formación',
+                f_single: 'Solo',
+                f_duo: 'Dúo',
+                f_trio: 'Trío',
+                f_triangle: 'Triángulo',
+                f_row: 'Fila',
+                f_grid: 'Cuadrícula',
+                resetView: 'Reiniciar Vista',
             },
             'pt': {
                 title: 'GRID FLOW',
@@ -432,6 +487,14 @@
                 importFail: 'Falha',
                 fk: 'Modo FK',
                 ik: 'Modo IK',
+                formation: 'Formação',
+                f_single: 'Solo',
+                f_duo: 'Dueto',
+                f_trio: 'Trio',
+                f_triangle: 'Triângulo',
+                f_row: 'Fila',
+                f_grid: 'Grade',
+                resetView: 'Redefinir Vista',
             },
             'fr': {
                 title: 'GRID FLOW',
@@ -488,6 +551,14 @@
                 importFail: 'Échec',
                 fk: 'Mode FK',
                 ik: 'Mode IK',
+                formation: 'Formation',
+                f_single: 'Solo',
+                f_duo: 'Duo',
+                f_trio: 'Trio',
+                f_triangle: 'Triangle',
+                f_row: 'Rangée',
+                f_grid: 'Grille',
+                resetView: 'Réinit. Vue',
             },
             'de': {
                 title: 'GRID FLOW',
@@ -544,6 +615,14 @@
                 importFail: 'Fehler',
                 fk: 'FK-Modus',
                 ik: 'IK-Modus',
+                formation: 'Formation',
+                f_single: 'Einzel',
+                f_duo: 'Duo',
+                f_trio: 'Trio',
+                f_triangle: 'Dreieck',
+                f_row: 'Reihe',
+                f_grid: 'Raster',
+                resetView: 'Ansicht zurücksetzen',
             },
             'vi': {
                 title: 'GRID FLOW',
@@ -600,6 +679,14 @@
                 importFail: 'Thất bại',
                 fk: 'Chế độ FK',
                 ik: 'Chế độ IK',
+                formation: 'Đội hình',
+                f_single: 'Đơn',
+                f_duo: 'Đôi',
+                f_trio: 'Ba người',
+                f_triangle: 'Tam giác',
+                f_row: 'Hàng ngang',
+                f_grid: 'Lưới',
+                resetView: 'Đặt lại Chế độ xem',
             },
             'hi': {
                 title: 'GRID FLOW',
@@ -656,6 +743,14 @@
                 importFail: 'विफल',
                 fk: 'FK मोड',
                 ik: 'IK मोड',
+                formation: 'गठन',
+                f_single: 'एकल',
+                f_duo: 'जोड़ी',
+                f_trio: 'तिकड़ी',
+                f_triangle: 'त्रिकोण',
+                f_row: 'पंक्ति',
+                f_grid: 'ग्रिड',
+                resetView: 'दृश्य रीसेट करें',
             },
             'ru': {
                 title: 'GRID FLOW',
@@ -712,10 +807,16 @@
                 importFail: 'Ошибка',
                 fk: 'FK Режим',
                 ik: 'IK Режим',
+                formation: 'Построение',
+                f_single: 'Одиночное',
+                f_duo: 'Дуэт',
+                f_trio: 'Трио',
+                f_triangle: 'Треугольник',
+                f_row: 'Ряд',
+                f_grid: 'Сетка',
+                resetView: 'Сброс вида',
             }
         };
-
-        // --- Constants & Helper Functions ---
 
         const SEGMENT_LENGTHS = {
             upperArm: 90,
@@ -744,105 +845,49 @@
         };
 
         const PRESETS = {
-            idle: {
-                easing: 'Smooth (流暢)',
-                bodyX: 0, bodyY: 0, waist: 0,
-                headTilt: 0, headSlide: 0,
-                lShoulder: 270, lElbow: 180, lWrist: 180,
-                rShoulder: 270, rElbow: 0, rWrist: 0,
-                lHip: 90, lKnee: 90, lAnkle: 0, 
-                rHip: 90, rKnee: 90, rAnkle: 180 
-            },
-            box: {
-                easing: 'Smooth (流暢)',
-                bodyX: 0, bodyY: 0, waist: 0,
-                headTilt: 0, headSlide: 0,
-                lShoulder: 180, lElbow: 90, lWrist: 90,
-                rShoulder: 0, rElbow: 270, rWrist: 270,
-                lHip: 90, lKnee: 90, lAnkle: 0,
-                rHip: 90, rKnee: 90, rAnkle: 180
-            },
-            prayer: {
-                easing: 'Smooth (流暢)',
-                bodyX: 0, bodyY: 0, waist: 0,
-                headTilt: 15, headSlide: 0,
-                lShoulder: 270, lElbow: 45, lWrist: 270,
-                rShoulder: 270, rElbow: 315, rWrist: 90,
-                lHip: 100, lKnee: 100, lAnkle: 0,
-                rHip: 80, rKnee: 80, rAnkle: 180
-            },
-            tutting_l: {
-                easing: 'Smooth (流暢)',
-                bodyX: 20, bodyY: 0, waist: -10,
-                headTilt: -10, headSlide: 15,
-                lShoulder: 180, lElbow: 90, lWrist: 180,
-                rShoulder: 90, rElbow: 180, rWrist: 0,
-                lHip: 90, lKnee: 90, lAnkle: 0,
-                rHip: 90, rKnee: 90, rAnkle: 180
-            },
-            cobra: {
-                easing: 'Smooth (流暢)',
-                bodyX: 0, bodyY: 20, waist: 20,
-                headTilt: 0, headSlide: -10,
-                lShoulder: 315, lElbow: 135, lWrist: 270,
-                rShoulder: 225, rElbow: 225, rWrist: 90,
-                lHip: 70, lKnee: 45, lAnkle: 90,
-                rHip: 110, rKnee: 135, rAnkle: 90
-            },
-            pharaoh: {
-                easing: 'Smooth (流暢)',
-                bodyX: 0, bodyY: 0, waist: 0,
-                headTilt: 0, headSlide: 0,
-                lShoulder: 0, lElbow: 90, lWrist: 180, 
-                rShoulder: 180, rElbow: 270, rWrist: 0, 
-                lHip: 90, lKnee: 90, lAnkle: 0,
-                rHip: 90, rKnee: 90, rAnkle: 180
-            },
-            diamond: {
-                easing: 'Smooth (流暢)',
-                bodyX: 0, bodyY: 0, waist: 0,
-                headTilt: 0, headSlide: 0,
-                lShoulder: 315, lElbow: 225, lWrist: 135, 
-                rShoulder: 225, rElbow: 315, rWrist: 45, 
-                lHip: 80, lKnee: 80, lAnkle: 0,
-                rHip: 100, rKnee: 100, rAnkle: 180
-            },
-            stairs: {
-                easing: 'Smooth (流暢)',
-                bodyX: -10, bodyY: 0, waist: 10,
-                headTilt: -5, headSlide: 10,
-                lShoulder: 0, lElbow: 90, lWrist: 0, 
-                rShoulder: 180, rElbow: 270, rWrist: 180, 
-                lHip: 90, lKnee: 70, lAnkle: 0,
-                rHip: 90, rKnee: 110, rAnkle: 180
-            },
-            frame: {
-                easing: 'Smooth (流暢)',
-                bodyX: 0, bodyY: 0, waist: 0,
-                headTilt: 0, headSlide: 0,
-                lShoulder: 270, lElbow: 180, lWrist: 90, 
-                rShoulder: 270, rElbow: 0, rWrist: 90, 
-                lHip: 90, lKnee: 90, lAnkle: 0,
-                rHip: 90, rKnee: 90, rAnkle: 180
-            },
-            wings: {
-                easing: 'Smooth (流暢)',
-                bodyX: 0, bodyY: -20, waist: 0,
-                headTilt: 0, headSlide: 0,
-                lShoulder: 315, lElbow: 315, lWrist: 315, 
-                rShoulder: 225, rElbow: 225, rWrist: 225, 
-                lHip: 100, lKnee: 100, lAnkle: 0,
-                rHip: 80, rKnee: 80, rAnkle: 180
-            },
-            zig_zag: {
-                easing: 'Smooth (流暢)',
-                bodyX: 0, bodyY: 0, waist: -15,
-                headTilt: 10, headSlide: -10,
-                lShoulder: 0, lElbow: 90, lWrist: 0, 
-                rShoulder: 180, rElbow: 270, rWrist: 180, 
-                lHip: 80, lKnee: 45, lAnkle: 90,
-                rHip: 100, rKnee: 135, rAnkle: 90 
-            }
+            idle: { easing: 'Smooth (流暢)', bodyX: 0, bodyY: 0, waist: 0, headTilt: 0, headSlide: 0, lShoulder: 270, lElbow: 180, lWrist: 180, rShoulder: 270, rElbow: 0, rWrist: 0, lHip: 90, lKnee: 90, lAnkle: 0, rHip: 90, rKnee: 90, rAnkle: 180 },
+            box: { easing: 'Smooth (流暢)', bodyX: 0, bodyY: 0, waist: 0, headTilt: 0, headSlide: 0, lShoulder: 180, lElbow: 90, lWrist: 90, rShoulder: 0, rElbow: 270, rWrist: 270, lHip: 90, lKnee: 90, lAnkle: 0, rHip: 90, rKnee: 90, rAnkle: 180 },
+            prayer: { easing: 'Smooth (流暢)', bodyX: 0, bodyY: 0, waist: 0, headTilt: 15, headSlide: 0, lShoulder: 270, lElbow: 45, lWrist: 270, rShoulder: 270, rElbow: 315, rWrist: 90, lHip: 100, lKnee: 100, lAnkle: 0, rHip: 80, rKnee: 80, rAnkle: 180 },
+            tutting_l: { easing: 'Smooth (流暢)', bodyX: 20, bodyY: 0, waist: -10, headTilt: -10, headSlide: 15, lShoulder: 180, lElbow: 90, lWrist: 180, rShoulder: 90, rElbow: 180, rWrist: 0, lHip: 90, lKnee: 90, lAnkle: 0, rHip: 90, rKnee: 90, rAnkle: 180 },
+            cobra: { easing: 'Smooth (流暢)', bodyX: 0, bodyY: 20, waist: 20, headTilt: 0, headSlide: -10, lShoulder: 315, lElbow: 135, lWrist: 270, rShoulder: 225, rElbow: 225, rWrist: 90, lHip: 70, lKnee: 45, lAnkle: 90, rHip: 110, rKnee: 135, rAnkle: 90 },
+            pharaoh: { easing: 'Smooth (流暢)', bodyX: 0, bodyY: 0, waist: 0, headTilt: 0, headSlide: 0, lShoulder: 0, lElbow: 90, lWrist: 180, rShoulder: 180, rElbow: 270, rWrist: 0, lHip: 90, lKnee: 90, lAnkle: 0, rHip: 90, rKnee: 90, rAnkle: 180 },
+            diamond: { easing: 'Smooth (流暢)', bodyX: 0, bodyY: 0, waist: 0, headTilt: 0, headSlide: 0, lShoulder: 315, lElbow: 225, lWrist: 135, rShoulder: 225, rElbow: 315, rWrist: 45, lHip: 80, lKnee: 80, lAnkle: 0, rHip: 100, rKnee: 100, rAnkle: 180 },
+            stairs: { easing: 'Smooth (流暢)', bodyX: -10, bodyY: 0, waist: 10, headTilt: -5, headSlide: 10, lShoulder: 0, lElbow: 90, lWrist: 0, rShoulder: 180, rElbow: 270, rWrist: 180, lHip: 90, lKnee: 70, lAnkle: 0, rHip: 90, rKnee: 110, rAnkle: 180 },
+            frame: { easing: 'Smooth (流暢)', bodyX: 0, bodyY: 0, waist: 0, headTilt: 0, headSlide: 0, lShoulder: 270, lElbow: 180, lWrist: 90, rShoulder: 270, rElbow: 0, rWrist: 90, lHip: 90, lKnee: 90, lAnkle: 0, rHip: 90, rKnee: 90, rAnkle: 180 },
+            wings: { easing: 'Smooth (流暢)', bodyX: 0, bodyY: -20, waist: 0, headTilt: 0, headSlide: 0, lShoulder: 315, lElbow: 315, lWrist: 315, rShoulder: 225, rElbow: 225, rWrist: 225, lHip: 100, lKnee: 100, lAnkle: 0, rHip: 80, rKnee: 80, rAnkle: 180 },
+            zig_zag: { easing: 'Smooth (流暢)', bodyX: 0, bodyY: 0, waist: -15, headTilt: 10, headSlide: -10, lShoulder: 0, lElbow: 90, lWrist: 0, rShoulder: 180, rElbow: 270, rWrist: 180, lHip: 80, lKnee: 45, lAnkle: 90, rHip: 100, rKnee: 135, rAnkle: 90 }
+        };
+
+        const FORMATIONS = {
+            'single': [
+                { id: 0, x: 0, y: 0, scale: 1, opacity: 1, main: true }
+            ],
+            'duo': [
+                { id: 1, x: -80, y: 0, scale: 0.9, opacity: 0.9 },
+                { id: 0, x: 80, y: 0, scale: 0.9, opacity: 0.9, main: true }
+            ],
+            'trio': [
+                { id: 1, x: -120, y: 0, scale: 0.8, opacity: 0.8 },
+                { id: 0, x: 0, y: 0, scale: 1, opacity: 1, main: true },
+                { id: 2, x: 120, y: 0, scale: 0.8, opacity: 0.8 }
+            ],
+            'triangle': [
+                { id: 1, x: -100, y: -50, scale: 0.7, opacity: 0.7 },
+                { id: 2, x: 100, y: -50, scale: 0.7, opacity: 0.7 },
+                { id: 0, x: 0, y: 50, scale: 1, opacity: 1, main: true }
+            ],
+            'row': [
+                { id: 1, x: -180, y: 0, scale: 0.7, opacity: 0.7 },
+                { id: 2, x: -90, y: 0, scale: 0.8, opacity: 0.8 },
+                { id: 0, x: 0, y: 0, scale: 1, opacity: 1, main: true },
+                { id: 3, x: 90, y: 0, scale: 0.8, opacity: 0.8 },
+                { id: 4, x: 180, y: 0, scale: 0.7, opacity: 0.7 }
+            ],
+            'grid': [
+                { id: 1, x: -130, y: -120, scale: 0.5, opacity: 0.5 }, { id: 2, x: 0, y: -120, scale: 0.5, opacity: 0.5 }, { id: 3, x: 130, y: -120, scale: 0.5, opacity: 0.5 },
+                { id: 4, x: -130, y: 0, scale: 0.7, opacity: 0.7 },    { id: 0, x: 0, y: 0, scale: 1, opacity: 1, main: true },     { id: 5, x: 130, y: 0, scale: 0.7, opacity: 0.7 },
+                { id: 6, x: -130, y: 120, scale: 0.9, opacity: 0.9 },  { id: 7, x: 0, y: 120, scale: 0.9, opacity: 0.9 },  { id: 8, x: 130, y: 120, scale: 0.9, opacity: 0.9 }
+            ]
         };
 
         const toRad = (deg) => (deg * Math.PI) / 180;
@@ -887,7 +932,6 @@
             return newPose;
         };
 
-        // --- IK Solver ---
         const solveTwoJointIK = (target, origin, len1, len2, currentA1, currentA2) => {
             const dx = target.x - origin.x;
             const dy = target.y - origin.y;
@@ -937,78 +981,147 @@
             return distA < distB ? [deg1A, deg2A] : [deg1B, deg2B];
         };
 
+        // --- Define calculateSkeleton BEFORE TuttingSimulator ---
+        const calculateSkeleton = (pose) => {
+            const baseCenterX = 0; // Relative to dancer center
+            const baseCenterY = 0;
+            const hipCenterY = 0 + (pose.bodyY || 0); 
+            const hipCenterX = 0 + (pose.bodyX || 0);
+
+            const hipWidth = 25;
+            const shoulderWidth = 40;
+            const headRadius = 25;
+
+            const waistAngle = (pose.waist || 0) - 90; 
+            const shoulderCenter = calculateEndPoint(hipCenterX, hipCenterY, waistAngle, SEGMENT_LENGTHS.torso);
+
+            const rShoulderBase = calculateEndPoint(shoulderCenter.x, shoulderCenter.y, waistAngle - 90, shoulderWidth); 
+            const lShoulderBase = calculateEndPoint(shoulderCenter.x, shoulderCenter.y, waistAngle + 90, shoulderWidth); 
+            
+            const neckBase = shoulderCenter;
+            const headSlide = pose.headSlide || 0;
+            const headCenterBase = calculateEndPoint(neckBase.x, neckBase.y, waistAngle, SEGMENT_LENGTHS.neck);
+            
+            const slideX = Math.cos(toRad(waistAngle + 90)) * headSlide;
+            const slideY = Math.sin(toRad(waistAngle + 90)) * headSlide;
+            const headCenterX = headCenterBase.x + slideX;
+            const headCenterY = headCenterBase.y + slideY;
+
+            let displayTilt = (pose.headTilt || 0) + (pose.waist || 0); 
+            if (displayTilt > 180) displayTilt -= 360;
+
+            const tiltHandleDist = headRadius + 15;
+            const tiltHandleX = headCenterX + Math.cos(toRad(displayTilt - 90)) * tiltHandleDist;
+            const tiltHandleY = headCenterY + Math.sin(toRad(displayTilt - 90)) * tiltHandleDist;
+
+            const lElbowPos = calculateEndPoint(lShoulderBase.x, lShoulderBase.y, pose.lShoulder, SEGMENT_LENGTHS.upperArm);
+            const lWristPos = calculateEndPoint(lElbowPos.x, lElbowPos.y, pose.lElbow, SEGMENT_LENGTHS.forearm);
+            const lHandPos = calculateEndPoint(lWristPos.x, lWristPos.y, pose.lWrist, SEGMENT_LENGTHS.hand);
+
+            const rElbowPos = calculateEndPoint(rShoulderBase.x, rShoulderBase.y, pose.rShoulder, SEGMENT_LENGTHS.upperArm);
+            const rWristPos = calculateEndPoint(rElbowPos.x, rElbowPos.y, pose.rElbow, SEGMENT_LENGTHS.forearm);
+            const rHandPos = calculateEndPoint(rWristPos.x, rWristPos.y, pose.rWrist, SEGMENT_LENGTHS.hand);
+
+            const lHipPos = { x: hipCenterX + hipWidth, y: hipCenterY };
+            const lKneePos = calculateEndPoint(lHipPos.x, lHipPos.y, pose.lHip ?? 90, SEGMENT_LENGTHS.thigh);
+            const lAnklePos = calculateEndPoint(lKneePos.x, lKneePos.y, pose.lKnee ?? 90, SEGMENT_LENGTHS.shin);
+            const lFootPos = calculateEndPoint(lAnklePos.x, lAnklePos.y, pose.lAnkle ?? 0, SEGMENT_LENGTHS.foot);
+
+            const rHipPos = { x: hipCenterX - hipWidth, y: hipCenterY };
+            const rKneePos = calculateEndPoint(rHipPos.x, rHipPos.y, pose.rHip ?? 90, SEGMENT_LENGTHS.thigh);
+            const rAnklePos = calculateEndPoint(rKneePos.x, rKneePos.y, pose.rKnee ?? 90, SEGMENT_LENGTHS.shin);
+            const rFootPos = calculateEndPoint(rAnklePos.x, rAnklePos.y, pose.rAnkle ?? 180, SEGMENT_LENGTHS.foot);
+
+            return {
+                hipCenterX, hipCenterY, shoulderCenter,
+                rShoulderBase, lShoulderBase,
+                headCenterX, headCenterY, headRadius, displayTilt, neckBase,
+                tiltHandleX, tiltHandleY,
+                rElbowPos, rWristPos, rHandPos,
+                lElbowPos, lWristPos, lHandPos,
+                rHipPos, rKneePos, rAnklePos, rFootPos,
+                lHipPos, lKneePos, lAnklePos, lFootPos
+            };
+        };
+
         // --- Components ---
 
-        const SliderControl = ({ label, value, onChange, min = 0, max = 360, step = 1, snap = 90, unit = "°" }) => (
+        const SliderControl = ({ label, value, onChange, min = 0, max = 360, step = 1, snap = 90, unit = "°" }) => {
+            const [localVal, setLocalVal] = useState(value);
+            useEffect(() => { setLocalVal(Math.round(value)); }, [value]);
+            const handleInput = (e) => {
+                const v = e.target.value;
+                setLocalVal(v);
+                const num = parseFloat(v);
+                if (!isNaN(num)) onChange(num);
+            };
+            return (
             <div className="flex flex-col space-y-1 mb-2">
-                <div className="flex justify-between text-xs text-cyan-400 font-mono">
-                    <span>{label}</span>
-                    <span>{Math.round(value)}{unit}</span>
+                <div className="flex justify-between items-center text-xs text-cyan-400 font-mono">
+                    <span className="font-bold">{label}</span>
+                    <div className="flex items-center bg-slate-800/50 rounded border border-slate-700 focus-within:border-cyan-500 focus-within:bg-slate-800 transition-colors">
+                        <input type="number" value={localVal} onChange={handleInput} className="w-12 bg-transparent text-right text-cyan-300 focus:text-white focus:outline-none px-1 py-0.5 text-[10px] font-mono" />
+                        <span className="text-[10px] text-slate-500 pr-1 select-none">{unit}</span>
+                    </div>
                 </div>
                 <div className="flex items-center space-x-2">
-                    <input
-                        type="range"
-                        min={min}
-                        max={max}
-                        step={step}
-                        value={value}
-                        onChange={(e) => onChange(Number(e.target.value))}
-                        className="w-full h-2 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-cyan-500 hover:accent-cyan-400"
-                    />
-                    {snap !== null && (
-                        <button 
-                            onClick={() => onChange(snap === 0 ? 0 : Math.round(value / snap) * snap)}
-                            className="p-1 text-[10px] bg-gray-800 text-cyan-500 border border-cyan-900 rounded hover:bg-cyan-900/50 min-w-[30px] flex-shrink-0"
-                            title={`Snap to ${snap}${unit}`}
-                        >
-                            {snap}{unit}
-                        </button>
-                    )}
+                    <input type="range" min={min} max={max} step={step} value={value} onChange={(e) => onChange(Number(e.target.value))} className="w-full h-2 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-cyan-500 hover:accent-cyan-400" />
+                    {snap !== null && <button onClick={() => onChange(snap === 0 ? 0 : Math.round(value / snap) * snap)} className="p-1 text-[10px] bg-gray-800 text-cyan-500 border border-cyan-900 rounded hover:bg-cyan-900/50 min-w-[30px] flex-shrink-0" title={`Snap to ${snap}${unit}`}>{snap}{unit}</button>}
                 </div>
             </div>
-        );
+            );
+        };
 
-        const LimbRenderer = ({ start, end, color, thickness, glow }) => (
-            <g>
-                {glow && (
-                    <line
-                        x1={start.x} y1={start.y}
-                        x2={end.x} y2={end.y}
-                        stroke={color}
-                        strokeWidth={thickness + 8}
-                        strokeOpacity="0.2"
-                        strokeLinecap="round"
-                    />
-                )}
-                <line
-                    x1={start.x} y1={start.y}
-                    x2={end.x} y2={end.y}
-                    stroke={color}
-                    strokeWidth={thickness}
-                    strokeLinecap="round"
-                />
+        const LimbRenderer = ({ start, end, color, thickness, glow, opacity = 1 }) => (
+            <g opacity={opacity}>
+                {glow && <line x1={start.x} y1={start.y} x2={end.x} y2={end.y} stroke={color} strokeWidth={thickness + 8} strokeOpacity="0.2" strokeLinecap="round" />}
+                <line x1={start.x} y1={start.y} x2={end.x} y2={end.y} stroke={color} strokeWidth={thickness} strokeLinecap="round" />
                 <circle cx={end.x} cy={end.y} r={thickness/1.5} fill="#111" stroke={color} strokeWidth="2" />
             </g>
         );
 
         const DraggableJoint = ({ x, y, isActive, onMouseDown, onTouchStart, isFK = true }) => (
-            <g 
-                onMouseDown={onMouseDown} 
-                onTouchStart={onTouchStart}
-                className="cursor-pointer"
-                style={{ pointerEvents: 'all' }} 
-            >
+            <g onMouseDown={onMouseDown} onTouchStart={onTouchStart} className="cursor-pointer" style={{ pointerEvents: 'all' }}>
                 <circle cx={x} cy={y} r={20} fill="transparent" />
-                <circle 
-                    cx={x} cy={y} 
-                    r={isActive ? 10 : 6} 
-                    fill={isActive ? "#ffffff" : "rgba(255,255,255,0.3)"} 
-                    stroke={isActive ? "#22d3ee" : (isFK ? "white" : "#facc15")} 
-                    strokeWidth={2}
-                    className="transition-all duration-75"
-                />
+                <circle cx={x} cy={y} r={isActive ? 10 : 6} fill={isActive ? "#ffffff" : "rgba(255,255,255,0.3)"} stroke={isActive ? "#22d3ee" : (isFK ? "white" : "#facc15")} strokeWidth={2} className="transition-all duration-75" />
             </g>
         );
+
+        const DancerFigure = ({ skeleton, opacity = 1 }) => {
+            const s = skeleton;
+            return (
+                <g opacity={opacity}>
+                    {/* Floor line */}
+                    <line x1="-150" y1="190" x2="150" y2="190" stroke="#334155" strokeWidth="2" strokeDasharray="5,5" opacity="0.5" />
+                    
+                    <LimbRenderer start={s.rHipPos} end={s.rKneePos} color="#c026d3" thickness={9} glow={true} />
+                    <LimbRenderer start={s.rKneePos} end={s.rAnklePos} color="#c026d3" thickness={7} glow={true} />
+                    <LimbRenderer start={s.rAnklePos} end={s.rFootPos} color="#e879f9" thickness={5} glow={false} />
+
+                    <LimbRenderer start={s.lHipPos} end={s.lKneePos} color="#0891b2" thickness={9} glow={true} />
+                    <LimbRenderer start={s.lKneePos} end={s.lAnklePos} color="#0891b2" thickness={7} glow={true} />
+                    <LimbRenderer start={s.lAnklePos} end={s.lFootPos} color="#22d3ee" thickness={5} glow={false} />
+
+                    <path d={`M${s.rHipPos.x} ${s.rHipPos.y} L${s.rShoulderBase.x} ${s.rShoulderBase.y} L${s.lShoulderBase.x} ${s.lShoulderBase.y} L${s.lHipPos.x} ${s.lHipPos.y} Z`} fill="#334155" stroke="#475569" strokeWidth="2" />
+                    <line x1={s.rHipPos.x} y1={s.rHipPos.y} x2={s.lHipPos.x} y2={s.lHipPos.y} stroke="#475569" strokeWidth="3" />
+                    <line x1={s.shoulderCenter.x} y1={s.shoulderCenter.y} x2={s.headCenterX} y2={s.headCenterY + s.headRadius/2} stroke="#475569" strokeWidth="10" strokeLinecap="round"/>
+
+                    <g transform={`rotate(${s.displayTilt}, ${s.headCenterX}, ${s.headCenterY})`}>
+                        <circle cx={s.headCenterX} cy={s.headCenterY} r={s.headRadius} fill="#1e293b" stroke="#94a3b8" strokeWidth="2" />
+                        <path d={`M${s.headCenterX-10} ${s.headCenterY-5} L${s.headCenterX-5} ${s.headCenterY-5}`} stroke="#475569" strokeWidth="2"/>
+                        <path d={`M${s.headCenterX+5} ${s.headCenterY-5} L${s.headCenterX+10} ${s.headCenterY-5}`} stroke="#475569" strokeWidth="2"/>
+                    </g>
+
+                    <LimbRenderer start={s.rShoulderBase} end={s.rElbowPos} color="#d946ef" thickness={8} glow={true} />
+                    <LimbRenderer start={s.rElbowPos} end={s.rWristPos} color="#d946ef" thickness={6} glow={true} />
+                    <LimbRenderer start={s.rWristPos} end={s.rHandPos} color="#e879f9" thickness={4} glow={false} />
+
+                    <LimbRenderer start={s.lShoulderBase} end={s.lElbowPos} color="#06b6d4" thickness={8} glow={true} />
+                    <LimbRenderer start={s.lElbowPos} end={s.lWristPos} color="#06b6d4" thickness={6} glow={true} />
+                    <LimbRenderer start={s.lWristPos} end={s.lHandPos} color="#22d3ee" thickness={4} glow={false} />
+                </g>
+            );
+        }
 
         function TuttingSimulator() {
             // State
@@ -1019,24 +1132,28 @@
             const [bpm, setBpm] = useState(100);
             const [showGrid, setShowGrid] = useState(true);
             const [zoom, setZoom] = useState(1); 
+            const [pan, setPan] = useState({ x: 0, y: 0 });
+            const [isPanning, setIsPanning] = useState(false);
             const [selectedPreset, setSelectedPreset] = useState('');
-            const [customPresets, setCustomPresets] = useState({}); // New state for custom presets
-            const [presetName, setPresetName] = useState(""); // New state for input name
+            const [customPresets, setCustomPresets] = useState({}); 
+            const [presetName, setPresetName] = useState("");
             const [isDragMode, setIsDragMode] = useState(false);
-            const [dragType, setDragType] = useState('FK'); // 'FK' or 'IK'
+            const [dragType, setDragType] = useState('FK'); 
             const [activeJoint, setActiveJoint] = useState(null);
+            const [formationType, setFormationType] = useState('single');
             const [lang, setLang] = useState('zh-TW');
 
             const fileInputRef = useRef(null);
             const svgRef = useRef(null);
+            const mainGroupRef = useRef(null);
+            const lastMousePos = useRef({ x: 0, y: 0 });
             
-            // Refs for animation loop
             const timelineRef = useRef(timeline);
             const frameIndexRef = useRef(currentFrameIndex);
             const requestRef = useRef();
             const startTimeRef = useRef(0);
             
-            // OPTIMIZATION: Refs for values accessed inside event listeners to avoid dependency cycles
+            // Optimized Refs
             const zoomRef = useRef(zoom);
             const activeJointRef = useRef(activeJoint);
             const isDragModeRef = useRef(isDragMode);
@@ -1045,109 +1162,100 @@
 
             useEffect(() => { timelineRef.current = timeline; }, [timeline]);
             useEffect(() => { frameIndexRef.current = currentFrameIndex; }, [currentFrameIndex]);
-
-            // Sync refs for optimization
             useEffect(() => { zoomRef.current = zoom; }, [zoom]);
             useEffect(() => { activeJointRef.current = activeJoint; }, [activeJoint]);
             useEffect(() => { isDragModeRef.current = isDragMode; }, [isDragMode]);
             useEffect(() => { poseRef.current = pose; }, [pose]);
             useEffect(() => { dragTypeRef.current = dragType; }, [dragType]);
 
-            // Helper: Text lookup
             const t = (key) => TRANSLATIONS[lang] ? (TRANSLATIONS[lang][key] || key) : key;
 
-            // --- Helpers ---
             const updatePose = (key, value) => {
                 if (!isPlaying) {
                     setPose(prev => ({ ...prev, [key]: value }));
                 }
             };
 
-            // --- Mouse/Touch Interaction Logic ---
-
-            const getSvgPoint = (clientX, clientY, currentZoom) => {
-                if (!svgRef.current) return { x: 0, y: 0 };
+            // --- Interaction ---
+            const getSvgPoint = (clientX, clientY) => {
+                if (!mainGroupRef.current) return { x: 0, y: 0 };
                 const pt = svgRef.current.createSVGPoint();
                 pt.x = clientX;
                 pt.y = clientY;
-                const svgP = pt.matrixTransform(svgRef.current.getScreenCTM().inverse());
-                return {
-                    x: (svgP.x - 200) / currentZoom + 200,
-                    y: (svgP.y - 200) / currentZoom + 200
-                };
+                const svgP = pt.matrixTransform(mainGroupRef.current.getScreenCTM().inverse());
+                return { x: svgP.x, y: svgP.y };
             };
 
             const handleJointDown = (e, jointName, pivot, type = 'angle', originPos = null) => {
                 if (!isDragMode) return;
                 e.preventDefault();
-                e.stopPropagation(); 
+                e.stopPropagation();
                 setIsPlaying(false);
-                // Store originPos for IK calculations
                 setActiveJoint({ name: jointName, pivot, type, origin: originPos });
             };
 
-            // Optimized move handler using refs
+            const handleSvgMouseDown = (e) => {
+                if (!activeJoint) {
+                    setIsPanning(true);
+                    lastMousePos.current = { x: e.clientX, y: e.clientY };
+                }
+            };
+
+            const handleWheel = (e) => {
+                e.preventDefault();
+                const newZoom = Math.min(5, Math.max(0.1, zoom - e.deltaY * 0.001));
+                setZoom(newZoom);
+            };
+
             const handleSvgMove = (clientX, clientY) => {
+                if (isPanning) {
+                    const dx = clientX - lastMousePos.current.x;
+                    const dy = clientY - lastMousePos.current.y;
+                    setPan(prev => ({ x: prev.x + dx, y: prev.y + dy }));
+                    lastMousePos.current = { x: clientX, y: clientY };
+                    return;
+                }
+
                 const currentActiveJoint = activeJointRef.current;
                 const currentIsDragMode = isDragModeRef.current;
                 const currentDragType = dragTypeRef.current;
-                const currentZoom = zoomRef.current;
                 const currentPose = poseRef.current;
 
                 if (!currentActiveJoint || !currentIsDragMode) return;
 
-                const mousePos = getSvgPoint(clientX, clientY, currentZoom);
+                const mousePos = getSvgPoint(clientX, clientY);
 
-                // -- HEAD SLIDE --
+                // Remove the 200 offsets because we are now in 0-based local coordinates
+                
                 if (currentActiveJoint.type === 'headPos') {
-                    // Calculate projection onto the slide axis (perpendicular to neck)
-                    // Neck angle is waistAngle (pose.waist - 90)
-                    // Slide axis is waistAngle + 90
                     const waistRad = toRad((currentPose.waist || 0) - 90);
                     const neckBaseX = currentActiveJoint.pivot.x;
                     const neckBaseY = currentActiveJoint.pivot.y;
-                    
-                    // Vector from neck base to mouse
                     const dx = mousePos.x - neckBaseX;
                     const dy = mousePos.y - neckBaseY;
-                    
-                    // Unit vector of slide axis (Right relative to torso)
                     const axisX = Math.cos(waistRad + Math.PI/2);
                     const axisY = Math.sin(waistRad + Math.PI/2);
-                    
-                    // Dot product to project
                     const projection = dx * axisX + dy * axisY;
-                    
-                    // Clamp
                     const newVal = Math.max(-50, Math.min(50, projection));
                     updatePose('headSlide', newVal);
                 }
-                // -- HEAD TILT --
                 else if (currentActiveJoint.type === 'headTilt') {
                     const dx = mousePos.x - currentActiveJoint.pivot.x;
                     const dy = mousePos.y - currentActiveJoint.pivot.y;
                     let angle = toDeg(Math.atan2(dy, dx));
-                    
-                    // Convert absolute angle to relative tilt
-                    // Head absolute angle = waist - 90 + tilt
-                    // So tilt = absAngle - (waist - 90)
                     const waistAngle = (currentPose.waist || 0) - 90;
                     let relativeTilt = shortAngleDist(waistAngle, angle);
-                    
-                    // Clamp
                     updatePose('headTilt', Math.max(-60, Math.min(60, relativeTilt)));
                 }
-                // -- BODY POSITION --
                 else if (currentActiveJoint.type === 'pos') {
-                    const dx = mousePos.x - 200; 
-                    const dy = mousePos.y - 190; 
+                    // Mouse pos is relative to 0,0 center.
+                    const dx = mousePos.x;
+                    const dy = mousePos.y;
                     updatePose('bodyX', Math.max(-100, Math.min(100, dx)));
                     updatePose('bodyY', Math.max(-100, Math.min(100, dy)));
                 }
-                // -- IK MODE --
                 else if (currentDragType === 'IK' && currentActiveJoint.type === 'ik') {
                     const { name, origin } = currentActiveJoint;
-                    // Determine limb chain based on effector
                     if (name === 'rWrist') {
                         const [a1, a2] = solveTwoJointIK(mousePos, origin, SEGMENT_LENGTHS.upperArm, SEGMENT_LENGTHS.forearm, currentPose.rShoulder, currentPose.rElbow);
                         updatePose('rShoulder', a1);
@@ -1166,7 +1274,6 @@
                         updatePose('lKnee', a2);
                     }
                 }
-                // -- FK MODE (Default) --
                 else {
                     const dx = mousePos.x - currentActiveJoint.pivot.x;
                     const dy = mousePos.y - currentActiveJoint.pivot.y;
@@ -1176,34 +1283,30 @@
                 }
             };
 
-            const handleGlobalMouseUp = () => {
-                setActiveJoint(null);
+            const handleGlobalMouseUp = () => { 
+                setActiveJoint(null); 
+                setIsPanning(false);
             };
 
-            // Optimization: Removed 'pose' and 'zoom' from dependency array to prevent re-binding on every frame
             useEffect(() => {
                 const onMove = (e) => handleSvgMove(e.clientX, e.clientY);
                 const onUp = () => handleGlobalMouseUp();
                 const onTouchMove = (e) => handleSvgMove(e.touches[0].clientX, e.touches[0].clientY);
-                
-                // Only attach listeners when an active joint exists (start of drag)
-                if (activeJoint) {
+                if (activeJoint || isPanning) {
                     window.addEventListener('mousemove', onMove);
                     window.addEventListener('mouseup', onUp);
                     window.addEventListener('touchmove', onTouchMove, { passive: false });
                     window.addEventListener('touchend', onUp);
                 }
-
                 return () => {
                     window.removeEventListener('mousemove', onMove);
                     window.removeEventListener('mouseup', onUp);
                     window.removeEventListener('touchmove', onTouchMove);
                     window.removeEventListener('touchend', onUp);
                 };
-            }, [activeJoint]); 
+            }, [activeJoint, isPanning]); 
 
-
-            // --- Animation Loop & Logic ---
+            // --- Animation Loop ---
             const jumpToFrame = (index) => {
                 if (isPlaying) setIsPlaying(false);
                 setCurrentFrameIndex(index);
@@ -1243,26 +1346,16 @@
                 const presetKeys = Object.keys(PRESETS);
                 const easingKeys = Object.keys(EASING_FUNCTIONS);
                 const newLength = 16; 
-                
                 const newTimeline = Array(newLength).fill(null).map((_, i) => {
                     const randomKey = presetKeys[Math.floor(Math.random() * presetKeys.length)];
                     const basePose = { ...PRESETS[randomKey] };
                     const randomTilt = Math.floor(Math.random() * 30) - 15;
                     basePose.headTilt = (basePose.headTilt || 0) + randomTilt;
-                    
-                    // Random Easing
                     const randomEasing = easingKeys[Math.floor(Math.random() * easingKeys.length)];
                     basePose.easing = randomEasing;
-
-                    if (Math.random() > 0.6) basePose.headSlide = Math.floor(Math.random() * 40) - 20;
-                    else basePose.headSlide = 0; 
+                    if (Math.random() > 0.6) basePose.headSlide = Math.floor(Math.random() * 40) - 20; else basePose.headSlide = 0; 
                     if (Math.random() > 0.6) basePose.waist = Math.floor(Math.random() * 40) - 20;
-                    if (Math.random() > 0.7) {
-                        if (Math.random() > 0.5) basePose.bodyX = Math.floor(Math.random() * 60) - 30;
-                        else basePose.bodyY = Math.floor(Math.random() * 40) - 20;
-                    } else {
-                        basePose.bodyX = 0; basePose.bodyY = 0;
-                    }
+                    if (Math.random() > 0.7) { if (Math.random() > 0.5) basePose.bodyX = Math.floor(Math.random() * 60) - 30; else basePose.bodyY = Math.floor(Math.random() * 40) - 20; } else { basePose.bodyX = 0; basePose.bodyY = 0; }
                     return basePose;
                 });
                 setTimeline(newTimeline);
@@ -1304,14 +1397,8 @@
             };
 
             const handleSaveCustomPreset = () => {
-                if (!presetName.trim()) {
-                    alert(t('nameEmpty'));
-                    return;
-                }
-                setCustomPresets(prev => ({
-                    ...prev,
-                    [presetName]: { ...pose }
-                }));
+                if (!presetName.trim()) { alert(t('nameEmpty')); return; }
+                setCustomPresets(prev => ({ ...prev, [presetName]: { ...pose } }));
                 setPresetName("");
                 alert(t('saveSuccess'));
             };
@@ -1320,19 +1407,12 @@
                 const key = e.target.value;
                 setSelectedPreset(key);
                 if (isPlaying) return;
-
-                if (PRESETS[key]) {
-                    setPose(PRESETS[key]);
-                } else if (customPresets[key]) {
-                    setPose(customPresets[key]);
-                }
+                if (PRESETS[key]) setPose(PRESETS[key]);
+                else if (customPresets[key]) setPose(customPresets[key]);
             };
 
             useEffect(() => {
-                if (!isPlaying) {
-                    if (requestRef.current) cancelAnimationFrame(requestRef.current);
-                    return;
-                }
+                if (!isPlaying) { if (requestRef.current) cancelAnimationFrame(requestRef.current); return; }
                 startTimeRef.current = performance.now();
                 const animate = (time) => {
                     const beatDuration = 60000 / bpm;
@@ -1349,298 +1429,143 @@
                     const nextIndex = (currentIndex + 1) % timelineRef.current.length;
                     const startPose = timelineRef.current[currentIndex];
                     const endPose = timelineRef.current[nextIndex];
-                    
                     const easingName = startPose?.easing || 'Smooth (流暢)';
                     const easeFn = EASING_FUNCTIONS[easingName] || EASING_FUNCTIONS['Smooth (流暢)'];
-                    
                     const easedProgress = easeFn(progress);
-                    if (startPose && endPose) {
-                        setPose(interpolatePose(startPose, endPose, easedProgress));
-                    }
+                    if (startPose && endPose) setPose(interpolatePose(startPose, endPose, easedProgress));
                     requestRef.current = requestAnimationFrame(animate);
                 };
                 requestRef.current = requestAnimationFrame(animate);
                 return () => { if (requestRef.current) cancelAnimationFrame(requestRef.current); };
             }, [isPlaying, bpm]); 
 
-            const handleZoomIn = () => setZoom(z => Math.min(3, z + 0.2));
-            const handleZoomOut = () => setZoom(z => Math.max(0.5, z - 0.2));
-            const handleResetZoom = () => setZoom(1);
+            const handleZoomIn = () => setZoom(z => Math.min(5, z + 0.2));
+            const handleZoomOut = () => setZoom(z => Math.max(0.1, z - 0.2));
+            const handleResetView = () => {
+                setZoom(1);
+                setPan({ x: 0, y: 0 });
+            };
 
-            // --- Render Calculation ---
-            
-            const baseCenterX = 200;
-            const baseCenterY = 140;
-            const hipCenterY = 190 + (pose.bodyY || 0); 
-            const hipCenterX = 200 + (pose.bodyX || 0);
-
-            const hipWidth = 25;
-            const shoulderWidth = 40;
-            const headRadius = 25;
-
-            const waistAngle = (pose.waist || 0) - 90; 
-            const shoulderCenter = calculateEndPoint(hipCenterX, hipCenterY, waistAngle, SEGMENT_LENGTHS.torso);
-
-            const rShoulderBase = calculateEndPoint(shoulderCenter.x, shoulderCenter.y, waistAngle - 90, shoulderWidth); 
-            const lShoulderBase = calculateEndPoint(shoulderCenter.x, shoulderCenter.y, waistAngle + 90, shoulderWidth); 
-            
-            const neckBase = shoulderCenter;
-            const headSlide = pose.headSlide || 0;
-            const headCenterBase = calculateEndPoint(neckBase.x, neckBase.y, waistAngle, SEGMENT_LENGTHS.neck);
-            
-            const slideX = Math.cos(toRad(waistAngle + 90)) * headSlide;
-            const slideY = Math.sin(toRad(waistAngle + 90)) * headSlide;
-            const headCenterX = headCenterBase.x + slideX;
-            const headCenterY = headCenterBase.y + slideY;
-
-            let displayTilt = (pose.headTilt || 0) + (pose.waist || 0); 
-            if (displayTilt > 180) displayTilt -= 360;
-
-            // Calculate Tilt Handle Position (above head)
-            const tiltHandleDist = headRadius + 15;
-            const tiltHandleX = headCenterX + Math.cos(toRad(displayTilt - 90)) * tiltHandleDist;
-            const tiltHandleY = headCenterY + Math.sin(toRad(displayTilt - 90)) * tiltHandleDist;
-
-
-            const lElbowPos = calculateEndPoint(lShoulderBase.x, lShoulderBase.y, pose.lShoulder, SEGMENT_LENGTHS.upperArm);
-            const lWristPos = calculateEndPoint(lElbowPos.x, lElbowPos.y, pose.lElbow, SEGMENT_LENGTHS.forearm);
-            const lHandPos = calculateEndPoint(lWristPos.x, lWristPos.y, pose.lWrist, SEGMENT_LENGTHS.hand);
-
-            const rElbowPos = calculateEndPoint(rShoulderBase.x, rShoulderBase.y, pose.rShoulder, SEGMENT_LENGTHS.upperArm);
-            const rWristPos = calculateEndPoint(rElbowPos.x, rElbowPos.y, pose.rElbow, SEGMENT_LENGTHS.forearm);
-            const rHandPos = calculateEndPoint(rWristPos.x, rWristPos.y, pose.rWrist, SEGMENT_LENGTHS.hand);
-
-            const lHipPos = { x: hipCenterX + hipWidth, y: hipCenterY };
-            const lKneePos = calculateEndPoint(lHipPos.x, lHipPos.y, pose.lHip ?? 90, SEGMENT_LENGTHS.thigh);
-            const lAnklePos = calculateEndPoint(lKneePos.x, lKneePos.y, pose.lKnee ?? 90, SEGMENT_LENGTHS.shin);
-            const lFootPos = calculateEndPoint(lAnklePos.x, lAnklePos.y, pose.lAnkle ?? 0, SEGMENT_LENGTHS.foot);
-
-            const rHipPos = { x: hipCenterX - hipWidth, y: hipCenterY };
-            const rKneePos = calculateEndPoint(rHipPos.x, rHipPos.y, pose.rHip ?? 90, SEGMENT_LENGTHS.thigh);
-            const rAnklePos = calculateEndPoint(rKneePos.x, rKneePos.y, pose.rKnee ?? 90, SEGMENT_LENGTHS.shin);
-            const rFootPos = calculateEndPoint(rAnklePos.x, rAnklePos.y, pose.rAnkle ?? 180, SEGMENT_LENGTHS.foot);
+            // --- Rendering ---
+            const skeleton = useMemo(() => calculateSkeleton(pose), [pose]);
+            const formationData = FORMATIONS[formationType] || FORMATIONS['single'];
+            // Identify Main Dancer from formation
+            const mainDancer = formationData.find(d => d.main) || formationData[0];
 
             return (
                 <div className="h-[100dvh] bg-slate-950 text-white font-sans selection:bg-cyan-500/30 flex flex-col md:flex-row overflow-hidden">
                 
-                {/* --- TOP PANEL (Mobile) / LEFT PANEL (Desktop) --- */}
+                {/* --- TOP/LEFT PANEL --- */}
                 <div className="w-full md:flex-1 h-[55%] md:h-full flex flex-col relative border-b md:border-b-0 md:border-r border-slate-800 z-10 bg-slate-950 min-w-0">
                     
-                    {/* Header Row: Title & Language */}
-                    <div className="absolute top-3 left-3 z-10 flex items-start gap-4">
-                    <div>
-                        <h1 className="text-xl md:text-3xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-fuchsia-500">
-                        {t('title')}
-                        </h1>
-                        <p className="text-[10px] md:text-xs text-slate-500 font-mono mt-0.5">{t('subtitle')}</p>
-                    </div>
-                    </div>
-
-                    {/* Language Selector */}
-                    <div className="absolute top-3 right-3 z-10">
-                    <div className="relative group">
-                        <div className="flex items-center bg-slate-800/80 backdrop-blur-sm border border-slate-700 rounded-full px-2 py-1 cursor-pointer hover:bg-slate-700 transition-colors">
-                        <Globe size={14} className="text-slate-400 mr-1" />
-                        <select 
-                            value={lang} 
-                            onChange={(e) => setLang(e.target.value)}
-                            className="bg-transparent text-[10px] md:text-xs text-slate-300 focus:outline-none cursor-pointer appearance-none pr-2"
-                        >
-                            <option value="zh-TW">繁體中文</option>
-                            <option value="ja">日本語</option>
-                            <option value="ko">한국어</option>
-                            <option value="en">English</option>
-                            <option value="es">Español</option>
-                            <option value="pt">Português</option>
-                            <option value="fr">Français</option>
-                            <option value="de">Deutsch</option>
-                            <option value="vi">Tiếng Việt</option>
-                            <option value="hi">हिन्दी</option>
-                            <option value="ru">Русский</option>
-                        </select>
+                    <div className="absolute top-3 left-3 z-10 flex items-start gap-4 pointer-events-none">
+                        <div>
+                            <h1 className="text-xl md:text-3xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-fuchsia-500">{t('title')}</h1>
+                            <p className="text-[10px] md:text-xs text-slate-500 font-mono mt-0.5">{t('subtitle')}</p>
                         </div>
                     </div>
+
+                    <div className="absolute top-3 right-3 z-10">
+                        <div className="flex items-center bg-slate-800/80 backdrop-blur-sm border border-slate-700 rounded-full px-2 py-1 cursor-pointer hover:bg-slate-700 transition-colors">
+                            <Globe size={14} className="text-slate-400 mr-1" />
+                            <select value={lang} onChange={(e) => setLang(e.target.value)} className="bg-transparent text-[10px] md:text-xs text-slate-300 focus:outline-none cursor-pointer appearance-none pr-2">
+                                <option value="zh-TW">繁體中文</option>
+                                <option value="en">English</option>
+                                <option value="ja">日本語</option>
+                                <option value="ko">한국어</option>
+                                <option value="es">Español</option>
+                                <option value="pt">Português</option>
+                                <option value="fr">Français</option>
+                                <option value="de">Deutsch</option>
+                                <option value="vi">Tiếng Việt</option>
+                                <option value="hi">हिन्दी</option>
+                                <option value="ru">Русский</option>
+                            </select>
+                        </div>
                     </div>
 
-                    <div className="flex-1 w-full flex items-center justify-center overflow-hidden relative p-2 bg-slate-900">
+                    <div className={`flex-1 w-full flex items-center justify-center overflow-hidden relative p-2 bg-slate-900 ${isPanning ? 'cursor-grabbing' : 'cursor-grab'}`}>
                         {showGrid && (
                             <div className="absolute inset-0 opacity-20 pointer-events-none" 
                                 style={{ 
-                                backgroundImage: 'linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px)', 
-                                backgroundSize: '40px 40px' 
+                                    backgroundImage: 'linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px)', 
+                                    backgroundSize: '40px 40px',
                                 }}>
                             </div>
                         )}
 
-                        <div className="relative h-full w-full flex items-center justify-center">
-                            <svg ref={svgRef} className="h-full w-auto aspect-square max-w-full select-none" viewBox="0 0 400 400">
+                        <div className="relative h-full w-full flex items-center justify-center" onWheel={handleWheel} onMouseDown={handleSvgMouseDown}>
+                            <svg ref={svgRef} className="w-full h-full select-none" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid meet">
                                 <defs>
                                 <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
                                     <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
-                                    <feMerge>
-                                    <feMergeNode in="coloredBlur"/>
-                                    <feMergeNode in="SourceGraphic"/>
-                                    </feMerge>
+                                    <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
                                 </filter>
                                 </defs>
 
-                                <g transform={`translate(200, 200) scale(${zoom}) translate(-200, -200)`}>
-                                
-                                <line x1="50" y1="380" x2="350" y2="380" stroke="#334155" strokeWidth="2" strokeDasharray="5,5" />
-
-                                {/* --- Visuals --- */}
-                                <LimbRenderer start={rHipPos} end={rKneePos} color="#c026d3" thickness={9} glow={true} />
-                                <LimbRenderer start={rKneePos} end={rAnklePos} color="#c026d3" thickness={7} glow={true} />
-                                <LimbRenderer start={rAnklePos} end={rFootPos} color="#e879f9" thickness={5} glow={false} />
-
-                                <LimbRenderer start={lHipPos} end={lKneePos} color="#0891b2" thickness={9} glow={true} />
-                                <LimbRenderer start={lKneePos} end={lAnklePos} color="#0891b2" thickness={7} glow={true} />
-                                <LimbRenderer start={lAnklePos} end={lFootPos} color="#22d3ee" thickness={5} glow={false} />
-
-                                <path 
-                                    d={`M${rHipPos.x} ${rHipPos.y} L${rShoulderBase.x} ${rShoulderBase.y} L${lShoulderBase.x} ${lShoulderBase.y} L${lHipPos.x} ${lHipPos.y} Z`}
-                                    fill="#334155" stroke="#475569" strokeWidth="2"
-                                />
-                                <line x1={rHipPos.x} y1={rHipPos.y} x2={lHipPos.x} y2={lHipPos.y} stroke="#475569" strokeWidth="3" />
-
-                                <line x1={shoulderCenter.x} y1={shoulderCenter.y} x2={headCenterX} y2={headCenterY + headRadius/2} stroke="#475569" strokeWidth="10" strokeLinecap="round"/>
-
-                                <g transform={`rotate(${displayTilt}, ${headCenterX}, ${headCenterY})`}>
-                                    <circle cx={headCenterX} cy={headCenterY} r={headRadius} fill="#1e293b" stroke="#94a3b8" strokeWidth="2" />
-                                    <path d={`M${headCenterX-10} ${headCenterY-5} L${headCenterX-5} ${headCenterY-5}`} stroke="#475569" strokeWidth="2"/>
-                                    <path d={`M${headCenterX+5} ${headCenterY-5} L${headCenterX+10} ${headCenterY-5}`} stroke="#475569" strokeWidth="2"/>
-                                </g>
-
-                                <LimbRenderer start={rShoulderBase} end={rElbowPos} color="#d946ef" thickness={8} glow={true} />
-                                <LimbRenderer start={rElbowPos} end={rWristPos} color="#d946ef" thickness={6} glow={true} />
-                                <LimbRenderer start={rWristPos} end={rHandPos} color="#e879f9" thickness={4} glow={false} />
-
-                                <LimbRenderer start={lShoulderBase} end={lElbowPos} color="#06b6d4" thickness={8} glow={true} />
-                                <LimbRenderer start={lElbowPos} end={lWristPos} color="#06b6d4" thickness={6} glow={true} />
-                                <LimbRenderer start={lWristPos} end={lHandPos} color="#22d3ee" thickness={4} glow={false} />
-
-                                {/* --- Interactive Handles (Only in Drag Mode) --- */}
-                                {isDragMode && (
-                                    <g>
-                                    {/* Body Center */}
-                                    <DraggableJoint x={hipCenterX} y={hipCenterY} isActive={activeJoint?.name === 'bodyX'} 
-                                        onMouseDown={(e) => handleJointDown(e, 'bodyX', null, 'pos')} 
-                                        onTouchStart={(e) => handleJointDown(e, 'bodyX', null, 'pos')} 
-                                    />
+                                {/* Correct Coordinate System:
+                                    1. Translate to Screen Center (200, 200) + Pan Offset.
+                                    2. Scale (Zoom).
+                                    (No negative translate needed because skeleton is 0-based)
+                                */}
+                                <g ref={mainGroupRef} transform={`translate(${200 + pan.x}, ${200 + pan.y}) scale(${zoom})`}>
                                     
-                                    {/* Head Handles */}
-                                    <DraggableJoint x={headCenterX} y={headCenterY} isActive={activeJoint?.type === 'headPos'} 
-                                        onMouseDown={(e) => handleJointDown(e, 'head', neckBase, 'headPos')} 
-                                        onTouchStart={(e) => handleJointDown(e, 'head', neckBase, 'headPos')} 
-                                    />
-                                    
-                                    <DraggableJoint x={tiltHandleX} y={tiltHandleY} isActive={activeJoint?.type === 'headTilt'} 
-                                        onMouseDown={(e) => handleJointDown(e, 'headTilt', {x: headCenterX, y: headCenterY}, 'headTilt')} 
-                                        onTouchStart={(e) => handleJointDown(e, 'headTilt', {x: headCenterX, y: headCenterY}, 'headTilt')} 
-                                        isFK={false}
-                                    />
+                                    {/* Render Formation Dancers */}
+                                    {formationData.map((dancer, idx) => (
+                                        <g key={idx} transform={`translate(${dancer.x}, ${dancer.y}) scale(${dancer.scale})`}>
+                                            <DancerFigure skeleton={skeleton} opacity={dancer.opacity} />
+                                        </g>
+                                    ))}
 
-                                    {/* R Arm (Screen Left) */}
-                                    {/* Shoulder - Always FK */}
-                                    <DraggableJoint x={rElbowPos.x} y={rElbowPos.y} isActive={activeJoint?.name === 'rShoulder'} 
-                                        onMouseDown={(e) => handleJointDown(e, 'rShoulder', rShoulderBase)} 
-                                        onTouchStart={(e) => handleJointDown(e, 'rShoulder', rShoulderBase)} 
-                                    />
-                                    
-                                    {/* Elbow - FK or IK (via Wrist) */}
-                                    <DraggableJoint x={rWristPos.x} y={rWristPos.y} isActive={activeJoint?.name === (dragType === 'IK' ? 'rWrist' : 'rElbow')} 
-                                        onMouseDown={(e) => handleJointDown(e, dragType === 'IK' ? 'rWrist' : 'rElbow', dragType === 'IK' ? rShoulderBase : rElbowPos, dragType === 'IK' ? 'ik' : 'angle', rShoulderBase)} 
-                                        onTouchStart={(e) => handleJointDown(e, dragType === 'IK' ? 'rWrist' : 'rElbow', dragType === 'IK' ? rShoulderBase : rElbowPos, dragType === 'IK' ? 'ik' : 'angle', rShoulderBase)} 
-                                        isFK={dragType === 'FK'}
-                                    />
-                                    
-                                    {/* Wrist - FK Only Handle (Tip) */}
-                                    {dragType === 'FK' && (
-                                        <DraggableJoint x={rHandPos.x} y={rHandPos.y} isActive={activeJoint?.name === 'rWrist'} 
-                                            onMouseDown={(e) => handleJointDown(e, 'rWrist', rWristPos)} 
-                                            onTouchStart={(e) => handleJointDown(e, 'rWrist', rWristPos)} 
-                                        />
+                                    {/* Interactive Handles (Transformed by Main Dancer's Position) */}
+                                    {isDragMode && mainDancer && (
+                                        <g transform={`translate(${mainDancer.x}, ${mainDancer.y}) scale(${mainDancer.scale})`}>
+                                            {/* Body Center */}
+                                            <DraggableJoint x={skeleton.hipCenterX} y={skeleton.hipCenterY} isActive={activeJoint?.name === 'bodyX'} onMouseDown={(e) => handleJointDown(e, 'bodyX', null, 'pos')} onTouchStart={(e) => handleJointDown(e, 'bodyX', null, 'pos')} />
+                                            <DraggableJoint x={skeleton.headCenterX} y={skeleton.headCenterY} isActive={activeJoint?.type === 'headPos'} onMouseDown={(e) => handleJointDown(e, 'head', skeleton.neckBase, 'headPos')} onTouchStart={(e) => handleJointDown(e, 'head', skeleton.neckBase, 'headPos')} />
+                                            <DraggableJoint x={skeleton.tiltHandleX} y={skeleton.tiltHandleY} isActive={activeJoint?.type === 'headTilt'} onMouseDown={(e) => handleJointDown(e, 'headTilt', {x: skeleton.headCenterX, y: skeleton.headCenterY}, 'headTilt')} onTouchStart={(e) => handleJointDown(e, 'headTilt', {x: skeleton.headCenterX, y: skeleton.headCenterY}, 'headTilt')} isFK={false} />
+
+                                            {/* Right Arm */}
+                                            <DraggableJoint x={skeleton.rElbowPos.x} y={skeleton.rElbowPos.y} isActive={activeJoint?.name === 'rShoulder'} onMouseDown={(e) => handleJointDown(e, 'rShoulder', skeleton.rShoulderBase)} onTouchStart={(e) => handleJointDown(e, 'rShoulder', skeleton.rShoulderBase)} />
+                                            <DraggableJoint x={skeleton.rWristPos.x} y={skeleton.rWristPos.y} isActive={activeJoint?.name === (dragType === 'IK' ? 'rWrist' : 'rElbow')} onMouseDown={(e) => handleJointDown(e, dragType === 'IK' ? 'rWrist' : 'rElbow', dragType === 'IK' ? skeleton.rShoulderBase : skeleton.rElbowPos, dragType === 'IK' ? 'ik' : 'angle', skeleton.rShoulderBase)} onTouchStart={(e) => handleJointDown(e, dragType === 'IK' ? 'rWrist' : 'rElbow', dragType === 'IK' ? skeleton.rShoulderBase : skeleton.rElbowPos, dragType === 'IK' ? 'ik' : 'angle', skeleton.rShoulderBase)} isFK={dragType === 'FK'} />
+                                            {dragType === 'FK' && <DraggableJoint x={skeleton.rHandPos.x} y={skeleton.rHandPos.y} isActive={activeJoint?.name === 'rWrist'} onMouseDown={(e) => handleJointDown(e, 'rWrist', skeleton.rWristPos)} onTouchStart={(e) => handleJointDown(e, 'rWrist', skeleton.rWristPos)} />}
+
+                                            {/* Left Arm */}
+                                            <DraggableJoint x={skeleton.lElbowPos.x} y={skeleton.lElbowPos.y} isActive={activeJoint?.name === 'lShoulder'} onMouseDown={(e) => handleJointDown(e, 'lShoulder', skeleton.lShoulderBase)} onTouchStart={(e) => handleJointDown(e, 'lShoulder', skeleton.lShoulderBase)} />
+                                            <DraggableJoint x={skeleton.lWristPos.x} y={skeleton.lWristPos.y} isActive={activeJoint?.name === (dragType === 'IK' ? 'lWrist' : 'lElbow')} onMouseDown={(e) => handleJointDown(e, dragType === 'IK' ? 'lWrist' : 'lElbow', dragType === 'IK' ? skeleton.lShoulderBase : skeleton.lElbowPos, dragType === 'IK' ? 'ik' : 'angle', skeleton.lShoulderBase)} onTouchStart={(e) => handleJointDown(e, dragType === 'IK' ? 'lWrist' : 'lElbow', dragType === 'IK' ? skeleton.lShoulderBase : skeleton.lElbowPos, dragType === 'IK' ? 'ik' : 'angle', skeleton.lShoulderBase)} isFK={dragType === 'FK'} />
+                                            {dragType === 'FK' && <DraggableJoint x={skeleton.lHandPos.x} y={skeleton.lHandPos.y} isActive={activeJoint?.name === 'lWrist'} onMouseDown={(e) => handleJointDown(e, 'lWrist', skeleton.lWristPos)} onTouchStart={(e) => handleJointDown(e, 'lWrist', skeleton.lWristPos)} />}
+
+                                            {/* Right Leg */}
+                                            <DraggableJoint x={skeleton.rKneePos.x} y={skeleton.rKneePos.y} isActive={activeJoint?.name === 'rHip'} onMouseDown={(e) => handleJointDown(e, 'rHip', skeleton.rHipPos)} onTouchStart={(e) => handleJointDown(e, 'rHip', skeleton.rHipPos)} />
+                                            <DraggableJoint x={skeleton.rAnklePos.x} y={skeleton.rAnklePos.y} isActive={activeJoint?.name === (dragType === 'IK' ? 'rAnkle' : 'rKnee')} onMouseDown={(e) => handleJointDown(e, dragType === 'IK' ? 'rAnkle' : 'rKnee', dragType === 'IK' ? skeleton.rHipPos : skeleton.rKneePos, dragType === 'IK' ? 'ik' : 'angle', skeleton.rHipPos)} onTouchStart={(e) => handleJointDown(e, dragType === 'IK' ? 'rAnkle' : 'rKnee', dragType === 'IK' ? skeleton.rHipPos : skeleton.rKneePos, dragType === 'IK' ? 'ik' : 'angle', skeleton.rHipPos)} isFK={dragType === 'FK'} />
+                                            {dragType === 'FK' && <DraggableJoint x={skeleton.rFootPos.x} y={skeleton.rFootPos.y} isActive={activeJoint?.name === 'rAnkle'} onMouseDown={(e) => handleJointDown(e, 'rAnkle', skeleton.rAnklePos)} onTouchStart={(e) => handleJointDown(e, 'rAnkle', skeleton.rAnklePos)} />}
+
+                                            {/* Left Leg */}
+                                            <DraggableJoint x={skeleton.lKneePos.x} y={skeleton.lKneePos.y} isActive={activeJoint?.name === 'lHip'} onMouseDown={(e) => handleJointDown(e, 'lHip', skeleton.lHipPos)} onTouchStart={(e) => handleJointDown(e, 'lHip', skeleton.lHipPos)} />
+                                            <DraggableJoint x={skeleton.lAnklePos.x} y={skeleton.lAnklePos.y} isActive={activeJoint?.name === (dragType === 'IK' ? 'lAnkle' : 'lKnee')} onMouseDown={(e) => handleJointDown(e, dragType === 'IK' ? 'lAnkle' : 'lKnee', dragType === 'IK' ? skeleton.lHipPos : skeleton.lKneePos, dragType === 'IK' ? 'ik' : 'angle', skeleton.lHipPos)} onTouchStart={(e) => handleJointDown(e, dragType === 'IK' ? 'lAnkle' : 'lKnee', dragType === 'IK' ? skeleton.lHipPos : skeleton.lKneePos, dragType === 'IK' ? 'ik' : 'angle', skeleton.lHipPos)} isFK={dragType === 'FK'} />
+                                            {dragType === 'FK' && <DraggableJoint x={skeleton.lFootPos.x} y={skeleton.lFootPos.y} isActive={activeJoint?.name === 'lAnkle'} onMouseDown={(e) => handleJointDown(e, 'lAnkle', skeleton.lAnklePos)} onTouchStart={(e) => handleJointDown(e, 'lAnkle', skeleton.lAnklePos)} />}
+                                        </g>
                                     )}
-
-                                    {/* L Arm (Screen Right) */}
-                                    <DraggableJoint x={lElbowPos.x} y={lElbowPos.y} isActive={activeJoint?.name === 'lShoulder'} 
-                                        onMouseDown={(e) => handleJointDown(e, 'lShoulder', lShoulderBase)} 
-                                        onTouchStart={(e) => handleJointDown(e, 'lShoulder', lShoulderBase)} 
-                                    />
-                                    <DraggableJoint x={lWristPos.x} y={lWristPos.y} isActive={activeJoint?.name === (dragType === 'IK' ? 'lWrist' : 'lElbow')} 
-                                        onMouseDown={(e) => handleJointDown(e, dragType === 'IK' ? 'lWrist' : 'lElbow', dragType === 'IK' ? lShoulderBase : lElbowPos, dragType === 'IK' ? 'ik' : 'angle', lShoulderBase)} 
-                                        onTouchStart={(e) => handleJointDown(e, dragType === 'IK' ? 'lWrist' : 'lElbow', dragType === 'IK' ? lShoulderBase : lElbowPos, dragType === 'IK' ? 'ik' : 'angle', lShoulderBase)} 
-                                        isFK={dragType === 'FK'}
-                                    />
-                                    {dragType === 'FK' && (
-                                        <DraggableJoint x={lHandPos.x} y={lHandPos.y} isActive={activeJoint?.name === 'lWrist'} 
-                                            onMouseDown={(e) => handleJointDown(e, 'lWrist', lWristPos)} 
-                                            onTouchStart={(e) => handleJointDown(e, 'lWrist', lWristPos)} 
-                                        />
-                                    )}
-
-                                    {/* Legs */}
-                                    <DraggableJoint x={rKneePos.x} y={rKneePos.y} isActive={activeJoint?.name === 'rHip'} 
-                                        onMouseDown={(e) => handleJointDown(e, 'rHip', rHipPos)} 
-                                        onTouchStart={(e) => handleJointDown(e, 'rHip', rHipPos)} 
-                                    />
-                                    <DraggableJoint x={rAnklePos.x} y={rAnklePos.y} isActive={activeJoint?.name === (dragType === 'IK' ? 'rAnkle' : 'rKnee')} 
-                                        onMouseDown={(e) => handleJointDown(e, dragType === 'IK' ? 'rAnkle' : 'rKnee', dragType === 'IK' ? rHipPos : rKneePos, dragType === 'IK' ? 'ik' : 'angle', rHipPos)} 
-                                        onTouchStart={(e) => handleJointDown(e, dragType === 'IK' ? 'rAnkle' : 'rKnee', dragType === 'IK' ? rHipPos : rKneePos, dragType === 'IK' ? 'ik' : 'angle', rHipPos)}
-                                        isFK={dragType === 'FK'}
-                                    />
-                                    {dragType === 'FK' && (
-                                        <DraggableJoint x={rFootPos.x} y={rFootPos.y} isActive={activeJoint?.name === 'rAnkle'} 
-                                            onMouseDown={(e) => handleJointDown(e, 'rAnkle', rAnklePos)} 
-                                            onTouchStart={(e) => handleJointDown(e, 'rAnkle', rAnklePos)} 
-                                        />
-                                    )}
-
-                                    <DraggableJoint x={lKneePos.x} y={lKneePos.y} isActive={activeJoint?.name === 'lHip'} 
-                                        onMouseDown={(e) => handleJointDown(e, 'lHip', lHipPos)} 
-                                        onTouchStart={(e) => handleJointDown(e, 'lHip', lHipPos)} 
-                                    />
-                                    <DraggableJoint x={lAnklePos.x} y={lAnklePos.y} isActive={activeJoint?.name === (dragType === 'IK' ? 'lAnkle' : 'lKnee')} 
-                                        onMouseDown={(e) => handleJointDown(e, dragType === 'IK' ? 'lAnkle' : 'lKnee', dragType === 'IK' ? lHipPos : lKneePos, dragType === 'IK' ? 'ik' : 'angle', lHipPos)} 
-                                        onTouchStart={(e) => handleJointDown(e, dragType === 'IK' ? 'lAnkle' : 'lKnee', dragType === 'IK' ? lHipPos : lKneePos, dragType === 'IK' ? 'ik' : 'angle', lHipPos)} 
-                                        isFK={dragType === 'FK'}
-                                    />
-                                    {dragType === 'FK' && (
-                                        <DraggableJoint x={lFootPos.x} y={lFootPos.y} isActive={activeJoint?.name === 'lAnkle'} 
-                                            onMouseDown={(e) => handleJointDown(e, 'lAnkle', lAnklePos)} 
-                                            onTouchStart={(e) => handleJointDown(e, 'lAnkle', lAnklePos)} 
-                                        />
-                                    )}
-                                    </g>
-                                )}
-
                                 </g>
                             </svg>
 
                             {/* Overlay Controls */}
-                            <div className="absolute bottom-2 right-2 md:bottom-4 md:right-4 flex space-x-1 md:space-x-2">
+                            <div className="absolute bottom-2 right-2 md:bottom-4 md:right-4 flex space-x-1 md:space-x-2 pointer-events-auto">
                                 <div className="flex items-center bg-slate-800 rounded-lg border border-slate-700 overflow-hidden">
-                                    <button 
-                                        onClick={() => setIsDragMode(!isDragMode)}
-                                        className={`p-1.5 md:p-2 transition-all ${isDragMode ? 'bg-fuchsia-500 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-700'}`}
-                                        title={isDragMode ? t('dragModeOn') : t('dragModeOff')}
-                                    >
+                                    <button onClick={() => setIsDragMode(!isDragMode)} className={`p-1.5 md:p-2 transition-all ${isDragMode ? 'bg-fuchsia-500 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-700'}`} title={isDragMode ? t('dragModeOn') : t('dragModeOff')}>
                                         <Hand size={16} className="md:w-5 md:h-5" />
                                     </button>
                                     {isDragMode && (
-                                        <button 
-                                            onClick={() => setDragType(prev => prev === 'FK' ? 'IK' : 'FK')}
-                                            className="px-2 py-1.5 md:px-3 md:py-2 text-[10px] md:text-xs font-mono font-bold text-slate-300 border-l border-slate-600 hover:bg-slate-700 transition-colors w-[40px]"
-                                            title={t(dragType.toLowerCase())}
-                                        >
+                                        <button onClick={() => setDragType(prev => prev === 'FK' ? 'IK' : 'FK')} className="px-2 py-1.5 md:px-3 md:py-2 text-[10px] md:text-xs font-mono font-bold text-slate-300 border-l border-slate-600 hover:bg-slate-700 transition-colors w-[40px]" title={t(dragType.toLowerCase())}>
                                             {dragType}
                                         </button>
                                     )}
                                 </div>
-                                
                                 <div className="w-px h-6 md:h-8 bg-slate-700 mx-1"></div>
                                 <button onClick={handleZoomOut} className="p-1.5 md:p-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-400 hover:text-white hover:border-slate-500"><ZoomOut size={16} className="md:w-5 md:h-5" /></button>
-                                <button onClick={handleResetZoom} className="px-2 py-1.5 md:px-3 md:py-2 rounded-lg bg-slate-800 border border-slate-700 text-[10px] md:text-xs font-mono text-slate-300 min-w-[40px] md:min-w-[60px]">{Math.round(zoom * 100)}%</button>
+                                <button onClick={handleResetView} className="px-2 py-1.5 md:px-3 md:py-2 rounded-lg bg-slate-800 border border-slate-700 text-[10px] md:text-xs font-mono text-slate-300 min-w-[60px] md:min-w-[80px] flex items-center justify-center gap-1" title={t('resetView')}>
+                                    <RotateCw size={10} /> {Math.round(zoom * 100)}%
+                                </button>
                                 <button onClick={handleZoomIn} className="p-1.5 md:p-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-400 hover:text-white hover:border-slate-500"><ZoomIn size={16} className="md:w-5 md:h-5" /></button>
                                 <div className="w-px h-6 md:h-8 bg-slate-700 mx-1"></div>
                                 <button onClick={() => setShowGrid(!showGrid)} className={`p-1.5 md:p-2 rounded-lg border ${showGrid ? 'bg-cyan-500/20 border-cyan-500 text-cyan-400' : 'bg-slate-800 border-slate-700 text-slate-400'}`}><Grid size={16} className="md:w-5 md:h-5" /></button>
@@ -1648,22 +1573,16 @@
                         </div>
                     </div>
 
-                    {/* Timeline Strip */}
+                    {/* Timeline */}
                     <div className="w-full bg-slate-900/90 p-3 border-t border-slate-800 flex-shrink-0">
                     <div className="flex flex-wrap justify-between items-center mb-2 gap-2">
                         <span className="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest">{t('timeline')} ({timeline.length})</span>
-                        
                         <div className="flex items-center space-x-2 md:space-x-4">
                         <button onClick={handleAIGenerate} className="flex items-center space-x-1 px-2 py-1 bg-fuchsia-600 hover:bg-fuchsia-500 text-white rounded text-[10px] font-bold transition-all shadow-[0_0_10px_rgba(192,38,211,0.4)]"><Sparkles size={10} /><span>{t('ai')}</span></button>
                         <div className="w-px h-3 bg-slate-700 hidden md:block"></div>
                         <div className="hidden md:flex items-center space-x-1">
                             <Settings size={10} className="text-slate-500" />
-                            {/* Easing Selector for specific frame */}
-                            <select 
-                            value={pose.easing || 'Smooth (流暢)'} 
-                            onChange={(e) => updatePose('easing', e.target.value)}
-                            className="bg-slate-800 border border-slate-700 text-[10px] text-white rounded px-1 py-0.5 focus:outline-none max-w-[80px]"
-                            >
+                            <select value={pose.easing || 'Smooth (流暢)'} onChange={(e) => updatePose('easing', e.target.value)} className="bg-slate-800 border border-slate-700 text-[10px] text-white rounded px-1 py-0.5 focus:outline-none max-w-[80px]">
                             {Object.keys(EASING_FUNCTIONS).map(name => (<option key={name} value={name}>{name.split(' ')[0]}</option>))}
                             </select>
                         </div>
@@ -1673,11 +1592,7 @@
                         </div>
                         </div>
                     </div>
-
-                    <div className="w-full mb-2 px-1">
-                        <input type="range" min={0} max={Math.max(0, timeline.length - 1)} value={currentFrameIndex} onChange={handleTimelineScrub} className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-cyan-500 hover:accent-cyan-400 block"/>
-                    </div>
-                    
+                    <div className="w-full mb-2 px-1"><input type="range" min={0} max={Math.max(0, timeline.length - 1)} value={currentFrameIndex} onChange={handleTimelineScrub} className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-cyan-500 hover:accent-cyan-400 block"/></div>
                     <div className="flex items-center space-x-2 overflow-x-auto pb-1 custom-scrollbar no-scrollbar-mobile">
                         <button onClick={() => setIsPlaying(!isPlaying)} className={`p-2.5 rounded-full flex-shrink-0 transition-all ${isPlaying ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'} text-white shadow-lg`}>{isPlaying ? <Square fill="currentColor" size={12} /> : <Play fill="currentColor" size={12} />}</button>
                         {timeline.map((_, idx) => (
@@ -1687,7 +1602,6 @@
                         ))}
                         <button onClick={addKeyframe} className="w-8 h-12 md:w-10 md:h-14 flex-shrink-0 rounded border-2 border-dashed border-slate-600 hover:border-cyan-500 text-slate-600 hover:text-cyan-500 flex items-center justify-center transition-colors"><Plus size={14} /></button>
                     </div>
-                    
                     <div className="flex justify-between mt-1 pt-1 border-t border-slate-800/50">
                         <button onClick={deleteKeyframe} className="flex items-center text-[10px] text-red-400 px-2 py-1"><Trash2 size={10} className="mr-1"/> {t('delete')}</button>
                         <button onClick={updateKeyframe} className="flex items-center text-[10px] text-cyan-400 px-2 py-1"><Layers size={10} className="mr-1"/> {t('update')}</button>
@@ -1695,7 +1609,7 @@
                     </div>
                 </div>
 
-                {/* --- BOTTOM PANEL (Mobile) / RIGHT PANEL (Desktop) --- */}
+                {/* --- BOTTOM/RIGHT PANEL --- */}
                 <div className="w-full md:w-[350px] h-[45%] md:h-full bg-slate-900/95 md:bg-slate-900/80 overflow-y-auto md:border-l border-t md:border-t-0 border-slate-800 custom-scrollbar shadow-[0_-5px_20px_rgba(0,0,0,0.5)] z-20 flex-shrink-0">
                     <div className="p-4 md:p-6">
                         <div className="mb-6">
@@ -1705,34 +1619,16 @@
                         <div className="mb-4 p-3 bg-slate-800/50 rounded-lg border border-slate-700">
                             <label className="text-[10px] text-slate-400 mb-1 block">{t('savePreset')}</label>
                             <div className="flex gap-2">
-                                <input
-                                    type="text"
-                                    value={presetName}
-                                    onChange={(e) => setPresetName(e.target.value)}
-                                    placeholder={t('enterName')}
-                                    className="flex-1 bg-slate-900 border border-slate-600 rounded px-2 py-1 text-[10px] md:text-xs text-white focus:outline-none focus:border-cyan-500 placeholder-slate-600"
-                                />
-                                <button
-                                    onClick={handleSaveCustomPreset}
-                                    className="px-2 py-1 bg-cyan-600 hover:bg-cyan-500 text-white rounded text-[10px] md:text-xs flex items-center transition-colors"
-                                >
-                                    <Save size={12} className="mr-1" />
-                                    {t('save')}
-                                </button>
+                                <input type="text" value={presetName} onChange={(e) => setPresetName(e.target.value)} placeholder={t('enterName')} className="flex-1 bg-slate-900 border border-slate-600 rounded px-2 py-1 text-[10px] md:text-xs text-white focus:outline-none focus:border-cyan-500 placeholder-slate-600" />
+                                <button onClick={handleSaveCustomPreset} className="px-2 py-1 bg-cyan-600 hover:bg-cyan-500 text-white rounded text-[10px] md:text-xs flex items-center transition-colors"><Save size={12} className="mr-1" />{t('save')}</button>
                             </div>
                         </div>
 
                         <div className="mb-3">
                             <select value={selectedPreset} onChange={handlePresetChange} className="w-full bg-slate-800 border border-slate-700 text-white text-[10px] md:text-xs rounded px-2 py-2 focus:outline-none focus:border-cyan-500" disabled={isPlaying}>
                             <option value="" disabled>{t('selectPreset')}</option>
-                            <optgroup label={t('presets')}>
-                                {Object.keys(PRESETS).map(key => (<option key={key} value={key}>{t(`p_${key}`)}</option>))}
-                            </optgroup>
-                            {Object.keys(customPresets).length > 0 && (
-                                <optgroup label={t('custom')}>
-                                    {Object.keys(customPresets).map(key => (<option key={key} value={key}>{key}</option>))}
-                                </optgroup>
-                            )}
+                            <optgroup label={t('presets')}>{Object.keys(PRESETS).map(key => (<option key={key} value={key}>{t(`p_${key}`)}</option>))}</optgroup>
+                            {Object.keys(customPresets).length > 0 && <optgroup label={t('custom')}>{Object.keys(customPresets).map(key => (<option key={key} value={key}>{key}</option>))}</optgroup>}
                             </select>
                         </div>
                         <div className="flex gap-2">
@@ -1742,16 +1638,25 @@
                         </div>
                         </div>
 
-                        <div className="space-y-6 pb-8">
-                        
-                        {/* Easing Control visible in editor as well */}
+                        <div className="mb-6 border-t border-slate-800 pt-4">
+                            <h2 className="text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-widest mb-3 flex items-center"><Users className="mr-2" size={12}/> {t('formation')}</h2>
+                            <div className="grid grid-cols-3 gap-2">
+                                {['single', 'duo', 'trio', 'triangle', 'row', 'grid'].map(f => (
+                                    <button 
+                                        key={f} 
+                                        onClick={() => setFormationType(f)}
+                                        className={`px-2 py-2 rounded text-[10px] md:text-xs border transition-all ${formationType === f ? 'bg-cyan-900/50 border-cyan-500 text-cyan-400' : 'bg-slate-800 border-slate-700 text-slate-400 hover:border-slate-500'}`}
+                                    >
+                                        {t(`f_${f}`)}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="space-y-6 pb-8 border-t border-slate-800 pt-4">
                         <div>
                             <h3 className="text-xs font-bold text-slate-300 mb-3 border-b border-slate-700/50 pb-1 flex justify-between items-center"><span>{t('easing')}</span><Settings size={12} className="text-slate-500"/></h3>
-                            <select 
-                            value={pose.easing || 'Smooth (流暢)'} 
-                            onChange={(e) => updatePose('easing', e.target.value)}
-                            className="w-full bg-slate-800 border border-slate-700 text-white text-[10px] md:text-xs rounded px-2 py-2 focus:outline-none focus:border-cyan-500"
-                            >
+                            <select value={pose.easing || 'Smooth (流暢)'} onChange={(e) => updatePose('easing', e.target.value)} className="w-full bg-slate-800 border border-slate-700 text-white text-[10px] md:text-xs rounded px-2 py-2 focus:outline-none focus:border-cyan-500">
                             {Object.keys(EASING_FUNCTIONS).map(name => (<option key={name} value={name}>{name}</option>))}
                             </select>
                         </div>
