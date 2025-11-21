@@ -117,7 +117,7 @@
                 subtitle: 'TUTTING SIMULATOR V2.6',
                 timeline: '時間軸',
                 bpm: 'BPM',
-                ai: 'AI 編舞',
+                ai: '生成編舞',
                 delete: '刪除',
                 update: '更新',
                 manage: '動作管理',
@@ -181,7 +181,7 @@
                 subtitle: 'TUTTING SIMULATOR V2.6',
                 timeline: 'TIMELINE',
                 bpm: 'BPM',
-                ai: 'AI GEN',
+                ai: 'GENERATE',
                 delete: 'DELETE',
                 update: 'UPDATE',
                 manage: 'MANAGE',
@@ -245,7 +245,7 @@
                 subtitle: 'タッティング・シミュレーター V2.6',
                 timeline: 'タイムライン',
                 bpm: 'BPM',
-                ai: 'AI生成',
+                ai: '振り付け生成',
                 delete: '削除',
                 update: '更新',
                 manage: '管理',
@@ -309,7 +309,7 @@
                 subtitle: '터팅 시뮬레이터 V2.6',
                 timeline: '타임라인',
                 bpm: 'BPM',
-                ai: 'AI 생성',
+                ai: '안무 생성',
                 delete: '삭제',
                 update: '갱신',
                 manage: '관리',
@@ -373,7 +373,7 @@
                 subtitle: 'SIMULADOR DE TUTTING V2.6',
                 timeline: 'LÍNEA DE TIEMPO',
                 bpm: 'BPM',
-                ai: 'GEN IA',
+                ai: 'GENERAR',
                 delete: 'BORRAR',
                 update: 'ACTUALIZAR',
                 manage: 'GESTIONAR',
@@ -437,7 +437,7 @@
                 subtitle: 'SIMULADOR DE TUTTING V2.6',
                 timeline: 'LINHA DO TEMPO',
                 bpm: 'BPM',
-                ai: 'GERAR IA',
+                ai: 'GERAR',
                 delete: 'EXCLUIR',
                 update: 'ATUALIZAR',
                 manage: 'GERENCIAR',
@@ -501,7 +501,7 @@
                 subtitle: 'SIMULATEUR DE TUTTING V2.6',
                 timeline: 'CHRONOLOGIE',
                 bpm: 'BPM',
-                ai: 'GEN IA',
+                ai: 'GÉNÉRER',
                 delete: 'SUPPRIMER',
                 update: 'METTRE À JOUR',
                 manage: 'GÉRER',
@@ -565,7 +565,7 @@
                 subtitle: 'TUTTING SIMULATOR V2.6',
                 timeline: 'ZEITACHSE',
                 bpm: 'BPM',
-                ai: 'KI GEN',
+                ai: 'GENERIEREN',
                 delete: 'LÖSCHEN',
                 update: 'AKTUALISIEREN',
                 manage: 'VERWALTEN',
@@ -629,7 +629,7 @@
                 subtitle: 'MÔ PHỎNG TUTTING V2.6',
                 timeline: 'DÒNG THỜI GIAN',
                 bpm: 'BPM',
-                ai: 'TẠO AI',
+                ai: 'TẠO VŨ ĐẠO',
                 delete: 'XÓA',
                 update: 'CẬP NHẬT',
                 manage: 'QUẢN LÝ',
@@ -693,7 +693,7 @@
                 subtitle: 'टटिंग सिम्युलेटर V2.6',
                 timeline: 'समयरेखा',
                 bpm: 'BPM',
-                ai: 'AI जनरेट',
+                ai: 'उत्पन्न करें',
                 delete: 'हटाएं',
                 update: 'अपडेट',
                 manage: 'प्रबंधन',
@@ -757,7 +757,7 @@
                 subtitle: 'СИМУЛЯТОР ТАТТИНГА V2.6',
                 timeline: 'ВРЕМЕННАЯ ШКАЛА',
                 bpm: 'УДАРЫ/МИН',
-                ai: 'ИИ',
+                ai: 'ГЕНЕРИРОВАТЬ',
                 delete: 'УДАЛИТЬ',
                 update: 'ОБНОВИТЬ',
                 manage: 'УПРАВЛЕНИЕ',
@@ -1256,22 +1256,61 @@
                 }
                 else if (currentDragType === 'IK' && currentActiveJoint.type === 'ik') {
                     const { name, origin } = currentActiveJoint;
-                    if (name === 'rWrist') {
-                        const [a1, a2] = solveTwoJointIK(mousePos, origin, SEGMENT_LENGTHS.upperArm, SEGMENT_LENGTHS.forearm, currentPose.rShoulder, currentPose.rElbow);
-                        updatePose('rShoulder', a1);
-                        updatePose('rElbow', a2);
-                    } else if (name === 'lWrist') {
-                         const [a1, a2] = solveTwoJointIK(mousePos, origin, SEGMENT_LENGTHS.upperArm, SEGMENT_LENGTHS.forearm, currentPose.lShoulder, currentPose.lElbow);
-                        updatePose('lShoulder', a1);
-                        updatePose('lElbow', a2);
-                    } else if (name === 'rAnkle') {
-                         const [a1, a2] = solveTwoJointIK(mousePos, origin, SEGMENT_LENGTHS.thigh, SEGMENT_LENGTHS.shin, currentPose.rHip ?? 90, currentPose.rKnee ?? 90);
-                        updatePose('rHip', a1);
-                        updatePose('rKnee', a2);
-                    } else if (name === 'lAnkle') {
-                         const [a1, a2] = solveTwoJointIK(mousePos, origin, SEGMENT_LENGTHS.thigh, SEGMENT_LENGTHS.shin, currentPose.lHip ?? 90, currentPose.lKnee ?? 90);
-                        updatePose('lHip', a1);
-                        updatePose('lKnee', a2);
+                    // Two-pass IK for hand tips to ensure arm alignment
+                    if (name === 'rWrist' || name === 'lWrist' || name === 'rAnkle' || name === 'lAnkle') {
+                        let finalTarget = mousePos;
+                        let limbLength1, limbLength2, currentA1, currentA2, propA1, propA2, handLength;
+                        
+                        if (name === 'rWrist') {
+                            limbLength1 = SEGMENT_LENGTHS.upperArm; limbLength2 = SEGMENT_LENGTHS.forearm;
+                            currentA1 = currentPose.rShoulder; currentA2 = currentPose.rElbow;
+                            propA1 = 'rShoulder'; propA2 = 'rElbow';
+                            handLength = SEGMENT_LENGTHS.hand;
+                        } else if (name === 'lWrist') {
+                            limbLength1 = SEGMENT_LENGTHS.upperArm; limbLength2 = SEGMENT_LENGTHS.forearm;
+                            currentA1 = currentPose.lShoulder; currentA2 = currentPose.lElbow;
+                            propA1 = 'lShoulder'; propA2 = 'lElbow';
+                            handLength = SEGMENT_LENGTHS.hand;
+                        } else if (name === 'rAnkle') {
+                            limbLength1 = SEGMENT_LENGTHS.thigh; limbLength2 = SEGMENT_LENGTHS.shin;
+                            currentA1 = currentPose.rHip ?? 90; currentA2 = currentPose.rKnee ?? 90;
+                            propA1 = 'rHip'; propA2 = 'rKnee';
+                            handLength = SEGMENT_LENGTHS.foot;
+                        } else {
+                            limbLength1 = SEGMENT_LENGTHS.thigh; limbLength2 = SEGMENT_LENGTHS.shin;
+                            currentA1 = currentPose.lHip ?? 90; currentA2 = currentPose.lKnee ?? 90;
+                            propA1 = 'lHip'; propA2 = 'lKnee';
+                            handLength = SEGMENT_LENGTHS.foot;
+                        }
+
+                        // 1. Solve IK for Mouse Pos (Tentative)
+                        const [tA1, tA2] = solveTwoJointIK(mousePos, origin, limbLength1, limbLength2 + handLength, currentA1, currentA2);
+                        
+                        // 2. Calculate Elbow Pos from Tentative Solution
+                        const elbowX = origin.x + Math.cos(toRad(tA1)) * limbLength1;
+                        const elbowY = origin.y + Math.sin(toRad(tA1)) * limbLength1;
+                        
+                        // 3. Calculate angle from Elbow to Mouse
+                        const wristAngleRad = Math.atan2(mousePos.y - elbowY, mousePos.x - elbowX);
+                        let wristAngleDeg = toDeg(wristAngleRad);
+                        if(wristAngleDeg < 0) wristAngleDeg += 360;
+
+                        // 4. Update Wrist Angle
+                        if(name === 'rWrist') updatePose('rWrist', wristAngleDeg);
+                        else if(name === 'lWrist') updatePose('lWrist', wristAngleDeg);
+                        else if(name === 'rAnkle') updatePose('rAnkle', wristAngleDeg);
+                        else if(name === 'lAnkle') updatePose('lAnkle', wristAngleDeg);
+
+                        // 5. Calculate Real Target for Wrist Joint
+                        const realWristTarget = {
+                            x: mousePos.x - Math.cos(wristAngleRad) * handLength,
+                            y: mousePos.y - Math.sin(wristAngleRad) * handLength
+                        };
+
+                        // 6. Solve IK for Real Target
+                        const [fA1, fA2] = solveTwoJointIK(realWristTarget, origin, limbLength1, limbLength2, currentA1, currentA2);
+                        updatePose(propA1, fA1);
+                        updatePose(propA2, fA2);
                     }
                 }
                 else {
@@ -1529,21 +1568,25 @@
                                             <DraggableJoint x={skeleton.rElbowPos.x} y={skeleton.rElbowPos.y} isActive={activeJoint?.name === 'rShoulder'} onMouseDown={(e) => handleJointDown(e, 'rShoulder', skeleton.rShoulderBase)} onTouchStart={(e) => handleJointDown(e, 'rShoulder', skeleton.rShoulderBase)} />
                                             <DraggableJoint x={skeleton.rWristPos.x} y={skeleton.rWristPos.y} isActive={activeJoint?.name === (dragType === 'IK' ? 'rWrist' : 'rElbow')} onMouseDown={(e) => handleJointDown(e, dragType === 'IK' ? 'rWrist' : 'rElbow', dragType === 'IK' ? skeleton.rShoulderBase : skeleton.rElbowPos, dragType === 'IK' ? 'ik' : 'angle', skeleton.rShoulderBase)} onTouchStart={(e) => handleJointDown(e, dragType === 'IK' ? 'rWrist' : 'rElbow', dragType === 'IK' ? skeleton.rShoulderBase : skeleton.rElbowPos, dragType === 'IK' ? 'ik' : 'angle', skeleton.rShoulderBase)} isFK={dragType === 'FK'} />
                                             {dragType === 'FK' && <DraggableJoint x={skeleton.rHandPos.x} y={skeleton.rHandPos.y} isActive={activeJoint?.name === 'rWrist'} onMouseDown={(e) => handleJointDown(e, 'rWrist', skeleton.rWristPos)} onTouchStart={(e) => handleJointDown(e, 'rWrist', skeleton.rWristPos)} />}
+                                            {dragType === 'IK' && <DraggableJoint x={skeleton.rHandPos.x} y={skeleton.rHandPos.y} isActive={activeJoint?.name === 'rWrist'} onMouseDown={(e) => handleJointDown(e, 'rWrist', skeleton.rShoulderBase, 'ik', skeleton.rShoulderBase)} onTouchStart={(e) => handleJointDown(e, 'rWrist', skeleton.rShoulderBase, 'ik', skeleton.rShoulderBase)} isFK={false} />}
 
                                             {/* Left Arm */}
                                             <DraggableJoint x={skeleton.lElbowPos.x} y={skeleton.lElbowPos.y} isActive={activeJoint?.name === 'lShoulder'} onMouseDown={(e) => handleJointDown(e, 'lShoulder', skeleton.lShoulderBase)} onTouchStart={(e) => handleJointDown(e, 'lShoulder', skeleton.lShoulderBase)} />
                                             <DraggableJoint x={skeleton.lWristPos.x} y={skeleton.lWristPos.y} isActive={activeJoint?.name === (dragType === 'IK' ? 'lWrist' : 'lElbow')} onMouseDown={(e) => handleJointDown(e, dragType === 'IK' ? 'lWrist' : 'lElbow', dragType === 'IK' ? skeleton.lShoulderBase : skeleton.lElbowPos, dragType === 'IK' ? 'ik' : 'angle', skeleton.lShoulderBase)} onTouchStart={(e) => handleJointDown(e, dragType === 'IK' ? 'lWrist' : 'lElbow', dragType === 'IK' ? skeleton.lShoulderBase : skeleton.lElbowPos, dragType === 'IK' ? 'ik' : 'angle', skeleton.lShoulderBase)} isFK={dragType === 'FK'} />
                                             {dragType === 'FK' && <DraggableJoint x={skeleton.lHandPos.x} y={skeleton.lHandPos.y} isActive={activeJoint?.name === 'lWrist'} onMouseDown={(e) => handleJointDown(e, 'lWrist', skeleton.lWristPos)} onTouchStart={(e) => handleJointDown(e, 'lWrist', skeleton.lWristPos)} />}
+                                            {dragType === 'IK' && <DraggableJoint x={skeleton.lHandPos.x} y={skeleton.lHandPos.y} isActive={activeJoint?.name === 'lWrist'} onMouseDown={(e) => handleJointDown(e, 'lWrist', skeleton.lShoulderBase, 'ik', skeleton.lShoulderBase)} onTouchStart={(e) => handleJointDown(e, 'lWrist', skeleton.lShoulderBase, 'ik', skeleton.lShoulderBase)} isFK={false} />}
 
                                             {/* Right Leg */}
                                             <DraggableJoint x={skeleton.rKneePos.x} y={skeleton.rKneePos.y} isActive={activeJoint?.name === 'rHip'} onMouseDown={(e) => handleJointDown(e, 'rHip', skeleton.rHipPos)} onTouchStart={(e) => handleJointDown(e, 'rHip', skeleton.rHipPos)} />
                                             <DraggableJoint x={skeleton.rAnklePos.x} y={skeleton.rAnklePos.y} isActive={activeJoint?.name === (dragType === 'IK' ? 'rAnkle' : 'rKnee')} onMouseDown={(e) => handleJointDown(e, dragType === 'IK' ? 'rAnkle' : 'rKnee', dragType === 'IK' ? skeleton.rHipPos : skeleton.rKneePos, dragType === 'IK' ? 'ik' : 'angle', skeleton.rHipPos)} onTouchStart={(e) => handleJointDown(e, dragType === 'IK' ? 'rAnkle' : 'rKnee', dragType === 'IK' ? skeleton.rHipPos : skeleton.rKneePos, dragType === 'IK' ? 'ik' : 'angle', skeleton.rHipPos)} isFK={dragType === 'FK'} />
                                             {dragType === 'FK' && <DraggableJoint x={skeleton.rFootPos.x} y={skeleton.rFootPos.y} isActive={activeJoint?.name === 'rAnkle'} onMouseDown={(e) => handleJointDown(e, 'rAnkle', skeleton.rAnklePos)} onTouchStart={(e) => handleJointDown(e, 'rAnkle', skeleton.rAnklePos)} />}
+                                            {dragType === 'IK' && <DraggableJoint x={skeleton.rFootPos.x} y={skeleton.rFootPos.y} isActive={activeJoint?.name === 'rAnkle'} onMouseDown={(e) => handleJointDown(e, 'rAnkle', skeleton.rHipPos, 'ik', skeleton.rHipPos)} onTouchStart={(e) => handleJointDown(e, 'rAnkle', skeleton.rHipPos, 'ik', skeleton.rHipPos)} isFK={false} />}
 
                                             {/* Left Leg */}
                                             <DraggableJoint x={skeleton.lKneePos.x} y={skeleton.lKneePos.y} isActive={activeJoint?.name === 'lHip'} onMouseDown={(e) => handleJointDown(e, 'lHip', skeleton.lHipPos)} onTouchStart={(e) => handleJointDown(e, 'lHip', skeleton.lHipPos)} />
                                             <DraggableJoint x={skeleton.lAnklePos.x} y={skeleton.lAnklePos.y} isActive={activeJoint?.name === (dragType === 'IK' ? 'lAnkle' : 'lKnee')} onMouseDown={(e) => handleJointDown(e, dragType === 'IK' ? 'lAnkle' : 'lKnee', dragType === 'IK' ? skeleton.lHipPos : skeleton.lKneePos, dragType === 'IK' ? 'ik' : 'angle', skeleton.lHipPos)} onTouchStart={(e) => handleJointDown(e, dragType === 'IK' ? 'lAnkle' : 'lKnee', dragType === 'IK' ? skeleton.lHipPos : skeleton.lKneePos, dragType === 'IK' ? 'ik' : 'angle', skeleton.lHipPos)} isFK={dragType === 'FK'} />
                                             {dragType === 'FK' && <DraggableJoint x={skeleton.lFootPos.x} y={skeleton.lFootPos.y} isActive={activeJoint?.name === 'lAnkle'} onMouseDown={(e) => handleJointDown(e, 'lAnkle', skeleton.lAnklePos)} onTouchStart={(e) => handleJointDown(e, 'lAnkle', skeleton.lAnklePos)} />}
+                                            {dragType === 'IK' && <DraggableJoint x={skeleton.lFootPos.x} y={skeleton.lFootPos.y} isActive={activeJoint?.name === 'lAnkle'} onMouseDown={(e) => handleJointDown(e, 'lAnkle', skeleton.lHipPos, 'ik', skeleton.lHipPos)} onTouchStart={(e) => handleJointDown(e, 'lAnkle', skeleton.lHipPos, 'ik', skeleton.lHipPos)} isFK={false} />}
                                         </g>
                                     )}
                                 </g>
@@ -1640,17 +1683,11 @@
 
                         <div className="mb-6 border-t border-slate-800 pt-4">
                             <h2 className="text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-widest mb-3 flex items-center"><Users className="mr-2" size={12}/> {t('formation')}</h2>
-                            <div className="grid grid-cols-3 gap-2">
+                            <select value={formationType} onChange={(e) => setFormationType(e.target.value)} className="w-full bg-slate-800 border border-slate-700 text-white text-[10px] md:text-xs rounded px-2 py-2 focus:outline-none focus:border-cyan-500">
                                 {['single', 'duo', 'trio', 'triangle', 'row', 'grid'].map(f => (
-                                    <button 
-                                        key={f} 
-                                        onClick={() => setFormationType(f)}
-                                        className={`px-2 py-2 rounded text-[10px] md:text-xs border transition-all ${formationType === f ? 'bg-cyan-900/50 border-cyan-500 text-cyan-400' : 'bg-slate-800 border-slate-700 text-slate-400 hover:border-slate-500'}`}
-                                    >
-                                        {t(`f_${f}`)}
-                                    </button>
+                                    <option key={f} value={f}>{t(`f_${f}`)}</option>
                                 ))}
-                            </div>
+                            </select>
                         </div>
 
                         <div className="space-y-6 pb-8 border-t border-slate-800 pt-4">
