@@ -93,6 +93,7 @@
         const FileJson = (props) => <Icon {...props}><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" /><polyline points="14 2 14 8 20 8" /></Icon>;
         const Hand = (props) => <Icon {...props}><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0" /><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2" /><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8" /><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15" /></Icon>;
         const Globe = (props) => <Icon {...props}><circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></Icon>;
+        const GitCommit = (props) => <Icon {...props}><circle cx="12" cy="12" r="4" /><line x1="1.05" y1="12" x2="7" y2="12" /><line x1="17.01" y1="12" x2="22.96" y2="12" /></Icon>;
 
         // --- Translations ---
         const TRANSLATIONS = {
@@ -109,6 +110,12 @@
                 selectPreset: '選擇預設動作',
                 export: '匯出',
                 import: '匯入',
+                savePreset: '儲存當前動作',
+                enterName: '動作名稱',
+                save: '儲存',
+                custom: '自訂動作',
+                saveSuccess: '動作已儲存！',
+                nameEmpty: '請輸入名稱',
                 body: '身體 (BODY)',
                 waist: '腰部',
                 bodyX: '水平位移',
@@ -138,11 +145,13 @@
                 p_frame: '相框',
                 p_wings: '展翅',
                 p_zig_zag: '鋸齒',
-                dragModeOn: '拖曳模式：開啟',
-                dragModeOff: '拖曳模式：關閉',
+                dragModeOn: '拖曳模式',
+                dragModeOff: '拖曳模式',
                 importSuccess: '匯入成功！',
                 importError: '檔案格式錯誤',
-                importFail: '匯入失敗'
+                importFail: '匯入失敗',
+                fk: '正向運動 (FK)',
+                ik: '反向運動 (IK)',
             },
             'ja': {
                 title: 'GRID FLOW',
@@ -157,6 +166,12 @@
                 selectPreset: 'プリセットを選択',
                 export: '出力',
                 import: '入力',
+                savePreset: 'ポーズ保存',
+                enterName: 'ポーズ名',
+                save: '保存',
+                custom: 'カスタム',
+                saveSuccess: '保存しました！',
+                nameEmpty: '名前を入力してください',
                 body: '体 (BODY)',
                 waist: '腰',
                 bodyX: '水平移動',
@@ -186,11 +201,13 @@
                 p_frame: 'フレーム',
                 p_wings: '翼',
                 p_zig_zag: 'ジグザグ',
-                dragModeOn: 'ドラッグ：ON',
-                dragModeOff: 'ドラッグ：OFF',
+                dragModeOn: 'ドラッグ',
+                dragModeOff: 'ドラッグ',
                 importSuccess: 'インポート成功！',
                 importError: 'ファイル形式エラー',
-                importFail: 'インポート失敗'
+                importFail: 'インポート失敗',
+                fk: 'FK (順運動学)',
+                ik: 'IK (逆運動学)',
             },
             'ko': {
                 title: 'GRID FLOW',
@@ -205,6 +222,12 @@
                 selectPreset: '프리셋 선택',
                 export: '내보내기',
                 import: '가져오기',
+                savePreset: '포즈 저장',
+                enterName: '포즈 이름',
+                save: '저장',
+                custom: '사용자 지정',
+                saveSuccess: '저장되었습니다!',
+                nameEmpty: '이름을 입력하세요',
                 body: '몸통 (BODY)',
                 waist: '허리',
                 bodyX: '수평 이동',
@@ -234,11 +257,13 @@
                 p_frame: '프레임',
                 p_wings: '날개',
                 p_zig_zag: '지그재그',
-                dragModeOn: '드래그: ON',
-                dragModeOff: '드래그: OFF',
+                dragModeOn: '드래그 모드',
+                dragModeOff: '드래그 모드',
                 importSuccess: '가져오기 성공!',
                 importError: '파일 형식 오류',
-                importFail: '가져오기 실패'
+                importFail: '가져오기 실패',
+                fk: 'FK 모드',
+                ik: 'IK 모드',
             },
             'en': {
                 title: 'GRID FLOW',
@@ -253,6 +278,12 @@
                 selectPreset: 'Select Preset',
                 export: 'EXPORT',
                 import: 'IMPORT',
+                savePreset: 'Save Pose',
+                enterName: 'Pose Name',
+                save: 'Save',
+                custom: 'Custom',
+                saveSuccess: 'Saved!',
+                nameEmpty: 'Enter a name',
                 body: 'BODY',
                 waist: 'Waist',
                 bodyX: 'Move X',
@@ -282,13 +313,406 @@
                 p_frame: 'Frame',
                 p_wings: 'Wings',
                 p_zig_zag: 'Zig Zag',
-                dragModeOn: 'Drag: ON',
-                dragModeOff: 'Drag: OFF',
+                dragModeOn: 'Drag Mode',
+                dragModeOff: 'Drag Mode',
                 importSuccess: 'Import Successful!',
                 importError: 'Invalid File Format',
-                importFail: 'Import Failed'
+                importFail: 'Import Failed',
+                fk: 'FK Mode',
+                ik: 'IK Mode',
             },
-            // ... (You can add other languages here if needed)
+            'es': {
+                title: 'GRID FLOW',
+                subtitle: 'SIMULADOR DE TUTTING V2.6',
+                timeline: 'LÍNEA DE TIEMPO',
+                bpm: 'BPM',
+                ai: 'GEN IA',
+                delete: 'BORRAR',
+                update: 'ACTUALIZAR',
+                manage: 'GESTIONAR',
+                presets: 'PREAJUSTES',
+                selectPreset: 'Elegir Preajuste',
+                export: 'EXPORTAR',
+                import: 'IMPORTAR',
+                savePreset: 'Guardar Pose',
+                enterName: 'Nombre de Pose',
+                save: 'Guardar',
+                custom: 'Personalizado',
+                saveSuccess: '¡Guardado!',
+                nameEmpty: 'Ingrese nombre',
+                body: 'CUERPO',
+                waist: 'Cintura',
+                bodyX: 'Mover X',
+                bodyY: 'Mover Y',
+                head: 'CABEZA',
+                headTilt: 'Inclinación',
+                headSlide: 'Deslizar',
+                rArm: 'BRAZO D',
+                lArm: 'BRAZO I',
+                rLeg: 'PIERNA D',
+                lLeg: 'PIERNA I',
+                shoulder: 'Hombro',
+                elbow: 'Codo',
+                wrist: 'Muñeca',
+                hip: 'Cadera',
+                knee: 'Rodilla',
+                ankle: 'Tobillo',
+                easing: 'Suavizado',
+                p_idle: 'Reposo',
+                p_box: 'Caja',
+                p_prayer: 'Oración',
+                p_tutting_l: 'Tutting L',
+                p_cobra: 'Cobra',
+                p_pharaoh: 'Faraón',
+                p_diamond: 'Diamante',
+                p_stairs: 'Escaleras',
+                p_frame: 'Marco',
+                p_wings: 'Alas',
+                p_zig_zag: 'Zig Zag',
+                dragModeOn: 'Arrastrar',
+                dragModeOff: 'Arrastrar',
+                importSuccess: '¡Importación exitosa!',
+                importError: 'Formato inválido',
+                importFail: 'Fallo al importar',
+                fk: 'Modo FK',
+                ik: 'Modo IK',
+            },
+            'pt': {
+                title: 'GRID FLOW',
+                subtitle: 'SIMULADOR DE TUTTING V2.6',
+                timeline: 'LINHA DO TEMPO',
+                bpm: 'BPM',
+                ai: 'GERAR IA',
+                delete: 'EXCLUIR',
+                update: 'ATUALIZAR',
+                manage: 'GERENCIAR',
+                presets: 'PREDEFINIÇÕES',
+                selectPreset: 'Selecionar',
+                export: 'EXPORTAR',
+                import: 'IMPORTAR',
+                savePreset: 'Salvar Pose',
+                enterName: 'Nome da Pose',
+                save: 'Salvar',
+                custom: 'Personalizado',
+                saveSuccess: 'Salvo!',
+                nameEmpty: 'Digite um nome',
+                body: 'CORPO',
+                waist: 'Cintura',
+                bodyX: 'Mover X',
+                bodyY: 'Mover Y',
+                head: 'CABEÇA',
+                headTilt: 'Inclinação',
+                headSlide: 'Deslizar',
+                rArm: 'BRAÇO D',
+                lArm: 'BRAÇO E',
+                rLeg: 'PERNA D',
+                lLeg: 'PERNA E',
+                shoulder: 'Ombro',
+                elbow: 'Cotovelo',
+                wrist: 'Punho',
+                hip: 'Quadril',
+                knee: 'Joelho',
+                ankle: 'Tornozelo',
+                easing: 'Suavização',
+                p_idle: 'Ocioso',
+                p_box: 'Caixa',
+                p_prayer: 'Oração',
+                p_tutting_l: 'Tutting L',
+                p_cobra: 'Cobra',
+                p_pharaoh: 'Faraó',
+                p_diamond: 'Diamante',
+                p_stairs: 'Escadas',
+                p_frame: 'Moldura',
+                p_wings: 'Asas',
+                p_zig_zag: 'Ziguezague',
+                dragModeOn: 'Arrastar',
+                dragModeOff: 'Arrastar',
+                importSuccess: 'Sucesso!',
+                importError: 'Formato Inválido',
+                importFail: 'Falha',
+                fk: 'Modo FK',
+                ik: 'Modo IK',
+            },
+            'fr': {
+                title: 'GRID FLOW',
+                subtitle: 'SIMULATEUR DE TUTTING V2.6',
+                timeline: 'CHRONOLOGIE',
+                bpm: 'BPM',
+                ai: 'GEN IA',
+                delete: 'SUPPRIMER',
+                update: 'METTRE À JOUR',
+                manage: 'GÉRER',
+                presets: 'PRÉRÉGLAGES',
+                selectPreset: 'Sélectionner',
+                export: 'EXPORTER',
+                import: 'IMPORTER',
+                savePreset: 'Sauver Pose',
+                enterName: 'Nom de Pose',
+                save: 'Sauver',
+                custom: 'Personnalisé',
+                saveSuccess: 'Enregistré!',
+                nameEmpty: 'Entrez un nom',
+                body: 'CORPS',
+                waist: 'Taille',
+                bodyX: 'Dépl. X',
+                bodyY: 'Dépl. Y',
+                head: 'TÊTE',
+                headTilt: 'Inclinaison',
+                headSlide: 'Glissement',
+                rArm: 'BRAS D',
+                lArm: 'BRAS G',
+                rLeg: 'JAMBE D',
+                lLeg: 'JAMBE G',
+                shoulder: 'Épaule',
+                elbow: 'Coude',
+                wrist: 'Poignet',
+                hip: 'Hanche',
+                knee: 'Genou',
+                ankle: 'Cheville',
+                easing: 'Lissage',
+                p_idle: 'Repos',
+                p_box: 'Boîte',
+                p_prayer: 'Prière',
+                p_tutting_l: 'Tutting L',
+                p_cobra: 'Cobra',
+                p_pharaoh: 'Pharaon',
+                p_diamond: 'Diamant',
+                p_stairs: 'Escaliers',
+                p_frame: 'Cadre',
+                p_wings: 'Ailes',
+                p_zig_zag: 'Zig Zag',
+                dragModeOn: 'Glisser',
+                dragModeOff: 'Glisser',
+                importSuccess: 'Succès!',
+                importError: 'Format Invalide',
+                importFail: 'Échec',
+                fk: 'Mode FK',
+                ik: 'Mode IK',
+            },
+            'de': {
+                title: 'GRID FLOW',
+                subtitle: 'TUTTING SIMULATOR V2.6',
+                timeline: 'ZEITACHSE',
+                bpm: 'BPM',
+                ai: 'KI GEN',
+                delete: 'LÖSCHEN',
+                update: 'AKTUALISIEREN',
+                manage: 'VERWALTEN',
+                presets: 'VORLAGEN',
+                selectPreset: 'Vorlage wählen',
+                export: 'EXPORT',
+                import: 'IMPORT',
+                savePreset: 'Pose speichern',
+                enterName: 'Posenname',
+                save: 'Speichern',
+                custom: 'Benutzerdefiniert',
+                saveSuccess: 'Gespeichert!',
+                nameEmpty: 'Namen eingeben',
+                body: 'KÖRPER',
+                waist: 'Taille',
+                bodyX: 'Bewegung X',
+                bodyY: 'Bewegung Y',
+                head: 'KOPF',
+                headTilt: 'Neigung',
+                headSlide: 'Schieben',
+                rArm: 'R ARM',
+                lArm: 'L ARM',
+                rLeg: 'R BEIN',
+                lLeg: 'L BEIN',
+                shoulder: 'Schulter',
+                elbow: 'Ellbogen',
+                wrist: 'Handgelenk',
+                hip: 'Hüfte',
+                knee: 'Knie',
+                ankle: 'Knöchel',
+                easing: 'Easing',
+                p_idle: 'Ruhe',
+                p_box: 'Box',
+                p_prayer: 'Gebet',
+                p_tutting_l: 'Tutting L',
+                p_cobra: 'Kobra',
+                p_pharaoh: 'Pharao',
+                p_diamond: 'Diamant',
+                p_stairs: 'Treppe',
+                p_frame: 'Rahmen',
+                p_wings: 'Flügel',
+                p_zig_zag: 'Zickzack',
+                dragModeOn: 'Zieh-Modus',
+                dragModeOff: 'Zieh-Modus',
+                importSuccess: 'Erfolg!',
+                importError: 'Ungültiges Format',
+                importFail: 'Fehler',
+                fk: 'FK-Modus',
+                ik: 'IK-Modus',
+            },
+            'vi': {
+                title: 'GRID FLOW',
+                subtitle: 'MÔ PHỎNG TUTTING V2.6',
+                timeline: 'DÒNG THỜI GIAN',
+                bpm: 'BPM',
+                ai: 'TẠO AI',
+                delete: 'XÓA',
+                update: 'CẬP NHẬT',
+                manage: 'QUẢN LÝ',
+                presets: 'MẪU CÓ SẴN',
+                selectPreset: 'Chọn Mẫu',
+                export: 'XUẤT',
+                import: 'NHẬP',
+                savePreset: 'Lưu Tư thế',
+                enterName: 'Tên Tư thế',
+                save: 'Lưu',
+                custom: 'Tùy chỉnh',
+                saveSuccess: 'Đã lưu!',
+                nameEmpty: 'Nhập tên',
+                body: 'CƠ THỂ',
+                waist: 'Eo',
+                bodyX: 'Di chuyển X',
+                bodyY: 'Di chuyển Y',
+                head: 'ĐẦU',
+                headTilt: 'Nghiêng',
+                headSlide: 'Trượt',
+                rArm: 'TAY PHẢI',
+                lArm: 'TAY TRÁI',
+                rLeg: 'CHÂN PHẢI',
+                lLeg: 'CHÂN TRÁI',
+                shoulder: 'Vai',
+                elbow: 'Khuỷu',
+                wrist: 'Cổ tay',
+                hip: 'Hông',
+                knee: 'Đầu gối',
+                ankle: 'Cổ chân',
+                easing: 'Chuyển động',
+                p_idle: 'Nghỉ',
+                p_box: 'Hộp',
+                p_prayer: 'Cầu nguyện',
+                p_tutting_l: 'Chữ L',
+                p_cobra: 'Rắn hổ mang',
+                p_pharaoh: 'Pharaoh',
+                p_diamond: 'Kim cương',
+                p_stairs: 'Cầu thang',
+                p_frame: 'Khung ảnh',
+                p_wings: 'Đôi cánh',
+                p_zig_zag: 'Zig Zag',
+                dragModeOn: 'Chế độ Kéo',
+                dragModeOff: 'Chế độ Kéo',
+                importSuccess: 'Thành công!',
+                importError: 'Lỗi định dạng',
+                importFail: 'Thất bại',
+                fk: 'Chế độ FK',
+                ik: 'Chế độ IK',
+            },
+            'hi': {
+                title: 'GRID FLOW',
+                subtitle: 'टटिंग सिम्युलेटर V2.6',
+                timeline: 'समयरेखा',
+                bpm: 'BPM',
+                ai: 'AI जनरेट',
+                delete: 'हटाएं',
+                update: 'अपडेट',
+                manage: 'प्रबंधन',
+                presets: 'प्रीसेट',
+                selectPreset: 'प्रीसेट चुनें',
+                export: 'निर्यात',
+                import: 'आयात',
+                savePreset: 'पोज़ सहेजें',
+                enterName: 'पोज़ का नाम',
+                save: 'सहेजें',
+                custom: 'कस्टम',
+                saveSuccess: 'सहेज लिया!',
+                nameEmpty: 'नाम दर्ज करें',
+                body: 'शरीर',
+                waist: 'कमर',
+                bodyX: 'चाल X',
+                bodyY: 'चाल Y',
+                head: 'सिर',
+                headTilt: 'झुकाव',
+                headSlide: 'स्लाइड',
+                rArm: 'दायां हाथ',
+                lArm: 'बायां हाथ',
+                rLeg: 'दायां पैर',
+                lLeg: 'बायां पैर',
+                shoulder: 'कंधा',
+                elbow: 'कोहनी',
+                wrist: 'कलाई',
+                hip: 'कूल्हा',
+                knee: 'घुटना',
+                ankle: 'टखना',
+                easing: 'गति',
+                p_idle: 'निष्क्रिय',
+                p_box: 'बक्सा',
+                p_prayer: 'प्रार्थना',
+                p_tutting_l: 'टटिंग L',
+                p_cobra: 'कोबरा',
+                p_pharaoh: 'फिरौन',
+                p_diamond: 'हीरा',
+                p_stairs: 'सीढ़ियाँ',
+                p_frame: 'फ्रेम',
+                p_wings: 'पंख',
+                p_zig_zag: 'ज़िग ज़ैग',
+                dragModeOn: 'ड्रैग मोड',
+                dragModeOff: 'ड्रैग मोड',
+                importSuccess: 'सफल!',
+                importError: 'अवैध प्रारूप',
+                importFail: 'विफल',
+                fk: 'FK मोड',
+                ik: 'IK मोड',
+            },
+            'ru': {
+                title: 'GRID FLOW',
+                subtitle: 'СИМУЛЯТОР ТАТТИНГА V2.6',
+                timeline: 'ВРЕМЕННАЯ ШКАЛА',
+                bpm: 'УДАРЫ/МИН',
+                ai: 'ИИ',
+                delete: 'УДАЛИТЬ',
+                update: 'ОБНОВИТЬ',
+                manage: 'УПРАВЛЕНИЕ',
+                presets: 'ПРЕСЕТЫ',
+                selectPreset: 'Выберите пресет',
+                export: 'ЭКСПОРТ',
+                import: 'ИМПОРТ',
+                savePreset: 'Сохранить позу',
+                enterName: 'Имя позы',
+                save: 'Сохранить',
+                custom: 'Пользов.',
+                saveSuccess: 'Сохранено!',
+                nameEmpty: 'Введите имя',
+                body: 'ТЕЛО',
+                waist: 'Талия',
+                bodyX: 'Сдвиг X',
+                bodyY: 'Сдвиг Y',
+                head: 'ГОЛОВА',
+                headTilt: 'Наклон',
+                headSlide: 'Сдвиг',
+                rArm: 'ПР. РУКА',
+                lArm: 'ЛЕВ. РУКА',
+                rLeg: 'ПР. НОГА',
+                lLeg: 'ЛЕВ. НОГА',
+                shoulder: 'Плечо',
+                elbow: 'Локоть',
+                wrist: 'Запястье',
+                hip: 'Бедро',
+                knee: 'Колено',
+                ankle: 'Лодыжка',
+                easing: 'Сглаживание',
+                p_idle: 'Ожидание',
+                p_box: 'Коробка',
+                p_prayer: 'Молитва',
+                p_tutting_l: 'L-форма',
+                p_cobra: 'Кобра',
+                p_pharaoh: 'Фараон',
+                p_diamond: 'Алмаз',
+                p_stairs: 'Лестница',
+                p_frame: 'Рамка',
+                p_wings: 'Крылья',
+                p_zig_zag: 'Зигзаг',
+                dragModeOn: 'Перетаскивание',
+                dragModeOff: 'Перетаскивание',
+                importSuccess: 'Успешно!',
+                importError: 'Ошибка формата',
+                importFail: 'Ошибка',
+                fk: 'FK Режим',
+                ik: 'IK Режим',
+            }
         };
 
         // --- Constants & Helper Functions ---
@@ -463,6 +887,56 @@
             return newPose;
         };
 
+        // --- IK Solver ---
+        const solveTwoJointIK = (target, origin, len1, len2, currentA1, currentA2) => {
+            const dx = target.x - origin.x;
+            const dy = target.y - origin.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            
+            // Clamp distance to prevent unreachable targets
+            const d = Math.min(dist, len1 + len2 - 0.1); 
+            
+            const baseAngle = Math.atan2(dy, dx);
+            
+            // Law of Cosines to find internal angles
+            // c^2 = a^2 + b^2 - 2ab cos(C) => cos(C) = (a^2 + b^2 - c^2) / 2ab
+            const cosAlpha = (len1 * len1 + d * d - len2 * len2) / (2 * len1 * d);
+            const alpha = Math.acos(Math.max(-1, Math.min(1, cosAlpha))); // Clamp for safety
+            
+            // Two possible solutions for the first joint (elbow up/down)
+            const theta1_A = baseAngle - alpha;
+            const theta1_B = baseAngle + alpha;
+            
+            // Calculate elbow positions for both solutions
+            const elbow_A = {
+                x: origin.x + Math.cos(theta1_A) * len1,
+                y: origin.y + Math.sin(theta1_A) * len1
+            };
+            const elbow_B = {
+                x: origin.x + Math.cos(theta1_B) * len1,
+                y: origin.y + Math.sin(theta1_B) * len1
+            };
+            
+            // Calculate second joint angles
+            const theta2_A = Math.atan2(target.y - elbow_A.y, target.x - elbow_A.x);
+            const theta2_B = Math.atan2(target.y - elbow_B.y, target.x - elbow_B.x);
+            
+            // Convert to degrees [0, 360]
+            const toPosDeg = (rad) => {
+                let deg = toDeg(rad) % 360;
+                return deg < 0 ? deg + 360 : deg;
+            };
+            
+            const deg1A = toPosDeg(theta1_A); const deg2A = toPosDeg(theta2_A);
+            const deg1B = toPosDeg(theta1_B); const deg2B = toPosDeg(theta2_B);
+            
+            // Determine which solution is closer to the current pose
+            const distA = Math.abs(shortAngleDist(currentA1, deg1A)) + Math.abs(shortAngleDist(currentA2, deg2A));
+            const distB = Math.abs(shortAngleDist(currentA1, deg1B)) + Math.abs(shortAngleDist(currentA2, deg2B));
+            
+            return distA < distB ? [deg1A, deg2A] : [deg1B, deg2B];
+        };
+
         // --- Components ---
 
         const SliderControl = ({ label, value, onChange, min = 0, max = 360, step = 1, snap = 90, unit = "°" }) => (
@@ -517,7 +991,7 @@
             </g>
         );
 
-        const DraggableJoint = ({ x, y, isActive, onMouseDown, onTouchStart }) => (
+        const DraggableJoint = ({ x, y, isActive, onMouseDown, onTouchStart, isFK = true }) => (
             <g 
                 onMouseDown={onMouseDown} 
                 onTouchStart={onTouchStart}
@@ -529,7 +1003,7 @@
                     cx={x} cy={y} 
                     r={isActive ? 10 : 6} 
                     fill={isActive ? "#ffffff" : "rgba(255,255,255,0.3)"} 
-                    stroke={isActive ? "#22d3ee" : "white"} 
+                    stroke={isActive ? "#22d3ee" : (isFK ? "white" : "#facc15")} 
                     strokeWidth={2}
                     className="transition-all duration-75"
                 />
@@ -546,7 +1020,10 @@
             const [showGrid, setShowGrid] = useState(true);
             const [zoom, setZoom] = useState(1); 
             const [selectedPreset, setSelectedPreset] = useState('');
+            const [customPresets, setCustomPresets] = useState({}); // New state for custom presets
+            const [presetName, setPresetName] = useState(""); // New state for input name
             const [isDragMode, setIsDragMode] = useState(false);
+            const [dragType, setDragType] = useState('FK'); // 'FK' or 'IK'
             const [activeJoint, setActiveJoint] = useState(null);
             const [lang, setLang] = useState('zh-TW');
 
@@ -558,9 +1035,23 @@
             const frameIndexRef = useRef(currentFrameIndex);
             const requestRef = useRef();
             const startTimeRef = useRef(0);
+            
+            // OPTIMIZATION: Refs for values accessed inside event listeners to avoid dependency cycles
+            const zoomRef = useRef(zoom);
+            const activeJointRef = useRef(activeJoint);
+            const isDragModeRef = useRef(isDragMode);
+            const poseRef = useRef(pose);
+            const dragTypeRef = useRef(dragType);
 
             useEffect(() => { timelineRef.current = timeline; }, [timeline]);
             useEffect(() => { frameIndexRef.current = currentFrameIndex; }, [currentFrameIndex]);
+
+            // Sync refs for optimization
+            useEffect(() => { zoomRef.current = zoom; }, [zoom]);
+            useEffect(() => { activeJointRef.current = activeJoint; }, [activeJoint]);
+            useEffect(() => { isDragModeRef.current = isDragMode; }, [isDragMode]);
+            useEffect(() => { poseRef.current = pose; }, [pose]);
+            useEffect(() => { dragTypeRef.current = dragType; }, [dragType]);
 
             // Helper: Text lookup
             const t = (key) => TRANSLATIONS[lang] ? (TRANSLATIONS[lang][key] || key) : key;
@@ -574,43 +1065,114 @@
 
             // --- Mouse/Touch Interaction Logic ---
 
-            const getSvgPoint = (clientX, clientY) => {
+            const getSvgPoint = (clientX, clientY, currentZoom) => {
                 if (!svgRef.current) return { x: 0, y: 0 };
                 const pt = svgRef.current.createSVGPoint();
                 pt.x = clientX;
                 pt.y = clientY;
                 const svgP = pt.matrixTransform(svgRef.current.getScreenCTM().inverse());
                 return {
-                    x: (svgP.x - 200) / zoom + 200,
-                    y: (svgP.y - 200) / zoom + 200
+                    x: (svgP.x - 200) / currentZoom + 200,
+                    y: (svgP.y - 200) / currentZoom + 200
                 };
             };
 
-            const handleJointDown = (e, jointName, pivot, type = 'angle') => {
+            const handleJointDown = (e, jointName, pivot, type = 'angle', originPos = null) => {
                 if (!isDragMode) return;
                 e.preventDefault();
                 e.stopPropagation(); 
                 setIsPlaying(false);
-                setActiveJoint({ name: jointName, pivot, type });
+                // Store originPos for IK calculations
+                setActiveJoint({ name: jointName, pivot, type, origin: originPos });
             };
 
+            // Optimized move handler using refs
             const handleSvgMove = (clientX, clientY) => {
-                if (!activeJoint || !isDragMode) return;
+                const currentActiveJoint = activeJointRef.current;
+                const currentIsDragMode = isDragModeRef.current;
+                const currentDragType = dragTypeRef.current;
+                const currentZoom = zoomRef.current;
+                const currentPose = poseRef.current;
 
-                const mousePos = getSvgPoint(clientX, clientY);
+                if (!currentActiveJoint || !currentIsDragMode) return;
 
-                if (activeJoint.type === 'pos') {
+                const mousePos = getSvgPoint(clientX, clientY, currentZoom);
+
+                // -- HEAD SLIDE --
+                if (currentActiveJoint.type === 'headPos') {
+                    // Calculate projection onto the slide axis (perpendicular to neck)
+                    // Neck angle is waistAngle (pose.waist - 90)
+                    // Slide axis is waistAngle + 90
+                    const waistRad = toRad((currentPose.waist || 0) - 90);
+                    const neckBaseX = currentActiveJoint.pivot.x;
+                    const neckBaseY = currentActiveJoint.pivot.y;
+                    
+                    // Vector from neck base to mouse
+                    const dx = mousePos.x - neckBaseX;
+                    const dy = mousePos.y - neckBaseY;
+                    
+                    // Unit vector of slide axis (Right relative to torso)
+                    const axisX = Math.cos(waistRad + Math.PI/2);
+                    const axisY = Math.sin(waistRad + Math.PI/2);
+                    
+                    // Dot product to project
+                    const projection = dx * axisX + dy * axisY;
+                    
+                    // Clamp
+                    const newVal = Math.max(-50, Math.min(50, projection));
+                    updatePose('headSlide', newVal);
+                }
+                // -- HEAD TILT --
+                else if (currentActiveJoint.type === 'headTilt') {
+                    const dx = mousePos.x - currentActiveJoint.pivot.x;
+                    const dy = mousePos.y - currentActiveJoint.pivot.y;
+                    let angle = toDeg(Math.atan2(dy, dx));
+                    
+                    // Convert absolute angle to relative tilt
+                    // Head absolute angle = waist - 90 + tilt
+                    // So tilt = absAngle - (waist - 90)
+                    const waistAngle = (currentPose.waist || 0) - 90;
+                    let relativeTilt = shortAngleDist(waistAngle, angle);
+                    
+                    // Clamp
+                    updatePose('headTilt', Math.max(-60, Math.min(60, relativeTilt)));
+                }
+                // -- BODY POSITION --
+                else if (currentActiveJoint.type === 'pos') {
                     const dx = mousePos.x - 200; 
                     const dy = mousePos.y - 190; 
                     updatePose('bodyX', Math.max(-100, Math.min(100, dx)));
                     updatePose('bodyY', Math.max(-100, Math.min(100, dy)));
-                } else {
-                    const dx = mousePos.x - activeJoint.pivot.x;
-                    const dy = mousePos.y - activeJoint.pivot.y;
+                }
+                // -- IK MODE --
+                else if (currentDragType === 'IK' && currentActiveJoint.type === 'ik') {
+                    const { name, origin } = currentActiveJoint;
+                    // Determine limb chain based on effector
+                    if (name === 'rWrist') {
+                        const [a1, a2] = solveTwoJointIK(mousePos, origin, SEGMENT_LENGTHS.upperArm, SEGMENT_LENGTHS.forearm, currentPose.rShoulder, currentPose.rElbow);
+                        updatePose('rShoulder', a1);
+                        updatePose('rElbow', a2);
+                    } else if (name === 'lWrist') {
+                         const [a1, a2] = solveTwoJointIK(mousePos, origin, SEGMENT_LENGTHS.upperArm, SEGMENT_LENGTHS.forearm, currentPose.lShoulder, currentPose.lElbow);
+                        updatePose('lShoulder', a1);
+                        updatePose('lElbow', a2);
+                    } else if (name === 'rAnkle') {
+                         const [a1, a2] = solveTwoJointIK(mousePos, origin, SEGMENT_LENGTHS.thigh, SEGMENT_LENGTHS.shin, currentPose.rHip ?? 90, currentPose.rKnee ?? 90);
+                        updatePose('rHip', a1);
+                        updatePose('rKnee', a2);
+                    } else if (name === 'lAnkle') {
+                         const [a1, a2] = solveTwoJointIK(mousePos, origin, SEGMENT_LENGTHS.thigh, SEGMENT_LENGTHS.shin, currentPose.lHip ?? 90, currentPose.lKnee ?? 90);
+                        updatePose('lHip', a1);
+                        updatePose('lKnee', a2);
+                    }
+                }
+                // -- FK MODE (Default) --
+                else {
+                    const dx = mousePos.x - currentActiveJoint.pivot.x;
+                    const dy = mousePos.y - currentActiveJoint.pivot.y;
                     let angle = toDeg(Math.atan2(dy, dx));
-                    
                     if (angle < 0) angle += 360;
-                    updatePose(activeJoint.name, angle);
+                    updatePose(currentActiveJoint.name, angle);
                 }
             };
 
@@ -618,11 +1180,13 @@
                 setActiveJoint(null);
             };
 
+            // Optimization: Removed 'pose' and 'zoom' from dependency array to prevent re-binding on every frame
             useEffect(() => {
                 const onMove = (e) => handleSvgMove(e.clientX, e.clientY);
                 const onUp = () => handleGlobalMouseUp();
                 const onTouchMove = (e) => handleSvgMove(e.touches[0].clientX, e.touches[0].clientY);
                 
+                // Only attach listeners when an active joint exists (start of drag)
                 if (activeJoint) {
                     window.addEventListener('mousemove', onMove);
                     window.addEventListener('mouseup', onUp);
@@ -636,7 +1200,7 @@
                     window.removeEventListener('touchmove', onTouchMove);
                     window.removeEventListener('touchend', onUp);
                 };
-            }, [activeJoint, zoom, pose]); 
+            }, [activeJoint]); 
 
 
             // --- Animation Loop & Logic ---
@@ -739,12 +1303,28 @@
                 event.target.value = null; 
             };
 
+            const handleSaveCustomPreset = () => {
+                if (!presetName.trim()) {
+                    alert(t('nameEmpty'));
+                    return;
+                }
+                setCustomPresets(prev => ({
+                    ...prev,
+                    [presetName]: { ...pose }
+                }));
+                setPresetName("");
+                alert(t('saveSuccess'));
+            };
+
             const handlePresetChange = (e) => {
                 const key = e.target.value;
                 setSelectedPreset(key);
-                if (key && PRESETS[key]) {
-                    if (isPlaying) return;
+                if (isPlaying) return;
+
+                if (PRESETS[key]) {
                     setPose(PRESETS[key]);
+                } else if (customPresets[key]) {
+                    setPose(customPresets[key]);
                 }
             };
 
@@ -815,6 +1395,12 @@
 
             let displayTilt = (pose.headTilt || 0) + (pose.waist || 0); 
             if (displayTilt > 180) displayTilt -= 360;
+
+            // Calculate Tilt Handle Position (above head)
+            const tiltHandleDist = headRadius + 15;
+            const tiltHandleX = headCenterX + Math.cos(toRad(displayTilt - 90)) * tiltHandleDist;
+            const tiltHandleY = headCenterY + Math.sin(toRad(displayTilt - 90)) * tiltHandleDist;
+
 
             const lElbowPos = calculateEndPoint(lShoulderBase.x, lShoulderBase.y, pose.lShoulder, SEGMENT_LENGTHS.upperArm);
             const lWristPos = calculateEndPoint(lElbowPos.x, lElbowPos.y, pose.lElbow, SEGMENT_LENGTHS.forearm);
@@ -942,60 +1528,89 @@
                                         onTouchStart={(e) => handleJointDown(e, 'bodyX', null, 'pos')} 
                                     />
                                     
+                                    {/* Head Handles */}
+                                    <DraggableJoint x={headCenterX} y={headCenterY} isActive={activeJoint?.type === 'headPos'} 
+                                        onMouseDown={(e) => handleJointDown(e, 'head', neckBase, 'headPos')} 
+                                        onTouchStart={(e) => handleJointDown(e, 'head', neckBase, 'headPos')} 
+                                    />
+                                    
+                                    <DraggableJoint x={tiltHandleX} y={tiltHandleY} isActive={activeJoint?.type === 'headTilt'} 
+                                        onMouseDown={(e) => handleJointDown(e, 'headTilt', {x: headCenterX, y: headCenterY}, 'headTilt')} 
+                                        onTouchStart={(e) => handleJointDown(e, 'headTilt', {x: headCenterX, y: headCenterY}, 'headTilt')} 
+                                        isFK={false}
+                                    />
+
                                     {/* R Arm (Screen Left) */}
+                                    {/* Shoulder - Always FK */}
                                     <DraggableJoint x={rElbowPos.x} y={rElbowPos.y} isActive={activeJoint?.name === 'rShoulder'} 
                                         onMouseDown={(e) => handleJointDown(e, 'rShoulder', rShoulderBase)} 
                                         onTouchStart={(e) => handleJointDown(e, 'rShoulder', rShoulderBase)} 
                                     />
-                                    <DraggableJoint x={rWristPos.x} y={rWristPos.y} isActive={activeJoint?.name === 'rElbow'} 
-                                        onMouseDown={(e) => handleJointDown(e, 'rElbow', rElbowPos)} 
-                                        onTouchStart={(e) => handleJointDown(e, 'rElbow', rElbowPos)} 
+                                    
+                                    {/* Elbow - FK or IK (via Wrist) */}
+                                    <DraggableJoint x={rWristPos.x} y={rWristPos.y} isActive={activeJoint?.name === (dragType === 'IK' ? 'rWrist' : 'rElbow')} 
+                                        onMouseDown={(e) => handleJointDown(e, dragType === 'IK' ? 'rWrist' : 'rElbow', dragType === 'IK' ? rShoulderBase : rElbowPos, dragType === 'IK' ? 'ik' : 'angle', rShoulderBase)} 
+                                        onTouchStart={(e) => handleJointDown(e, dragType === 'IK' ? 'rWrist' : 'rElbow', dragType === 'IK' ? rShoulderBase : rElbowPos, dragType === 'IK' ? 'ik' : 'angle', rShoulderBase)} 
+                                        isFK={dragType === 'FK'}
                                     />
-                                    <DraggableJoint x={rHandPos.x} y={rHandPos.y} isActive={activeJoint?.name === 'rWrist'} 
-                                        onMouseDown={(e) => handleJointDown(e, 'rWrist', rWristPos)} 
-                                        onTouchStart={(e) => handleJointDown(e, 'rWrist', rWristPos)} 
-                                    />
+                                    
+                                    {/* Wrist - FK Only Handle (Tip) */}
+                                    {dragType === 'FK' && (
+                                        <DraggableJoint x={rHandPos.x} y={rHandPos.y} isActive={activeJoint?.name === 'rWrist'} 
+                                            onMouseDown={(e) => handleJointDown(e, 'rWrist', rWristPos)} 
+                                            onTouchStart={(e) => handleJointDown(e, 'rWrist', rWristPos)} 
+                                        />
+                                    )}
 
                                     {/* L Arm (Screen Right) */}
                                     <DraggableJoint x={lElbowPos.x} y={lElbowPos.y} isActive={activeJoint?.name === 'lShoulder'} 
                                         onMouseDown={(e) => handleJointDown(e, 'lShoulder', lShoulderBase)} 
                                         onTouchStart={(e) => handleJointDown(e, 'lShoulder', lShoulderBase)} 
                                     />
-                                    <DraggableJoint x={lWristPos.x} y={lWristPos.y} isActive={activeJoint?.name === 'lElbow'} 
-                                        onMouseDown={(e) => handleJointDown(e, 'lElbow', lElbowPos)} 
-                                        onTouchStart={(e) => handleJointDown(e, 'lElbow', lElbowPos)} 
+                                    <DraggableJoint x={lWristPos.x} y={lWristPos.y} isActive={activeJoint?.name === (dragType === 'IK' ? 'lWrist' : 'lElbow')} 
+                                        onMouseDown={(e) => handleJointDown(e, dragType === 'IK' ? 'lWrist' : 'lElbow', dragType === 'IK' ? lShoulderBase : lElbowPos, dragType === 'IK' ? 'ik' : 'angle', lShoulderBase)} 
+                                        onTouchStart={(e) => handleJointDown(e, dragType === 'IK' ? 'lWrist' : 'lElbow', dragType === 'IK' ? lShoulderBase : lElbowPos, dragType === 'IK' ? 'ik' : 'angle', lShoulderBase)} 
+                                        isFK={dragType === 'FK'}
                                     />
-                                    <DraggableJoint x={lHandPos.x} y={lHandPos.y} isActive={activeJoint?.name === 'lWrist'} 
-                                        onMouseDown={(e) => handleJointDown(e, 'lWrist', lWristPos)} 
-                                        onTouchStart={(e) => handleJointDown(e, 'lWrist', lWristPos)} 
-                                    />
+                                    {dragType === 'FK' && (
+                                        <DraggableJoint x={lHandPos.x} y={lHandPos.y} isActive={activeJoint?.name === 'lWrist'} 
+                                            onMouseDown={(e) => handleJointDown(e, 'lWrist', lWristPos)} 
+                                            onTouchStart={(e) => handleJointDown(e, 'lWrist', lWristPos)} 
+                                        />
+                                    )}
 
                                     {/* Legs */}
                                     <DraggableJoint x={rKneePos.x} y={rKneePos.y} isActive={activeJoint?.name === 'rHip'} 
                                         onMouseDown={(e) => handleJointDown(e, 'rHip', rHipPos)} 
                                         onTouchStart={(e) => handleJointDown(e, 'rHip', rHipPos)} 
                                     />
-                                    <DraggableJoint x={rAnklePos.x} y={rAnklePos.y} isActive={activeJoint?.name === 'rKnee'} 
-                                        onMouseDown={(e) => handleJointDown(e, 'rKnee', rKneePos)} 
-                                        onTouchStart={(e) => handleJointDown(e, 'rKnee', rKneePos)} 
+                                    <DraggableJoint x={rAnklePos.x} y={rAnklePos.y} isActive={activeJoint?.name === (dragType === 'IK' ? 'rAnkle' : 'rKnee')} 
+                                        onMouseDown={(e) => handleJointDown(e, dragType === 'IK' ? 'rAnkle' : 'rKnee', dragType === 'IK' ? rHipPos : rKneePos, dragType === 'IK' ? 'ik' : 'angle', rHipPos)} 
+                                        onTouchStart={(e) => handleJointDown(e, dragType === 'IK' ? 'rAnkle' : 'rKnee', dragType === 'IK' ? rHipPos : rKneePos, dragType === 'IK' ? 'ik' : 'angle', rHipPos)}
+                                        isFK={dragType === 'FK'}
                                     />
-                                    <DraggableJoint x={rFootPos.x} y={rFootPos.y} isActive={activeJoint?.name === 'rAnkle'} 
-                                        onMouseDown={(e) => handleJointDown(e, 'rAnkle', rAnklePos)} 
-                                        onTouchStart={(e) => handleJointDown(e, 'rAnkle', rAnklePos)} 
-                                    />
+                                    {dragType === 'FK' && (
+                                        <DraggableJoint x={rFootPos.x} y={rFootPos.y} isActive={activeJoint?.name === 'rAnkle'} 
+                                            onMouseDown={(e) => handleJointDown(e, 'rAnkle', rAnklePos)} 
+                                            onTouchStart={(e) => handleJointDown(e, 'rAnkle', rAnklePos)} 
+                                        />
+                                    )}
 
                                     <DraggableJoint x={lKneePos.x} y={lKneePos.y} isActive={activeJoint?.name === 'lHip'} 
                                         onMouseDown={(e) => handleJointDown(e, 'lHip', lHipPos)} 
                                         onTouchStart={(e) => handleJointDown(e, 'lHip', lHipPos)} 
                                     />
-                                    <DraggableJoint x={lAnklePos.x} y={lAnklePos.y} isActive={activeJoint?.name === 'lKnee'} 
-                                        onMouseDown={(e) => handleJointDown(e, 'lKnee', lKneePos)} 
-                                        onTouchStart={(e) => handleJointDown(e, 'lKnee', lKneePos)} 
+                                    <DraggableJoint x={lAnklePos.x} y={lAnklePos.y} isActive={activeJoint?.name === (dragType === 'IK' ? 'lAnkle' : 'lKnee')} 
+                                        onMouseDown={(e) => handleJointDown(e, dragType === 'IK' ? 'lAnkle' : 'lKnee', dragType === 'IK' ? lHipPos : lKneePos, dragType === 'IK' ? 'ik' : 'angle', lHipPos)} 
+                                        onTouchStart={(e) => handleJointDown(e, dragType === 'IK' ? 'lAnkle' : 'lKnee', dragType === 'IK' ? lHipPos : lKneePos, dragType === 'IK' ? 'ik' : 'angle', lHipPos)} 
+                                        isFK={dragType === 'FK'}
                                     />
-                                    <DraggableJoint x={lFootPos.x} y={lFootPos.y} isActive={activeJoint?.name === 'lAnkle'} 
-                                        onMouseDown={(e) => handleJointDown(e, 'lAnkle', lAnklePos)} 
-                                        onTouchStart={(e) => handleJointDown(e, 'lAnkle', lAnklePos)} 
-                                    />
+                                    {dragType === 'FK' && (
+                                        <DraggableJoint x={lFootPos.x} y={lFootPos.y} isActive={activeJoint?.name === 'lAnkle'} 
+                                            onMouseDown={(e) => handleJointDown(e, 'lAnkle', lAnklePos)} 
+                                            onTouchStart={(e) => handleJointDown(e, 'lAnkle', lAnklePos)} 
+                                        />
+                                    )}
                                     </g>
                                 )}
 
@@ -1004,13 +1619,25 @@
 
                             {/* Overlay Controls */}
                             <div className="absolute bottom-2 right-2 md:bottom-4 md:right-4 flex space-x-1 md:space-x-2">
-                                <button 
-                                    onClick={() => setIsDragMode(!isDragMode)}
-                                    className={`p-1.5 md:p-2 rounded-lg border transition-all ${isDragMode ? 'bg-fuchsia-500/80 border-fuchsia-400 text-white shadow-[0_0_15px_rgba(217,70,239,0.6)] scale-110' : 'bg-slate-800 border-slate-700 text-slate-400 hover:text-white hover:border-slate-500'}`}
-                                    title={isDragMode ? t('dragModeOn') : t('dragModeOff')}
-                                >
-                                    <Hand size={16} className="md:w-5 md:h-5" />
-                                </button>
+                                <div className="flex items-center bg-slate-800 rounded-lg border border-slate-700 overflow-hidden">
+                                    <button 
+                                        onClick={() => setIsDragMode(!isDragMode)}
+                                        className={`p-1.5 md:p-2 transition-all ${isDragMode ? 'bg-fuchsia-500 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-700'}`}
+                                        title={isDragMode ? t('dragModeOn') : t('dragModeOff')}
+                                    >
+                                        <Hand size={16} className="md:w-5 md:h-5" />
+                                    </button>
+                                    {isDragMode && (
+                                        <button 
+                                            onClick={() => setDragType(prev => prev === 'FK' ? 'IK' : 'FK')}
+                                            className="px-2 py-1.5 md:px-3 md:py-2 text-[10px] md:text-xs font-mono font-bold text-slate-300 border-l border-slate-600 hover:bg-slate-700 transition-colors w-[40px]"
+                                            title={t(dragType.toLowerCase())}
+                                        >
+                                            {dragType}
+                                        </button>
+                                    )}
+                                </div>
+                                
                                 <div className="w-px h-6 md:h-8 bg-slate-700 mx-1"></div>
                                 <button onClick={handleZoomOut} className="p-1.5 md:p-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-400 hover:text-white hover:border-slate-500"><ZoomOut size={16} className="md:w-5 md:h-5" /></button>
                                 <button onClick={handleResetZoom} className="px-2 py-1.5 md:px-3 md:py-2 rounded-lg bg-slate-800 border border-slate-700 text-[10px] md:text-xs font-mono text-slate-300 min-w-[40px] md:min-w-[60px]">{Math.round(zoom * 100)}%</button>
@@ -1073,10 +1700,39 @@
                     <div className="p-4 md:p-6">
                         <div className="mb-6">
                         <h2 className="text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-widest mb-3 flex items-center"><RotateCcw className="mr-2" size={12}/> {t('manage')}</h2>
+                        
+                        {/* Custom Preset Input */}
+                        <div className="mb-4 p-3 bg-slate-800/50 rounded-lg border border-slate-700">
+                            <label className="text-[10px] text-slate-400 mb-1 block">{t('savePreset')}</label>
+                            <div className="flex gap-2">
+                                <input
+                                    type="text"
+                                    value={presetName}
+                                    onChange={(e) => setPresetName(e.target.value)}
+                                    placeholder={t('enterName')}
+                                    className="flex-1 bg-slate-900 border border-slate-600 rounded px-2 py-1 text-[10px] md:text-xs text-white focus:outline-none focus:border-cyan-500 placeholder-slate-600"
+                                />
+                                <button
+                                    onClick={handleSaveCustomPreset}
+                                    className="px-2 py-1 bg-cyan-600 hover:bg-cyan-500 text-white rounded text-[10px] md:text-xs flex items-center transition-colors"
+                                >
+                                    <Save size={12} className="mr-1" />
+                                    {t('save')}
+                                </button>
+                            </div>
+                        </div>
+
                         <div className="mb-3">
                             <select value={selectedPreset} onChange={handlePresetChange} className="w-full bg-slate-800 border border-slate-700 text-white text-[10px] md:text-xs rounded px-2 py-2 focus:outline-none focus:border-cyan-500" disabled={isPlaying}>
                             <option value="" disabled>{t('selectPreset')}</option>
-                            {Object.keys(PRESETS).map(key => (<option key={key} value={key}>{t(`p_${key}`)}</option>))}
+                            <optgroup label={t('presets')}>
+                                {Object.keys(PRESETS).map(key => (<option key={key} value={key}>{t(`p_${key}`)}</option>))}
+                            </optgroup>
+                            {Object.keys(customPresets).length > 0 && (
+                                <optgroup label={t('custom')}>
+                                    {Object.keys(customPresets).map(key => (<option key={key} value={key}>{key}</option>))}
+                                </optgroup>
+                            )}
                             </select>
                         </div>
                         <div className="flex gap-2">
