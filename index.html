@@ -1,65 +1,77 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GRID FLOW - Tutting Simulator</title>
-    
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <!-- React & ReactDOM -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    
+
     <!-- Babel for JSX -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
+
     <style>
         /* Custom Scrollbar for Webkit */
         .custom-scrollbar::-webkit-scrollbar {
             height: 6px;
             width: 6px;
         }
+
         .custom-scrollbar::-webkit-scrollbar-track {
             background: #1e293b;
         }
+
         .custom-scrollbar::-webkit-scrollbar-thumb {
             background: #475569;
             border-radius: 3px;
         }
+
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
             background: #64748b;
         }
-        
+
         /* Hide scrollbar for mobile horizontal scroll */
         .no-scrollbar-mobile::-webkit-scrollbar {
             display: none;
         }
+
         .no-scrollbar-mobile {
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
-        
+
         body {
-            overflow: hidden; /* Prevent bounce on mobile */
-            touch-action: none; /* Prevent pull-to-refresh etc. */
+            overflow: hidden;
+            touch-action: none;
         }
 
         /* Hide number input spin buttons */
-        input[type=number]::-webkit-inner-spin-button, 
-        input[type=number]::-webkit-outer-spin-button { 
-            -webkit-appearance: none; 
-            margin: 0; 
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
         }
+
         input[type=number] {
             -moz-appearance: textfield;
         }
-        
-        .cursor-grab { cursor: grab; }
-        .cursor-grabbing { cursor: grabbing; }
+
+        .cursor-grab {
+            cursor: grab;
+        }
+
+        .cursor-grabbing {
+            cursor: grabbing;
+        }
     </style>
 </head>
+
 <body class="bg-slate-950 text-white">
     <div id="root"></div>
 
@@ -68,17 +80,17 @@
 
         // --- Icons (Inline SVG to avoid CDN dependency issues) ---
         const Icon = ({ children, size = 24, className = "", ...props }) => (
-            <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                width={size} 
-                height={size} 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="2" 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                className={className} 
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width={size}
+                height={size}
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className={className}
                 {...props}
             >
                 {children}
@@ -107,7 +119,9 @@
         const Hand = (props) => <Icon {...props}><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0" /><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2" /><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8" /><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15" /></Icon>;
         const Globe = (props) => <Icon {...props}><circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></Icon>;
         const Users = (props) => <Icon {...props}><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></Icon>;
-        const RotateCw = (props) => <Icon {...props}><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></Icon>;
+        const RotateCw = (props) => <Icon {...props}><path d="M23 4v6h-6" /><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" /></Icon>;
+        const LinkIcon = (props) => <Icon {...props}><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></Icon>;
+        const Clock = (props) => <Icon {...props}><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></Icon>;
 
         // --- Constants & Helper Functions ---
 
@@ -117,7 +131,7 @@
                 subtitle: 'TUTTING SIMULATOR V2.6',
                 timeline: '時間軸',
                 bpm: 'BPM',
-                ai: '生成編舞',
+                ai: 'AI 編舞',
                 delete: '刪除',
                 update: '更新',
                 manage: '動作管理',
@@ -175,13 +189,15 @@
                 f_row: '一排',
                 f_grid: '九宮格',
                 resetView: '重置視角',
+                handSync: '手部同步',
+                duration: '持續時間 (秒)',
             },
             'en': {
                 title: 'GRID FLOW',
                 subtitle: 'TUTTING SIMULATOR V2.6',
                 timeline: 'TIMELINE',
                 bpm: 'BPM',
-                ai: 'GENERATE',
+                ai: 'AI GEN',
                 delete: 'DELETE',
                 update: 'UPDATE',
                 manage: 'MANAGE',
@@ -239,13 +255,15 @@
                 f_row: 'Row',
                 f_grid: 'Grid 3x3',
                 resetView: 'Reset View',
+                handSync: 'Hand Sync',
+                duration: 'Duration (s)',
             },
             'ja': {
                 title: 'GRID FLOW',
                 subtitle: 'タッティング・シミュレーター V2.6',
                 timeline: 'タイムライン',
                 bpm: 'BPM',
-                ai: '振り付け生成',
+                ai: 'AI生成',
                 delete: '削除',
                 update: '更新',
                 manage: '管理',
@@ -303,13 +321,15 @@
                 f_row: '列',
                 f_grid: 'グリッド',
                 resetView: '視点リセット',
+                handSync: 'ハンド同期',
+                duration: '持続時間 (秒)',
             },
             'ko': {
                 title: 'GRID FLOW',
                 subtitle: '터팅 시뮬레이터 V2.6',
                 timeline: '타임라인',
                 bpm: 'BPM',
-                ai: '안무 생성',
+                ai: 'AI 생성',
                 delete: '삭제',
                 update: '갱신',
                 manage: '관리',
@@ -367,13 +387,15 @@
                 f_row: '일렬',
                 f_grid: '그리드',
                 resetView: '뷰 초기화',
+                handSync: '손 동기화',
+                duration: '지속 시간 (초)',
             },
             'es': {
                 title: 'GRID FLOW',
                 subtitle: 'SIMULADOR DE TUTTING V2.6',
                 timeline: 'LÍNEA DE TIEMPO',
                 bpm: 'BPM',
-                ai: 'GENERAR',
+                ai: 'GEN IA',
                 delete: 'BORRAR',
                 update: 'ACTUALIZAR',
                 manage: 'GESTIONAR',
@@ -431,13 +453,15 @@
                 f_row: 'Fila',
                 f_grid: 'Cuadrícula',
                 resetView: 'Reiniciar Vista',
+                handSync: 'Sincronizar Manos',
+                duration: 'Duración (s)',
             },
             'pt': {
                 title: 'GRID FLOW',
                 subtitle: 'SIMULADOR DE TUTTING V2.6',
                 timeline: 'LINHA DO TEMPO',
                 bpm: 'BPM',
-                ai: 'GERAR',
+                ai: 'GERAR IA',
                 delete: 'EXCLUIR',
                 update: 'ATUALIZAR',
                 manage: 'GERENCIAR',
@@ -495,13 +519,15 @@
                 f_row: 'Fila',
                 f_grid: 'Grade',
                 resetView: 'Redefinir Vista',
+                handSync: 'Sinc. Mãos',
+                duration: 'Duração (s)',
             },
             'fr': {
                 title: 'GRID FLOW',
                 subtitle: 'SIMULATEUR DE TUTTING V2.6',
                 timeline: 'CHRONOLOGIE',
                 bpm: 'BPM',
-                ai: 'GÉNÉRER',
+                ai: 'GEN IA',
                 delete: 'SUPPRIMER',
                 update: 'METTRE À JOUR',
                 manage: 'GÉRER',
@@ -559,13 +585,15 @@
                 f_row: 'Rangée',
                 f_grid: 'Grille',
                 resetView: 'Réinit. Vue',
+                handSync: 'Sync Mains',
+                duration: 'Durée (s)',
             },
             'de': {
                 title: 'GRID FLOW',
                 subtitle: 'TUTTING SIMULATOR V2.6',
                 timeline: 'ZEITACHSE',
                 bpm: 'BPM',
-                ai: 'GENERIEREN',
+                ai: 'KI GEN',
                 delete: 'LÖSCHEN',
                 update: 'AKTUALISIEREN',
                 manage: 'VERWALTEN',
@@ -623,13 +651,15 @@
                 f_row: 'Reihe',
                 f_grid: 'Raster',
                 resetView: 'Ansicht zurücksetzen',
+                handSync: 'Hand-Sync',
+                duration: 'Dauer (s)',
             },
             'vi': {
                 title: 'GRID FLOW',
                 subtitle: 'MÔ PHỎNG TUTTING V2.6',
                 timeline: 'DÒNG THỜI GIAN',
                 bpm: 'BPM',
-                ai: 'TẠO VŨ ĐẠO',
+                ai: 'TẠO AI',
                 delete: 'XÓA',
                 update: 'CẬP NHẬT',
                 manage: 'QUẢN LÝ',
@@ -687,13 +717,15 @@
                 f_row: 'Hàng ngang',
                 f_grid: 'Lưới',
                 resetView: 'Đặt lại Chế độ xem',
+                handSync: 'Đồng bộ tay',
+                duration: 'Thời lượng (s)',
             },
             'hi': {
                 title: 'GRID FLOW',
                 subtitle: 'टटिंग सिम्युलेटर V2.6',
                 timeline: 'समयरेखा',
                 bpm: 'BPM',
-                ai: 'उत्पन्न करें',
+                ai: 'AI जनरेट',
                 delete: 'हटाएं',
                 update: 'अपडेट',
                 manage: 'प्रबंधन',
@@ -751,13 +783,15 @@
                 f_row: 'पंक्ति',
                 f_grid: 'ग्रिड',
                 resetView: 'दृश्य रीसेट करें',
+                handSync: 'हाथ सिंक',
+                duration: 'अवधि (s)',
             },
             'ru': {
                 title: 'GRID FLOW',
                 subtitle: 'СИМУЛЯТОР ТАТТИНГА V2.6',
                 timeline: 'ВРЕМЕННАЯ ШКАЛА',
                 bpm: 'УДАРЫ/МИН',
-                ai: 'ГЕНЕРИРОВАТЬ',
+                ai: 'ИИ',
                 delete: 'УДАЛИТЬ',
                 update: 'ОБНОВИТЬ',
                 manage: 'УПРАВЛЕНИЕ',
@@ -815,6 +849,8 @@
                 f_row: 'Ряд',
                 f_grid: 'Сетка',
                 resetView: 'Сброс вида',
+                handSync: 'Синх. Рук',
+                duration: 'Длительность (с)',
             }
         };
 
@@ -837,25 +873,25 @@
             'Bounce (彈跳)': t => {
                 const n1 = 7.5625;
                 const d1 = 2.75;
-                if (t < 1 / d1) { return n1 * t * t; } 
-                else if (t < 2 / d1) { return n1 * (t -= 1.5 / d1) * t + 0.75; } 
-                else if (t < 2.5 / d1) { return n1 * (t -= 2.25 / d1) * t + 0.9375; } 
+                if (t < 1 / d1) { return n1 * t * t; }
+                else if (t < 2 / d1) { return n1 * (t -= 1.5 / d1) * t + 0.75; }
+                else if (t < 2.5 / d1) { return n1 * (t -= 2.25 / d1) * t + 0.9375; }
                 else { return n1 * (t -= 2.625 / d1) * t + 0.984375; }
             }
         };
 
         const PRESETS = {
-            idle: { easing: 'Smooth (流暢)', bodyX: 0, bodyY: 0, waist: 0, headTilt: 0, headSlide: 0, lShoulder: 270, lElbow: 180, lWrist: 180, rShoulder: 270, rElbow: 0, rWrist: 0, lHip: 90, lKnee: 90, lAnkle: 0, rHip: 90, rKnee: 90, rAnkle: 180 },
-            box: { easing: 'Smooth (流暢)', bodyX: 0, bodyY: 0, waist: 0, headTilt: 0, headSlide: 0, lShoulder: 180, lElbow: 90, lWrist: 90, rShoulder: 0, rElbow: 270, rWrist: 270, lHip: 90, lKnee: 90, lAnkle: 0, rHip: 90, rKnee: 90, rAnkle: 180 },
-            prayer: { easing: 'Smooth (流暢)', bodyX: 0, bodyY: 0, waist: 0, headTilt: 15, headSlide: 0, lShoulder: 270, lElbow: 45, lWrist: 270, rShoulder: 270, rElbow: 315, rWrist: 90, lHip: 100, lKnee: 100, lAnkle: 0, rHip: 80, rKnee: 80, rAnkle: 180 },
-            tutting_l: { easing: 'Smooth (流暢)', bodyX: 20, bodyY: 0, waist: -10, headTilt: -10, headSlide: 15, lShoulder: 180, lElbow: 90, lWrist: 180, rShoulder: 90, rElbow: 180, rWrist: 0, lHip: 90, lKnee: 90, lAnkle: 0, rHip: 90, rKnee: 90, rAnkle: 180 },
-            cobra: { easing: 'Smooth (流暢)', bodyX: 0, bodyY: 20, waist: 20, headTilt: 0, headSlide: -10, lShoulder: 315, lElbow: 135, lWrist: 270, rShoulder: 225, rElbow: 225, rWrist: 90, lHip: 70, lKnee: 45, lAnkle: 90, rHip: 110, rKnee: 135, rAnkle: 90 },
-            pharaoh: { easing: 'Smooth (流暢)', bodyX: 0, bodyY: 0, waist: 0, headTilt: 0, headSlide: 0, lShoulder: 0, lElbow: 90, lWrist: 180, rShoulder: 180, rElbow: 270, rWrist: 0, lHip: 90, lKnee: 90, lAnkle: 0, rHip: 90, rKnee: 90, rAnkle: 180 },
-            diamond: { easing: 'Smooth (流暢)', bodyX: 0, bodyY: 0, waist: 0, headTilt: 0, headSlide: 0, lShoulder: 315, lElbow: 225, lWrist: 135, rShoulder: 225, rElbow: 315, rWrist: 45, lHip: 80, lKnee: 80, lAnkle: 0, rHip: 100, rKnee: 100, rAnkle: 180 },
-            stairs: { easing: 'Smooth (流暢)', bodyX: -10, bodyY: 0, waist: 10, headTilt: -5, headSlide: 10, lShoulder: 0, lElbow: 90, lWrist: 0, rShoulder: 180, rElbow: 270, rWrist: 180, lHip: 90, lKnee: 70, lAnkle: 0, rHip: 90, rKnee: 110, rAnkle: 180 },
-            frame: { easing: 'Smooth (流暢)', bodyX: 0, bodyY: 0, waist: 0, headTilt: 0, headSlide: 0, lShoulder: 270, lElbow: 180, lWrist: 90, rShoulder: 270, rElbow: 0, rWrist: 90, lHip: 90, lKnee: 90, lAnkle: 0, rHip: 90, rKnee: 90, rAnkle: 180 },
-            wings: { easing: 'Smooth (流暢)', bodyX: 0, bodyY: -20, waist: 0, headTilt: 0, headSlide: 0, lShoulder: 315, lElbow: 315, lWrist: 315, rShoulder: 225, rElbow: 225, rWrist: 225, lHip: 100, lKnee: 100, lAnkle: 0, rHip: 80, rKnee: 80, rAnkle: 180 },
-            zig_zag: { easing: 'Smooth (流暢)', bodyX: 0, bodyY: 0, waist: -15, headTilt: 10, headSlide: -10, lShoulder: 0, lElbow: 90, lWrist: 0, rShoulder: 180, rElbow: 270, rWrist: 180, lHip: 80, lKnee: 45, lAnkle: 90, rHip: 100, rKnee: 135, rAnkle: 90 }
+            idle: { duration: 1, easing: 'Smooth (流暢)', bodyX: 0, bodyY: 0, waist: 0, headTilt: 0, headSlide: 0, lShoulder: 270, lElbow: 180, lWrist: 180, rShoulder: 270, rElbow: 0, rWrist: 0, lHip: 90, lKnee: 90, lAnkle: 0, rHip: 90, rKnee: 90, rAnkle: 180 },
+            box: { duration: 1, easing: 'Smooth (流暢)', bodyX: 0, bodyY: 0, waist: 0, headTilt: 0, headSlide: 0, lShoulder: 180, lElbow: 90, lWrist: 90, rShoulder: 0, rElbow: 270, rWrist: 270, lHip: 90, lKnee: 90, lAnkle: 0, rHip: 90, rKnee: 90, rAnkle: 180 },
+            prayer: { duration: 1, easing: 'Smooth (流暢)', bodyX: 0, bodyY: 0, waist: 0, headTilt: 15, headSlide: 0, lShoulder: 270, lElbow: 45, lWrist: 270, rShoulder: 270, rElbow: 315, rWrist: 90, lHip: 100, lKnee: 100, lAnkle: 0, rHip: 80, rKnee: 80, rAnkle: 180 },
+            tutting_l: { duration: 1, easing: 'Smooth (流暢)', bodyX: 20, bodyY: 0, waist: -10, headTilt: -10, headSlide: 15, lShoulder: 180, lElbow: 90, lWrist: 180, rShoulder: 90, rElbow: 180, rWrist: 0, lHip: 90, lKnee: 90, lAnkle: 0, rHip: 90, rKnee: 90, rAnkle: 180 },
+            cobra: { duration: 1, easing: 'Smooth (流暢)', bodyX: 0, bodyY: 20, waist: 20, headTilt: 0, headSlide: -10, lShoulder: 315, lElbow: 135, lWrist: 270, rShoulder: 225, rElbow: 225, rWrist: 90, lHip: 70, lKnee: 45, lAnkle: 90, rHip: 110, rKnee: 135, rAnkle: 90 },
+            pharaoh: { duration: 1, easing: 'Smooth (流暢)', bodyX: 0, bodyY: 0, waist: 0, headTilt: 0, headSlide: 0, lShoulder: 0, lElbow: 90, lWrist: 180, rShoulder: 180, rElbow: 270, rWrist: 0, lHip: 90, lKnee: 90, lAnkle: 0, rHip: 90, rKnee: 90, rAnkle: 180 },
+            diamond: { duration: 1, easing: 'Smooth (流暢)', bodyX: 0, bodyY: 0, waist: 0, headTilt: 0, headSlide: 0, lShoulder: 315, lElbow: 225, lWrist: 135, rShoulder: 225, rElbow: 315, rWrist: 45, lHip: 80, lKnee: 80, lAnkle: 0, rHip: 100, rKnee: 100, rAnkle: 180 },
+            stairs: { duration: 1, easing: 'Smooth (流暢)', bodyX: -10, bodyY: 0, waist: 10, headTilt: -5, headSlide: 10, lShoulder: 0, lElbow: 90, lWrist: 0, rShoulder: 180, rElbow: 270, rWrist: 180, lHip: 90, lKnee: 70, lAnkle: 0, rHip: 90, rKnee: 110, rAnkle: 180 },
+            frame: { duration: 1, easing: 'Smooth (流暢)', bodyX: 0, bodyY: 0, waist: 0, headTilt: 0, headSlide: 0, lShoulder: 270, lElbow: 180, lWrist: 90, rShoulder: 270, rElbow: 0, rWrist: 90, lHip: 90, lKnee: 90, lAnkle: 0, rHip: 90, rKnee: 90, rAnkle: 180 },
+            wings: { duration: 1, easing: 'Smooth (流暢)', bodyX: 0, bodyY: -20, waist: 0, headTilt: 0, headSlide: 0, lShoulder: 315, lElbow: 315, lWrist: 315, rShoulder: 225, rElbow: 225, rWrist: 225, lHip: 100, lKnee: 100, lAnkle: 0, rHip: 80, rKnee: 80, rAnkle: 180 },
+            zig_zag: { duration: 1, easing: 'Smooth (流暢)', bodyX: 0, bodyY: 0, waist: -15, headTilt: 10, headSlide: -10, lShoulder: 0, lElbow: 90, lWrist: 0, rShoulder: 180, rElbow: 270, rWrist: 180, lHip: 80, lKnee: 45, lAnkle: 90, rHip: 100, rKnee: 135, rAnkle: 90 }
         };
 
         const FORMATIONS = {
@@ -885,8 +921,8 @@
             ],
             'grid': [
                 { id: 1, x: -130, y: -120, scale: 0.5, opacity: 0.5 }, { id: 2, x: 0, y: -120, scale: 0.5, opacity: 0.5 }, { id: 3, x: 130, y: -120, scale: 0.5, opacity: 0.5 },
-                { id: 4, x: -130, y: 0, scale: 0.7, opacity: 0.7 },    { id: 0, x: 0, y: 0, scale: 1, opacity: 1, main: true },     { id: 5, x: 130, y: 0, scale: 0.7, opacity: 0.7 },
-                { id: 6, x: -130, y: 120, scale: 0.9, opacity: 0.9 },  { id: 7, x: 0, y: 120, scale: 0.9, opacity: 0.9 },  { id: 8, x: 130, y: 120, scale: 0.9, opacity: 0.9 }
+                { id: 4, x: -130, y: 0, scale: 0.7, opacity: 0.7 }, { id: 0, x: 0, y: 0, scale: 1, opacity: 1, main: true }, { id: 5, x: 130, y: 0, scale: 0.7, opacity: 0.7 },
+                { id: 6, x: -130, y: 120, scale: 0.9, opacity: 0.9 }, { id: 7, x: 0, y: 120, scale: 0.9, opacity: 0.9 }, { id: 8, x: 130, y: 120, scale: 0.9, opacity: 0.9 }
             ]
         };
 
@@ -921,7 +957,7 @@
         const interpolatePose = (poseA, poseB, t) => {
             const newPose = {};
             Object.keys(poseA).forEach(key => {
-                if(key === 'easing') return;
+                if (key === 'easing') return;
                 const endVal = poseB[key] !== undefined ? poseB[key] : poseA[key];
                 if (['headSlide', 'bodyX', 'bodyY'].includes(key)) {
                     newPose[key] = interpolateLinear(poseA[key], endVal, t);
@@ -936,21 +972,21 @@
             const dx = target.x - origin.x;
             const dy = target.y - origin.y;
             const dist = Math.sqrt(dx * dx + dy * dy);
-            
+
             // Clamp distance to prevent unreachable targets
-            const d = Math.min(dist, len1 + len2 - 0.1); 
-            
+            const d = Math.min(dist, len1 + len2 - 0.1);
+
             const baseAngle = Math.atan2(dy, dx);
-            
+
             // Law of Cosines to find internal angles
             // c^2 = a^2 + b^2 - 2ab cos(C) => cos(C) = (a^2 + b^2 - c^2) / 2ab
             const cosAlpha = (len1 * len1 + d * d - len2 * len2) / (2 * len1 * d);
             const alpha = Math.acos(Math.max(-1, Math.min(1, cosAlpha))); // Clamp for safety
-            
+
             // Two possible solutions for the first joint (elbow up/down)
             const theta1_A = baseAngle - alpha;
             const theta1_B = baseAngle + alpha;
-            
+
             // Calculate elbow positions for both solutions
             const elbow_A = {
                 x: origin.x + Math.cos(theta1_A) * len1,
@@ -960,24 +996,24 @@
                 x: origin.x + Math.cos(theta1_B) * len1,
                 y: origin.y + Math.sin(theta1_B) * len1
             };
-            
+
             // Calculate second joint angles
             const theta2_A = Math.atan2(target.y - elbow_A.y, target.x - elbow_A.x);
             const theta2_B = Math.atan2(target.y - elbow_B.y, target.x - elbow_B.x);
-            
+
             // Convert to degrees [0, 360]
             const toPosDeg = (rad) => {
                 let deg = toDeg(rad) % 360;
                 return deg < 0 ? deg + 360 : deg;
             };
-            
+
             const deg1A = toPosDeg(theta1_A); const deg2A = toPosDeg(theta2_A);
             const deg1B = toPosDeg(theta1_B); const deg2B = toPosDeg(theta2_B);
-            
+
             // Determine which solution is closer to the current pose
             const distA = Math.abs(shortAngleDist(currentA1, deg1A)) + Math.abs(shortAngleDist(currentA2, deg2A));
             const distB = Math.abs(shortAngleDist(currentA1, deg1B)) + Math.abs(shortAngleDist(currentA2, deg2B));
-            
+
             return distA < distB ? [deg1A, deg2A] : [deg1B, deg2B];
         };
 
@@ -985,29 +1021,29 @@
         const calculateSkeleton = (pose) => {
             const baseCenterX = 0; // Relative to dancer center
             const baseCenterY = 0;
-            const hipCenterY = 0 + (pose.bodyY || 0); 
+            const hipCenterY = 0 + (pose.bodyY || 0);
             const hipCenterX = 0 + (pose.bodyX || 0);
 
             const hipWidth = 25;
             const shoulderWidth = 40;
             const headRadius = 25;
 
-            const waistAngle = (pose.waist || 0) - 90; 
+            const waistAngle = (pose.waist || 0) - 90;
             const shoulderCenter = calculateEndPoint(hipCenterX, hipCenterY, waistAngle, SEGMENT_LENGTHS.torso);
 
-            const rShoulderBase = calculateEndPoint(shoulderCenter.x, shoulderCenter.y, waistAngle - 90, shoulderWidth); 
-            const lShoulderBase = calculateEndPoint(shoulderCenter.x, shoulderCenter.y, waistAngle + 90, shoulderWidth); 
-            
+            const rShoulderBase = calculateEndPoint(shoulderCenter.x, shoulderCenter.y, waistAngle - 90, shoulderWidth);
+            const lShoulderBase = calculateEndPoint(shoulderCenter.x, shoulderCenter.y, waistAngle + 90, shoulderWidth);
+
             const neckBase = shoulderCenter;
             const headSlide = pose.headSlide || 0;
             const headCenterBase = calculateEndPoint(neckBase.x, neckBase.y, waistAngle, SEGMENT_LENGTHS.neck);
-            
+
             const slideX = Math.cos(toRad(waistAngle + 90)) * headSlide;
             const slideY = Math.sin(toRad(waistAngle + 90)) * headSlide;
             const headCenterX = headCenterBase.x + slideX;
             const headCenterY = headCenterBase.y + slideY;
 
-            let displayTilt = (pose.headTilt || 0) + (pose.waist || 0); 
+            let displayTilt = (pose.headTilt || 0) + (pose.waist || 0);
             if (displayTilt > 180) displayTilt -= 360;
 
             const tiltHandleDist = headRadius + 15;
@@ -1056,19 +1092,19 @@
                 if (!isNaN(num)) onChange(num);
             };
             return (
-            <div className="flex flex-col space-y-1 mb-2">
-                <div className="flex justify-between items-center text-xs text-cyan-400 font-mono">
-                    <span className="font-bold">{label}</span>
-                    <div className="flex items-center bg-slate-800/50 rounded border border-slate-700 focus-within:border-cyan-500 focus-within:bg-slate-800 transition-colors">
-                        <input type="number" value={localVal} onChange={handleInput} className="w-12 bg-transparent text-right text-cyan-300 focus:text-white focus:outline-none px-1 py-0.5 text-[10px] font-mono" />
-                        <span className="text-[10px] text-slate-500 pr-1 select-none">{unit}</span>
+                <div className="flex flex-col space-y-1 mb-2">
+                    <div className="flex justify-between items-center text-xs text-cyan-400 font-mono">
+                        <span className="font-bold">{label}</span>
+                        <div className="flex items-center bg-slate-800/50 rounded border border-slate-700 focus-within:border-cyan-500 focus-within:bg-slate-800 transition-colors">
+                            <input type="number" value={localVal} onChange={handleInput} className="w-12 bg-transparent text-right text-cyan-300 focus:text-white focus:outline-none px-1 py-0.5 text-[10px] font-mono" />
+                            <span className="text-[10px] text-slate-500 pr-1 select-none">{unit}</span>
+                        </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <input type="range" min={min} max={max} step={step} value={value} onChange={(e) => onChange(Number(e.target.value))} className="w-full h-2 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-cyan-500 hover:accent-cyan-400" />
+                        {snap !== null && <button onClick={() => onChange(snap === 0 ? 0 : Math.round(value / snap) * snap)} className="p-1 text-[10px] bg-gray-800 text-cyan-500 border border-cyan-900 rounded hover:bg-cyan-900/50 min-w-[30px] flex-shrink-0" title={`Snap to ${snap}${unit}`}>{snap}{unit}</button>}
                     </div>
                 </div>
-                <div className="flex items-center space-x-2">
-                    <input type="range" min={min} max={max} step={step} value={value} onChange={(e) => onChange(Number(e.target.value))} className="w-full h-2 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-cyan-500 hover:accent-cyan-400" />
-                    {snap !== null && <button onClick={() => onChange(snap === 0 ? 0 : Math.round(value / snap) * snap)} className="p-1 text-[10px] bg-gray-800 text-cyan-500 border border-cyan-900 rounded hover:bg-cyan-900/50 min-w-[30px] flex-shrink-0" title={`Snap to ${snap}${unit}`}>{snap}{unit}</button>}
-                </div>
-            </div>
             );
         };
 
@@ -1076,7 +1112,7 @@
             <g opacity={opacity}>
                 {glow && <line x1={start.x} y1={start.y} x2={end.x} y2={end.y} stroke={color} strokeWidth={thickness + 8} strokeOpacity="0.2" strokeLinecap="round" />}
                 <line x1={start.x} y1={start.y} x2={end.x} y2={end.y} stroke={color} strokeWidth={thickness} strokeLinecap="round" />
-                <circle cx={end.x} cy={end.y} r={thickness/1.5} fill="#111" stroke={color} strokeWidth="2" />
+                <circle cx={end.x} cy={end.y} r={thickness / 1.5} fill="#111" stroke={color} strokeWidth="2" />
             </g>
         );
 
@@ -1093,7 +1129,7 @@
                 <g opacity={opacity}>
                     {/* Floor line */}
                     <line x1="-150" y1="190" x2="150" y2="190" stroke="#334155" strokeWidth="2" strokeDasharray="5,5" opacity="0.5" />
-                    
+
                     <LimbRenderer start={s.rHipPos} end={s.rKneePos} color="#c026d3" thickness={9} glow={true} />
                     <LimbRenderer start={s.rKneePos} end={s.rAnklePos} color="#c026d3" thickness={7} glow={true} />
                     <LimbRenderer start={s.rAnklePos} end={s.rFootPos} color="#e879f9" thickness={5} glow={false} />
@@ -1104,12 +1140,12 @@
 
                     <path d={`M${s.rHipPos.x} ${s.rHipPos.y} L${s.rShoulderBase.x} ${s.rShoulderBase.y} L${s.lShoulderBase.x} ${s.lShoulderBase.y} L${s.lHipPos.x} ${s.lHipPos.y} Z`} fill="#334155" stroke="#475569" strokeWidth="2" />
                     <line x1={s.rHipPos.x} y1={s.rHipPos.y} x2={s.lHipPos.x} y2={s.lHipPos.y} stroke="#475569" strokeWidth="3" />
-                    <line x1={s.shoulderCenter.x} y1={s.shoulderCenter.y} x2={s.headCenterX} y2={s.headCenterY + s.headRadius/2} stroke="#475569" strokeWidth="10" strokeLinecap="round"/>
+                    <line x1={s.shoulderCenter.x} y1={s.shoulderCenter.y} x2={s.headCenterX} y2={s.headCenterY + s.headRadius / 2} stroke="#475569" strokeWidth="10" strokeLinecap="round" />
 
                     <g transform={`rotate(${s.displayTilt}, ${s.headCenterX}, ${s.headCenterY})`}>
                         <circle cx={s.headCenterX} cy={s.headCenterY} r={s.headRadius} fill="#1e293b" stroke="#94a3b8" strokeWidth="2" />
-                        <path d={`M${s.headCenterX-10} ${s.headCenterY-5} L${s.headCenterX-5} ${s.headCenterY-5}`} stroke="#475569" strokeWidth="2"/>
-                        <path d={`M${s.headCenterX+5} ${s.headCenterY-5} L${s.headCenterX+10} ${s.headCenterY-5}`} stroke="#475569" strokeWidth="2"/>
+                        <path d={`M${s.headCenterX - 10} ${s.headCenterY - 5} L${s.headCenterX - 5} ${s.headCenterY - 5}`} stroke="#475569" strokeWidth="2" />
+                        <path d={`M${s.headCenterX + 5} ${s.headCenterY - 5} L${s.headCenterX + 10} ${s.headCenterY - 5}`} stroke="#475569" strokeWidth="2" />
                     </g>
 
                     <LimbRenderer start={s.rShoulderBase} end={s.rElbowPos} color="#d946ef" thickness={8} glow={true} />
@@ -1131,28 +1167,29 @@
             const [isPlaying, setIsPlaying] = useState(false);
             const [bpm, setBpm] = useState(100);
             const [showGrid, setShowGrid] = useState(true);
-            const [zoom, setZoom] = useState(1); 
+            const [zoom, setZoom] = useState(1);
             const [pan, setPan] = useState({ x: 0, y: 0 });
             const [isPanning, setIsPanning] = useState(false);
             const [selectedPreset, setSelectedPreset] = useState('');
-            const [customPresets, setCustomPresets] = useState({}); 
+            const [customPresets, setCustomPresets] = useState({});
             const [presetName, setPresetName] = useState("");
             const [isDragMode, setIsDragMode] = useState(false);
-            const [dragType, setDragType] = useState('FK'); 
+            const [dragType, setDragType] = useState('FK');
             const [activeJoint, setActiveJoint] = useState(null);
             const [formationType, setFormationType] = useState('single');
             const [lang, setLang] = useState('zh-TW');
+            const [isHandSync, setIsHandSync] = useState(false);
 
             const fileInputRef = useRef(null);
             const svgRef = useRef(null);
             const mainGroupRef = useRef(null);
             const lastMousePos = useRef({ x: 0, y: 0 });
-            
+
             const timelineRef = useRef(timeline);
             const frameIndexRef = useRef(currentFrameIndex);
             const requestRef = useRef();
             const startTimeRef = useRef(0);
-            
+
             // Optimized Refs
             const zoomRef = useRef(zoom);
             const activeJointRef = useRef(activeJoint);
@@ -1172,7 +1209,22 @@
 
             const updatePose = (key, value) => {
                 if (!isPlaying) {
-                    setPose(prev => ({ ...prev, [key]: value }));
+                    setPose(prev => {
+                        const newPose = { ...prev, [key]: value };
+
+                        // --- Hand Sync Logic ---
+                        if (key === 'waist' && isHandSync) {
+                            const prevWaist = prev.waist || 0;
+                            const delta = value - prevWaist;
+                            const armKeys = ['lShoulder', 'lElbow', 'lWrist', 'rShoulder', 'rElbow', 'rWrist'];
+                            
+                            armKeys.forEach(armKey => {
+                                // Add delta to keep relative angle constant
+                                newPose[armKey] = (prev[armKey] || 0) + delta;
+                            });
+                        }
+                        return newPose;
+                    });
                 }
             };
 
@@ -1226,15 +1278,15 @@
                 const mousePos = getSvgPoint(clientX, clientY);
 
                 // Remove the 200 offsets because we are now in 0-based local coordinates
-                
+
                 if (currentActiveJoint.type === 'headPos') {
                     const waistRad = toRad((currentPose.waist || 0) - 90);
                     const neckBaseX = currentActiveJoint.pivot.x;
                     const neckBaseY = currentActiveJoint.pivot.y;
                     const dx = mousePos.x - neckBaseX;
                     const dy = mousePos.y - neckBaseY;
-                    const axisX = Math.cos(waistRad + Math.PI/2);
-                    const axisY = Math.sin(waistRad + Math.PI/2);
+                    const axisX = Math.cos(waistRad + Math.PI / 2);
+                    const axisY = Math.sin(waistRad + Math.PI / 2);
                     const projection = dx * axisX + dy * axisY;
                     const newVal = Math.max(-50, Math.min(50, projection));
                     updatePose('headSlide', newVal);
@@ -1256,61 +1308,22 @@
                 }
                 else if (currentDragType === 'IK' && currentActiveJoint.type === 'ik') {
                     const { name, origin } = currentActiveJoint;
-                    // Two-pass IK for hand tips to ensure arm alignment
-                    if (name === 'rWrist' || name === 'lWrist' || name === 'rAnkle' || name === 'lAnkle') {
-                        let finalTarget = mousePos;
-                        let limbLength1, limbLength2, currentA1, currentA2, propA1, propA2, handLength;
-                        
-                        if (name === 'rWrist') {
-                            limbLength1 = SEGMENT_LENGTHS.upperArm; limbLength2 = SEGMENT_LENGTHS.forearm;
-                            currentA1 = currentPose.rShoulder; currentA2 = currentPose.rElbow;
-                            propA1 = 'rShoulder'; propA2 = 'rElbow';
-                            handLength = SEGMENT_LENGTHS.hand;
-                        } else if (name === 'lWrist') {
-                            limbLength1 = SEGMENT_LENGTHS.upperArm; limbLength2 = SEGMENT_LENGTHS.forearm;
-                            currentA1 = currentPose.lShoulder; currentA2 = currentPose.lElbow;
-                            propA1 = 'lShoulder'; propA2 = 'lElbow';
-                            handLength = SEGMENT_LENGTHS.hand;
-                        } else if (name === 'rAnkle') {
-                            limbLength1 = SEGMENT_LENGTHS.thigh; limbLength2 = SEGMENT_LENGTHS.shin;
-                            currentA1 = currentPose.rHip ?? 90; currentA2 = currentPose.rKnee ?? 90;
-                            propA1 = 'rHip'; propA2 = 'rKnee';
-                            handLength = SEGMENT_LENGTHS.foot;
-                        } else {
-                            limbLength1 = SEGMENT_LENGTHS.thigh; limbLength2 = SEGMENT_LENGTHS.shin;
-                            currentA1 = currentPose.lHip ?? 90; currentA2 = currentPose.lKnee ?? 90;
-                            propA1 = 'lHip'; propA2 = 'lKnee';
-                            handLength = SEGMENT_LENGTHS.foot;
-                        }
-
-                        // 1. Solve IK for Mouse Pos (Tentative)
-                        const [tA1, tA2] = solveTwoJointIK(mousePos, origin, limbLength1, limbLength2 + handLength, currentA1, currentA2);
-                        
-                        // 2. Calculate Elbow Pos from Tentative Solution
-                        const elbowX = origin.x + Math.cos(toRad(tA1)) * limbLength1;
-                        const elbowY = origin.y + Math.sin(toRad(tA1)) * limbLength1;
-                        
-                        // 3. Calculate angle from Elbow to Mouse
-                        const wristAngleRad = Math.atan2(mousePos.y - elbowY, mousePos.x - elbowX);
-                        let wristAngleDeg = toDeg(wristAngleRad);
-                        if(wristAngleDeg < 0) wristAngleDeg += 360;
-
-                        // 4. Update Wrist Angle
-                        if(name === 'rWrist') updatePose('rWrist', wristAngleDeg);
-                        else if(name === 'lWrist') updatePose('lWrist', wristAngleDeg);
-                        else if(name === 'rAnkle') updatePose('rAnkle', wristAngleDeg);
-                        else if(name === 'lAnkle') updatePose('lAnkle', wristAngleDeg);
-
-                        // 5. Calculate Real Target for Wrist Joint
-                        const realWristTarget = {
-                            x: mousePos.x - Math.cos(wristAngleRad) * handLength,
-                            y: mousePos.y - Math.sin(wristAngleRad) * handLength
-                        };
-
-                        // 6. Solve IK for Real Target
-                        const [fA1, fA2] = solveTwoJointIK(realWristTarget, origin, limbLength1, limbLength2, currentA1, currentA2);
-                        updatePose(propA1, fA1);
-                        updatePose(propA2, fA2);
+                    if (name === 'rWrist') {
+                        const [a1, a2] = solveTwoJointIK(mousePos, origin, SEGMENT_LENGTHS.upperArm, SEGMENT_LENGTHS.forearm, currentPose.rShoulder, currentPose.rElbow);
+                        updatePose('rShoulder', a1);
+                        updatePose('rElbow', a2);
+                    } else if (name === 'lWrist') {
+                        const [a1, a2] = solveTwoJointIK(mousePos, origin, SEGMENT_LENGTHS.upperArm, SEGMENT_LENGTHS.forearm, currentPose.lShoulder, currentPose.lElbow);
+                        updatePose('lShoulder', a1);
+                        updatePose('lElbow', a2);
+                    } else if (name === 'rAnkle') {
+                        const [a1, a2] = solveTwoJointIK(mousePos, origin, SEGMENT_LENGTHS.thigh, SEGMENT_LENGTHS.shin, currentPose.rHip ?? 90, currentPose.rKnee ?? 90);
+                        updatePose('rHip', a1);
+                        updatePose('rKnee', a2);
+                    } else if (name === 'lAnkle') {
+                        const [a1, a2] = solveTwoJointIK(mousePos, origin, SEGMENT_LENGTHS.thigh, SEGMENT_LENGTHS.shin, currentPose.lHip ?? 90, currentPose.lKnee ?? 90);
+                        updatePose('lHip', a1);
+                        updatePose('lKnee', a2);
                     }
                 }
                 else {
@@ -1322,8 +1335,8 @@
                 }
             };
 
-            const handleGlobalMouseUp = () => { 
-                setActiveJoint(null); 
+            const handleGlobalMouseUp = () => {
+                setActiveJoint(null);
                 setIsPanning(false);
             };
 
@@ -1343,7 +1356,7 @@
                     window.removeEventListener('touchmove', onTouchMove);
                     window.removeEventListener('touchend', onUp);
                 };
-            }, [activeJoint, isPanning]); 
+            }, [activeJoint, isPanning]);
 
             // --- Animation Loop ---
             const jumpToFrame = (index) => {
@@ -1384,7 +1397,7 @@
                 setIsPlaying(false);
                 const presetKeys = Object.keys(PRESETS);
                 const easingKeys = Object.keys(EASING_FUNCTIONS);
-                const newLength = 16; 
+                const newLength = 16;
                 const newTimeline = Array(newLength).fill(null).map((_, i) => {
                     const randomKey = presetKeys[Math.floor(Math.random() * presetKeys.length)];
                     const basePose = { ...PRESETS[randomKey] };
@@ -1392,7 +1405,7 @@
                     basePose.headTilt = (basePose.headTilt || 0) + randomTilt;
                     const randomEasing = easingKeys[Math.floor(Math.random() * easingKeys.length)];
                     basePose.easing = randomEasing;
-                    if (Math.random() > 0.6) basePose.headSlide = Math.floor(Math.random() * 40) - 20; else basePose.headSlide = 0; 
+                    if (Math.random() > 0.6) basePose.headSlide = Math.floor(Math.random() * 40) - 20; else basePose.headSlide = 0;
                     if (Math.random() > 0.6) basePose.waist = Math.floor(Math.random() * 40) - 20;
                     if (Math.random() > 0.7) { if (Math.random() > 0.5) basePose.bodyX = Math.floor(Math.random() * 60) - 30; else basePose.bodyY = Math.floor(Math.random() * 40) - 20; } else { basePose.bodyX = 0; basePose.bodyY = 0; }
                     return basePose;
@@ -1416,7 +1429,7 @@
             const handleImport = (event) => {
                 const fileReader = new FileReader();
                 const file = event.target.files[0];
-                if(!file) return;
+                if (!file) return;
                 fileReader.readAsText(file, "UTF-8");
                 fileReader.onload = (e) => {
                     try {
@@ -1432,7 +1445,7 @@
                         }
                     } catch (error) { alert(t('importFail')); }
                 };
-                event.target.value = null; 
+                event.target.value = null;
             };
 
             const handleSaveCustomPreset = () => {
@@ -1446,17 +1459,32 @@
                 const key = e.target.value;
                 setSelectedPreset(key);
                 if (isPlaying) return;
-                if (PRESETS[key]) setPose(PRESETS[key]);
+                // Preserve current duration when switching presets if desired, or reset.
+                // Here we'll merge the preset with the current duration to allow quick swapping without resetting time.
+                // Or simply use the preset's duration (default 1).
+                // Let's use the preset duration for cleaner state, but user can edit it.
+                if (PRESETS[key]) setPose({ ...PRESETS[key] });
                 else if (customPresets[key]) setPose(customPresets[key]);
             };
 
             useEffect(() => {
                 if (!isPlaying) { if (requestRef.current) cancelAnimationFrame(requestRef.current); return; }
                 startTimeRef.current = performance.now();
+                
                 const animate = (time) => {
-                    const beatDuration = 60000 / bpm;
+                    // Calculate duration based on the *starting* pose of the current segment
+                    const currentIndex = frameIndexRef.current;
+                    const startPose = timelineRef.current[currentIndex];
+                    
+                    // Duration logic: Use pose.duration (seconds) if available, otherwise fallback to BPM (1 beat)
+                    // Convert seconds to ms
+                    const stepDuration = (startPose.duration && startPose.duration > 0) 
+                        ? startPose.duration * 1000 
+                        : (60000 / bpm);
+
                     const elapsed = time - startTimeRef.current;
-                    let progress = elapsed / beatDuration;
+                    let progress = elapsed / stepDuration;
+                    
                     if (progress >= 1) {
                         const nextIndex = (frameIndexRef.current + 1) % timelineRef.current.length;
                         setCurrentFrameIndex(nextIndex);
@@ -1464,19 +1492,25 @@
                         startTimeRef.current = time;
                         progress = 0;
                     }
-                    const currentIndex = frameIndexRef.current;
-                    const nextIndex = (currentIndex + 1) % timelineRef.current.length;
-                    const startPose = timelineRef.current[currentIndex];
-                    const endPose = timelineRef.current[nextIndex];
-                    const easingName = startPose?.easing || 'Smooth (流暢)';
+                    
+                    // Recalculate current frame index in case it changed
+                    const activeIndex = frameIndexRef.current;
+                    const nextIndex = (activeIndex + 1) % timelineRef.current.length;
+                    const currentStartPose = timelineRef.current[activeIndex];
+                    const currentEndPose = timelineRef.current[nextIndex];
+                    
+                    const easingName = currentStartPose?.easing || 'Smooth (流暢)';
                     const easeFn = EASING_FUNCTIONS[easingName] || EASING_FUNCTIONS['Smooth (流暢)'];
+                    
                     const easedProgress = easeFn(progress);
-                    if (startPose && endPose) setPose(interpolatePose(startPose, endPose, easedProgress));
+                    if (currentStartPose && currentEndPose) {
+                        setPose(interpolatePose(currentStartPose, currentEndPose, easedProgress));
+                    }
                     requestRef.current = requestAnimationFrame(animate);
                 };
                 requestRef.current = requestAnimationFrame(animate);
                 return () => { if (requestRef.current) cancelAnimationFrame(requestRef.current); };
-            }, [isPlaying, bpm]); 
+            }, [isPlaying, bpm]); // Added bpm dependency, though bpm effect is minimized if duration is used
 
             const handleZoomIn = () => setZoom(z => Math.min(5, z + 0.2));
             const handleZoomOut = () => setZoom(z => Math.max(0.1, z - 0.2));
@@ -1493,233 +1527,249 @@
 
             return (
                 <div className="h-[100dvh] bg-slate-950 text-white font-sans selection:bg-cyan-500/30 flex flex-col md:flex-row overflow-hidden">
-                
-                {/* --- TOP/LEFT PANEL --- */}
-                <div className="w-full md:flex-1 h-[55%] md:h-full flex flex-col relative border-b md:border-b-0 md:border-r border-slate-800 z-10 bg-slate-950 min-w-0">
-                    
-                    <div className="absolute top-3 left-3 z-10 flex items-start gap-4 pointer-events-none">
-                        <div>
-                            <h1 className="text-xl md:text-3xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-fuchsia-500">{t('title')}</h1>
-                            <p className="text-[10px] md:text-xs text-slate-500 font-mono mt-0.5">{t('subtitle')}</p>
-                        </div>
-                    </div>
 
-                    <div className="absolute top-3 right-3 z-10">
-                        <div className="flex items-center bg-slate-800/80 backdrop-blur-sm border border-slate-700 rounded-full px-2 py-1 cursor-pointer hover:bg-slate-700 transition-colors">
-                            <Globe size={14} className="text-slate-400 mr-1" />
-                            <select value={lang} onChange={(e) => setLang(e.target.value)} className="bg-transparent text-[10px] md:text-xs text-slate-300 focus:outline-none cursor-pointer appearance-none pr-2">
-                                <option value="zh-TW">繁體中文</option>
-                                <option value="en">English</option>
-                                <option value="ja">日本語</option>
-                                <option value="ko">한국어</option>
-                                <option value="es">Español</option>
-                                <option value="pt">Português</option>
-                                <option value="fr">Français</option>
-                                <option value="de">Deutsch</option>
-                                <option value="vi">Tiếng Việt</option>
-                                <option value="hi">हिन्दी</option>
-                                <option value="ru">Русский</option>
-                            </select>
-                        </div>
-                    </div>
+                    {/* --- TOP/LEFT PANEL --- */}
+                    <div className="w-full md:flex-1 h-[55%] md:h-full flex flex-col relative border-b md:border-b-0 md:border-r border-slate-800 z-10 bg-slate-950 min-w-0">
 
-                    <div className={`flex-1 w-full flex items-center justify-center overflow-hidden relative p-2 bg-slate-900 ${isPanning ? 'cursor-grabbing' : 'cursor-grab'}`}>
-                        {showGrid && (
-                            <div className="absolute inset-0 opacity-20 pointer-events-none" 
-                                style={{ 
-                                    backgroundImage: 'linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px)', 
-                                    backgroundSize: '40px 40px',
-                                }}>
+                        <div className="absolute top-3 left-3 z-10 flex items-start gap-4 pointer-events-none">
+                            <div>
+                                <h1 className="text-xl md:text-3xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-fuchsia-500">{t('title')}</h1>
+                                <p className="text-[10px] md:text-xs text-slate-500 font-mono mt-0.5">{t('subtitle')}</p>
                             </div>
-                        )}
+                        </div>
 
-                        <div className="relative h-full w-full flex items-center justify-center" onWheel={handleWheel} onMouseDown={handleSvgMouseDown}>
-                            <svg ref={svgRef} className="w-full h-full select-none" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid meet">
-                                <defs>
-                                <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-                                    <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
-                                    <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
-                                </filter>
-                                </defs>
+                        <div className="absolute top-3 right-3 z-10">
+                            <div className="flex items-center bg-slate-800/80 backdrop-blur-sm border border-slate-700 rounded-full px-2 py-1 cursor-pointer hover:bg-slate-700 transition-colors">
+                                <Globe size={14} className="text-slate-400 mr-1" />
+                                <select value={lang} onChange={(e) => setLang(e.target.value)} className="bg-transparent text-[10px] md:text-xs text-slate-300 focus:outline-none cursor-pointer appearance-none pr-2">
+                                    <option value="zh-TW">繁體中文</option>
+                                    <option value="en">English</option>
+                                    <option value="ja">日本語</option>
+                                    <option value="ko">한국어</option>
+                                    <option value="es">Español</option>
+                                    <option value="pt">Português</option>
+                                    <option value="fr">Français</option>
+                                    <option value="de">Deutsch</option>
+                                    <option value="vi">Tiếng Việt</option>
+                                    <option value="hi">हिन्दी</option>
+                                    <option value="ru">Русский</option>
+                                </select>
+                            </div>
+                        </div>
 
-                                {/* Correct Coordinate System:
+                        <div className={`flex-1 w-full flex items-center justify-center overflow-hidden relative p-2 bg-slate-900 ${isPanning ? 'cursor-grabbing' : 'cursor-grab'}`}>
+                            {showGrid && (
+                                <div className="absolute inset-0 opacity-20 pointer-events-none"
+                                    style={{
+                                        backgroundImage: 'linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px)',
+                                        backgroundSize: '40px 40px',
+                                    }}>
+                                </div>
+                            )}
+
+                            <div className="relative h-full w-full flex items-center justify-center" onWheel={handleWheel} onMouseDown={handleSvgMouseDown}>
+                                <svg ref={svgRef} className="w-full h-full select-none" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid meet">
+                                    <defs>
+                                        <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                                            <feGaussianBlur stdDeviation="4" result="coloredBlur" />
+                                            <feMerge><feMergeNode in="coloredBlur" /><feMergeNode in="SourceGraphic" /></feMerge>
+                                        </filter>
+                                    </defs>
+
+                                    {/* Correct Coordinate System:
                                     1. Translate to Screen Center (200, 200) + Pan Offset.
                                     2. Scale (Zoom).
                                     (No negative translate needed because skeleton is 0-based)
                                 */}
-                                <g ref={mainGroupRef} transform={`translate(${200 + pan.x}, ${200 + pan.y}) scale(${zoom})`}>
-                                    
-                                    {/* Render Formation Dancers */}
-                                    {formationData.map((dancer, idx) => (
-                                        <g key={idx} transform={`translate(${dancer.x}, ${dancer.y}) scale(${dancer.scale})`}>
-                                            <DancerFigure skeleton={skeleton} opacity={dancer.opacity} />
-                                        </g>
-                                    ))}
+                                    <g ref={mainGroupRef} transform={`translate(${200 + pan.x}, ${200 + pan.y}) scale(${zoom})`}>
 
-                                    {/* Interactive Handles (Transformed by Main Dancer's Position) */}
-                                    {isDragMode && mainDancer && (
-                                        <g transform={`translate(${mainDancer.x}, ${mainDancer.y}) scale(${mainDancer.scale})`}>
-                                            {/* Body Center */}
-                                            <DraggableJoint x={skeleton.hipCenterX} y={skeleton.hipCenterY} isActive={activeJoint?.name === 'bodyX'} onMouseDown={(e) => handleJointDown(e, 'bodyX', null, 'pos')} onTouchStart={(e) => handleJointDown(e, 'bodyX', null, 'pos')} />
-                                            <DraggableJoint x={skeleton.headCenterX} y={skeleton.headCenterY} isActive={activeJoint?.type === 'headPos'} onMouseDown={(e) => handleJointDown(e, 'head', skeleton.neckBase, 'headPos')} onTouchStart={(e) => handleJointDown(e, 'head', skeleton.neckBase, 'headPos')} />
-                                            <DraggableJoint x={skeleton.tiltHandleX} y={skeleton.tiltHandleY} isActive={activeJoint?.type === 'headTilt'} onMouseDown={(e) => handleJointDown(e, 'headTilt', {x: skeleton.headCenterX, y: skeleton.headCenterY}, 'headTilt')} onTouchStart={(e) => handleJointDown(e, 'headTilt', {x: skeleton.headCenterX, y: skeleton.headCenterY}, 'headTilt')} isFK={false} />
+                                        {/* Render Formation Dancers */}
+                                        {formationData.map((dancer, idx) => (
+                                            <g key={idx} transform={`translate(${dancer.x}, ${dancer.y}) scale(${dancer.scale})`}>
+                                                <DancerFigure skeleton={skeleton} opacity={dancer.opacity} />
+                                            </g>
+                                        ))}
 
-                                            {/* Right Arm */}
-                                            <DraggableJoint x={skeleton.rElbowPos.x} y={skeleton.rElbowPos.y} isActive={activeJoint?.name === 'rShoulder'} onMouseDown={(e) => handleJointDown(e, 'rShoulder', skeleton.rShoulderBase)} onTouchStart={(e) => handleJointDown(e, 'rShoulder', skeleton.rShoulderBase)} />
-                                            <DraggableJoint x={skeleton.rWristPos.x} y={skeleton.rWristPos.y} isActive={activeJoint?.name === (dragType === 'IK' ? 'rWrist' : 'rElbow')} onMouseDown={(e) => handleJointDown(e, dragType === 'IK' ? 'rWrist' : 'rElbow', dragType === 'IK' ? skeleton.rShoulderBase : skeleton.rElbowPos, dragType === 'IK' ? 'ik' : 'angle', skeleton.rShoulderBase)} onTouchStart={(e) => handleJointDown(e, dragType === 'IK' ? 'rWrist' : 'rElbow', dragType === 'IK' ? skeleton.rShoulderBase : skeleton.rElbowPos, dragType === 'IK' ? 'ik' : 'angle', skeleton.rShoulderBase)} isFK={dragType === 'FK'} />
-                                            {dragType === 'FK' && <DraggableJoint x={skeleton.rHandPos.x} y={skeleton.rHandPos.y} isActive={activeJoint?.name === 'rWrist'} onMouseDown={(e) => handleJointDown(e, 'rWrist', skeleton.rWristPos)} onTouchStart={(e) => handleJointDown(e, 'rWrist', skeleton.rWristPos)} />}
-                                            {dragType === 'IK' && <DraggableJoint x={skeleton.rHandPos.x} y={skeleton.rHandPos.y} isActive={activeJoint?.name === 'rWrist'} onMouseDown={(e) => handleJointDown(e, 'rWrist', skeleton.rShoulderBase, 'ik', skeleton.rShoulderBase)} onTouchStart={(e) => handleJointDown(e, 'rWrist', skeleton.rShoulderBase, 'ik', skeleton.rShoulderBase)} isFK={false} />}
+                                        {/* Interactive Handles (Transformed by Main Dancer's Position) */}
+                                        {isDragMode && mainDancer && (
+                                            <g transform={`translate(${mainDancer.x}, ${mainDancer.y}) scale(${mainDancer.scale})`}>
+                                                {/* Body Center */}
+                                                <DraggableJoint x={skeleton.hipCenterX} y={skeleton.hipCenterY} isActive={activeJoint?.name === 'bodyX'} onMouseDown={(e) => handleJointDown(e, 'bodyX', null, 'pos')} onTouchStart={(e) => handleJointDown(e, 'bodyX', null, 'pos')} />
+                                                <DraggableJoint x={skeleton.headCenterX} y={skeleton.headCenterY} isActive={activeJoint?.type === 'headPos'} onMouseDown={(e) => handleJointDown(e, 'head', skeleton.neckBase, 'headPos')} onTouchStart={(e) => handleJointDown(e, 'head', skeleton.neckBase, 'headPos')} />
+                                                <DraggableJoint x={skeleton.tiltHandleX} y={skeleton.tiltHandleY} isActive={activeJoint?.type === 'headTilt'} onMouseDown={(e) => handleJointDown(e, 'headTilt', { x: skeleton.headCenterX, y: skeleton.headCenterY }, 'headTilt')} onTouchStart={(e) => handleJointDown(e, 'headTilt', { x: skeleton.headCenterX, y: skeleton.headCenterY }, 'headTilt')} isFK={false} />
 
-                                            {/* Left Arm */}
-                                            <DraggableJoint x={skeleton.lElbowPos.x} y={skeleton.lElbowPos.y} isActive={activeJoint?.name === 'lShoulder'} onMouseDown={(e) => handleJointDown(e, 'lShoulder', skeleton.lShoulderBase)} onTouchStart={(e) => handleJointDown(e, 'lShoulder', skeleton.lShoulderBase)} />
-                                            <DraggableJoint x={skeleton.lWristPos.x} y={skeleton.lWristPos.y} isActive={activeJoint?.name === (dragType === 'IK' ? 'lWrist' : 'lElbow')} onMouseDown={(e) => handleJointDown(e, dragType === 'IK' ? 'lWrist' : 'lElbow', dragType === 'IK' ? skeleton.lShoulderBase : skeleton.lElbowPos, dragType === 'IK' ? 'ik' : 'angle', skeleton.lShoulderBase)} onTouchStart={(e) => handleJointDown(e, dragType === 'IK' ? 'lWrist' : 'lElbow', dragType === 'IK' ? skeleton.lShoulderBase : skeleton.lElbowPos, dragType === 'IK' ? 'ik' : 'angle', skeleton.lShoulderBase)} isFK={dragType === 'FK'} />
-                                            {dragType === 'FK' && <DraggableJoint x={skeleton.lHandPos.x} y={skeleton.lHandPos.y} isActive={activeJoint?.name === 'lWrist'} onMouseDown={(e) => handleJointDown(e, 'lWrist', skeleton.lWristPos)} onTouchStart={(e) => handleJointDown(e, 'lWrist', skeleton.lWristPos)} />}
-                                            {dragType === 'IK' && <DraggableJoint x={skeleton.lHandPos.x} y={skeleton.lHandPos.y} isActive={activeJoint?.name === 'lWrist'} onMouseDown={(e) => handleJointDown(e, 'lWrist', skeleton.lShoulderBase, 'ik', skeleton.lShoulderBase)} onTouchStart={(e) => handleJointDown(e, 'lWrist', skeleton.lShoulderBase, 'ik', skeleton.lShoulderBase)} isFK={false} />}
+                                                {/* Right Arm */}
+                                                <DraggableJoint x={skeleton.rElbowPos.x} y={skeleton.rElbowPos.y} isActive={activeJoint?.name === 'rShoulder'} onMouseDown={(e) => handleJointDown(e, 'rShoulder', skeleton.rShoulderBase)} onTouchStart={(e) => handleJointDown(e, 'rShoulder', skeleton.rShoulderBase)} />
+                                                <DraggableJoint x={skeleton.rWristPos.x} y={skeleton.rWristPos.y} isActive={activeJoint?.name === (dragType === 'IK' ? 'rWrist' : 'rElbow')} onMouseDown={(e) => handleJointDown(e, dragType === 'IK' ? 'rWrist' : 'rElbow', dragType === 'IK' ? skeleton.rShoulderBase : skeleton.rElbowPos, dragType === 'IK' ? 'ik' : 'angle', skeleton.rShoulderBase)} onTouchStart={(e) => handleJointDown(e, dragType === 'IK' ? 'rWrist' : 'rElbow', dragType === 'IK' ? skeleton.rShoulderBase : skeleton.rElbowPos, dragType === 'IK' ? 'ik' : 'angle', skeleton.rShoulderBase)} isFK={dragType === 'FK'} />
+                                                <DraggableJoint x={skeleton.rHandPos.x} y={skeleton.rHandPos.y} isActive={activeJoint?.name === 'rWrist'} onMouseDown={(e) => handleJointDown(e, 'rWrist', skeleton.rWristPos)} onTouchStart={(e) => handleJointDown(e, 'rWrist', skeleton.rWristPos)} />
 
-                                            {/* Right Leg */}
-                                            <DraggableJoint x={skeleton.rKneePos.x} y={skeleton.rKneePos.y} isActive={activeJoint?.name === 'rHip'} onMouseDown={(e) => handleJointDown(e, 'rHip', skeleton.rHipPos)} onTouchStart={(e) => handleJointDown(e, 'rHip', skeleton.rHipPos)} />
-                                            <DraggableJoint x={skeleton.rAnklePos.x} y={skeleton.rAnklePos.y} isActive={activeJoint?.name === (dragType === 'IK' ? 'rAnkle' : 'rKnee')} onMouseDown={(e) => handleJointDown(e, dragType === 'IK' ? 'rAnkle' : 'rKnee', dragType === 'IK' ? skeleton.rHipPos : skeleton.rKneePos, dragType === 'IK' ? 'ik' : 'angle', skeleton.rHipPos)} onTouchStart={(e) => handleJointDown(e, dragType === 'IK' ? 'rAnkle' : 'rKnee', dragType === 'IK' ? skeleton.rHipPos : skeleton.rKneePos, dragType === 'IK' ? 'ik' : 'angle', skeleton.rHipPos)} isFK={dragType === 'FK'} />
-                                            {dragType === 'FK' && <DraggableJoint x={skeleton.rFootPos.x} y={skeleton.rFootPos.y} isActive={activeJoint?.name === 'rAnkle'} onMouseDown={(e) => handleJointDown(e, 'rAnkle', skeleton.rAnklePos)} onTouchStart={(e) => handleJointDown(e, 'rAnkle', skeleton.rAnklePos)} />}
-                                            {dragType === 'IK' && <DraggableJoint x={skeleton.rFootPos.x} y={skeleton.rFootPos.y} isActive={activeJoint?.name === 'rAnkle'} onMouseDown={(e) => handleJointDown(e, 'rAnkle', skeleton.rHipPos, 'ik', skeleton.rHipPos)} onTouchStart={(e) => handleJointDown(e, 'rAnkle', skeleton.rHipPos, 'ik', skeleton.rHipPos)} isFK={false} />}
+                                                {/* Left Arm */}
+                                                <DraggableJoint x={skeleton.lElbowPos.x} y={skeleton.lElbowPos.y} isActive={activeJoint?.name === 'lShoulder'} onMouseDown={(e) => handleJointDown(e, 'lShoulder', skeleton.lShoulderBase)} onTouchStart={(e) => handleJointDown(e, 'lShoulder', skeleton.lShoulderBase)} />
+                                                <DraggableJoint x={skeleton.lWristPos.x} y={skeleton.lWristPos.y} isActive={activeJoint?.name === (dragType === 'IK' ? 'lWrist' : 'lElbow')} onMouseDown={(e) => handleJointDown(e, dragType === 'IK' ? 'lWrist' : 'lElbow', dragType === 'IK' ? skeleton.lShoulderBase : skeleton.lElbowPos, dragType === 'IK' ? 'ik' : 'angle', skeleton.lShoulderBase)} onTouchStart={(e) => handleJointDown(e, dragType === 'IK' ? 'lWrist' : 'lElbow', dragType === 'IK' ? skeleton.lShoulderBase : skeleton.lElbowPos, dragType === 'IK' ? 'ik' : 'angle', skeleton.lShoulderBase)} isFK={dragType === 'FK'} />
+                                                <DraggableJoint x={skeleton.lHandPos.x} y={skeleton.lHandPos.y} isActive={activeJoint?.name === 'lWrist'} onMouseDown={(e) => handleJointDown(e, 'lWrist', skeleton.lWristPos)} onTouchStart={(e) => handleJointDown(e, 'lWrist', skeleton.lWristPos)} />
 
-                                            {/* Left Leg */}
-                                            <DraggableJoint x={skeleton.lKneePos.x} y={skeleton.lKneePos.y} isActive={activeJoint?.name === 'lHip'} onMouseDown={(e) => handleJointDown(e, 'lHip', skeleton.lHipPos)} onTouchStart={(e) => handleJointDown(e, 'lHip', skeleton.lHipPos)} />
-                                            <DraggableJoint x={skeleton.lAnklePos.x} y={skeleton.lAnklePos.y} isActive={activeJoint?.name === (dragType === 'IK' ? 'lAnkle' : 'lKnee')} onMouseDown={(e) => handleJointDown(e, dragType === 'IK' ? 'lAnkle' : 'lKnee', dragType === 'IK' ? skeleton.lHipPos : skeleton.lKneePos, dragType === 'IK' ? 'ik' : 'angle', skeleton.lHipPos)} onTouchStart={(e) => handleJointDown(e, dragType === 'IK' ? 'lAnkle' : 'lKnee', dragType === 'IK' ? skeleton.lHipPos : skeleton.lKneePos, dragType === 'IK' ? 'ik' : 'angle', skeleton.lHipPos)} isFK={dragType === 'FK'} />
-                                            {dragType === 'FK' && <DraggableJoint x={skeleton.lFootPos.x} y={skeleton.lFootPos.y} isActive={activeJoint?.name === 'lAnkle'} onMouseDown={(e) => handleJointDown(e, 'lAnkle', skeleton.lAnklePos)} onTouchStart={(e) => handleJointDown(e, 'lAnkle', skeleton.lAnklePos)} />}
-                                            {dragType === 'IK' && <DraggableJoint x={skeleton.lFootPos.x} y={skeleton.lFootPos.y} isActive={activeJoint?.name === 'lAnkle'} onMouseDown={(e) => handleJointDown(e, 'lAnkle', skeleton.lHipPos, 'ik', skeleton.lHipPos)} onTouchStart={(e) => handleJointDown(e, 'lAnkle', skeleton.lHipPos, 'ik', skeleton.lHipPos)} isFK={false} />}
-                                        </g>
-                                    )}
-                                </g>
-                            </svg>
+                                                {/* Right Leg */}
+                                                <DraggableJoint x={skeleton.rKneePos.x} y={skeleton.rKneePos.y} isActive={activeJoint?.name === 'rHip'} onMouseDown={(e) => handleJointDown(e, 'rHip', skeleton.rHipPos)} onTouchStart={(e) => handleJointDown(e, 'rHip', skeleton.rHipPos)} />
+                                                <DraggableJoint x={skeleton.rAnklePos.x} y={skeleton.rAnklePos.y} isActive={activeJoint?.name === (dragType === 'IK' ? 'rAnkle' : 'rKnee')} onMouseDown={(e) => handleJointDown(e, dragType === 'IK' ? 'rAnkle' : 'rKnee', dragType === 'IK' ? skeleton.rHipPos : skeleton.rKneePos, dragType === 'IK' ? 'ik' : 'angle', skeleton.rHipPos)} onTouchStart={(e) => handleJointDown(e, dragType === 'IK' ? 'rAnkle' : 'rKnee', dragType === 'IK' ? skeleton.rHipPos : skeleton.rKneePos, dragType === 'IK' ? 'ik' : 'angle', skeleton.rHipPos)} isFK={dragType === 'FK'} />
+                                                <DraggableJoint x={skeleton.rFootPos.x} y={skeleton.rFootPos.y} isActive={activeJoint?.name === 'rAnkle'} onMouseDown={(e) => handleJointDown(e, 'rAnkle', skeleton.rAnklePos)} onTouchStart={(e) => handleJointDown(e, 'rAnkle', skeleton.rAnklePos)} />
 
-                            {/* Overlay Controls */}
-                            <div className="absolute bottom-2 right-2 md:bottom-4 md:right-4 flex space-x-1 md:space-x-2 pointer-events-auto">
-                                <div className="flex items-center bg-slate-800 rounded-lg border border-slate-700 overflow-hidden">
-                                    <button onClick={() => setIsDragMode(!isDragMode)} className={`p-1.5 md:p-2 transition-all ${isDragMode ? 'bg-fuchsia-500 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-700'}`} title={isDragMode ? t('dragModeOn') : t('dragModeOff')}>
-                                        <Hand size={16} className="md:w-5 md:h-5" />
-                                    </button>
-                                    {isDragMode && (
-                                        <button onClick={() => setDragType(prev => prev === 'FK' ? 'IK' : 'FK')} className="px-2 py-1.5 md:px-3 md:py-2 text-[10px] md:text-xs font-mono font-bold text-slate-300 border-l border-slate-600 hover:bg-slate-700 transition-colors w-[40px]" title={t(dragType.toLowerCase())}>
-                                            {dragType}
+                                                {/* Left Leg */}
+                                                <DraggableJoint x={skeleton.lKneePos.x} y={skeleton.lKneePos.y} isActive={activeJoint?.name === 'lHip'} onMouseDown={(e) => handleJointDown(e, 'lHip', skeleton.lHipPos)} onTouchStart={(e) => handleJointDown(e, 'lHip', skeleton.lHipPos)} />
+                                                <DraggableJoint x={skeleton.lAnklePos.x} y={skeleton.lAnklePos.y} isActive={activeJoint?.name === (dragType === 'IK' ? 'lAnkle' : 'lKnee')} onMouseDown={(e) => handleJointDown(e, dragType === 'IK' ? 'lAnkle' : 'lKnee', dragType === 'IK' ? skeleton.lHipPos : skeleton.lKneePos, dragType === 'IK' ? 'ik' : 'angle', skeleton.lHipPos)} onTouchStart={(e) => handleJointDown(e, dragType === 'IK' ? 'lAnkle' : 'lKnee', dragType === 'IK' ? skeleton.lHipPos : skeleton.lKneePos, dragType === 'IK' ? 'ik' : 'angle', skeleton.lHipPos)} isFK={dragType === 'FK'} />
+                                                <DraggableJoint x={skeleton.lFootPos.x} y={skeleton.lFootPos.y} isActive={activeJoint?.name === 'lAnkle'} onMouseDown={(e) => handleJointDown(e, 'lAnkle', skeleton.lAnklePos)} onTouchStart={(e) => handleJointDown(e, 'lAnkle', skeleton.lAnklePos)} />
+                                            </g>
+                                        )}
+                                    </g>
+                                </svg>
+
+                                {/* Overlay Controls */}
+                                <div className="absolute bottom-2 right-2 md:bottom-4 md:right-4 flex space-x-1 md:space-x-2 pointer-events-auto">
+                                    <div className="flex items-center bg-slate-800 rounded-lg border border-slate-700 overflow-hidden">
+                                        <button onClick={() => setIsDragMode(!isDragMode)} className={`p-1.5 md:p-2 transition-all ${isDragMode ? 'bg-fuchsia-500 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-700'}`} title={isDragMode ? t('dragModeOn') : t('dragModeOff')}>
+                                            <Hand size={16} className="md:w-5 md:h-5" />
                                         </button>
-                                    )}
+                                        {isDragMode && (
+                                            <button onClick={() => setDragType(prev => prev === 'FK' ? 'IK' : 'FK')} className="px-2 py-1.5 md:px-3 md:py-2 text-[10px] md:text-xs font-mono font-bold text-slate-300 border-l border-slate-600 hover:bg-slate-700 transition-colors w-[40px]" title={t(dragType.toLowerCase())}>
+                                                {dragType}
+                                            </button>
+                                        )}
+                                    </div>
+                                    <div className="w-px h-6 md:h-8 bg-slate-700 mx-1"></div>
+                                    <button onClick={handleZoomOut} className="p-1.5 md:p-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-400 hover:text-white hover:border-slate-500"><ZoomOut size={16} className="md:w-5 md:h-5" /></button>
+                                    <button onClick={handleResetView} className="px-2 py-1.5 md:px-3 md:py-2 rounded-lg bg-slate-800 border border-slate-700 text-[10px] md:text-xs font-mono text-slate-300 min-w-[60px] md:min-w-[80px] flex items-center justify-center gap-1" title={t('resetView')}>
+                                        <RotateCw size={10} /> {Math.round(zoom * 100)}%
+                                    </button>
+                                    <button onClick={handleZoomIn} className="p-1.5 md:p-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-400 hover:text-white hover:border-slate-500"><ZoomIn size={16} className="md:w-5 md:h-5" /></button>
+                                    <div className="w-px h-6 md:h-8 bg-slate-700 mx-1"></div>
+                                    <button onClick={() => setShowGrid(!showGrid)} className={`p-1.5 md:p-2 rounded-lg border ${showGrid ? 'bg-cyan-500/20 border-cyan-500 text-cyan-400' : 'bg-slate-800 border-slate-700 text-slate-400'}`}><Grid size={16} className="md:w-5 md:h-5" /></button>
                                 </div>
-                                <div className="w-px h-6 md:h-8 bg-slate-700 mx-1"></div>
-                                <button onClick={handleZoomOut} className="p-1.5 md:p-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-400 hover:text-white hover:border-slate-500"><ZoomOut size={16} className="md:w-5 md:h-5" /></button>
-                                <button onClick={handleResetView} className="px-2 py-1.5 md:px-3 md:py-2 rounded-lg bg-slate-800 border border-slate-700 text-[10px] md:text-xs font-mono text-slate-300 min-w-[60px] md:min-w-[80px] flex items-center justify-center gap-1" title={t('resetView')}>
-                                    <RotateCw size={10} /> {Math.round(zoom * 100)}%
-                                </button>
-                                <button onClick={handleZoomIn} className="p-1.5 md:p-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-400 hover:text-white hover:border-slate-500"><ZoomIn size={16} className="md:w-5 md:h-5" /></button>
-                                <div className="w-px h-6 md:h-8 bg-slate-700 mx-1"></div>
-                                <button onClick={() => setShowGrid(!showGrid)} className={`p-1.5 md:p-2 rounded-lg border ${showGrid ? 'bg-cyan-500/20 border-cyan-500 text-cyan-400' : 'bg-slate-800 border-slate-700 text-slate-400'}`}><Grid size={16} className="md:w-5 md:h-5" /></button>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Timeline */}
-                    <div className="w-full bg-slate-900/90 p-3 border-t border-slate-800 flex-shrink-0">
-                    <div className="flex flex-wrap justify-between items-center mb-2 gap-2">
-                        <span className="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest">{t('timeline')} ({timeline.length})</span>
-                        <div className="flex items-center space-x-2 md:space-x-4">
-                        <button onClick={handleAIGenerate} className="flex items-center space-x-1 px-2 py-1 bg-fuchsia-600 hover:bg-fuchsia-500 text-white rounded text-[10px] font-bold transition-all shadow-[0_0_10px_rgba(192,38,211,0.4)]"><Sparkles size={10} /><span>{t('ai')}</span></button>
-                        <div className="w-px h-3 bg-slate-700 hidden md:block"></div>
-                        <div className="hidden md:flex items-center space-x-1">
-                            <Settings size={10} className="text-slate-500" />
-                            <select value={pose.easing || 'Smooth (流暢)'} onChange={(e) => updatePose('easing', e.target.value)} className="bg-slate-800 border border-slate-700 text-[10px] text-white rounded px-1 py-0.5 focus:outline-none max-w-[80px]">
-                            {Object.keys(EASING_FUNCTIONS).map(name => (<option key={name} value={name}>{name.split(' ')[0]}</option>))}
-                            </select>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                            <label className="text-[10px] text-slate-500">{t('bpm')}</label>
-                            <input type="number" value={bpm} onChange={(e) => setBpm(Number(e.target.value))} className="w-8 md:w-10 bg-slate-800 border border-slate-700 rounded px-1 text-[10px] text-center text-white" />
-                        </div>
-                        </div>
-                    </div>
-                    <div className="w-full mb-2 px-1"><input type="range" min={0} max={Math.max(0, timeline.length - 1)} value={currentFrameIndex} onChange={handleTimelineScrub} className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-cyan-500 hover:accent-cyan-400 block"/></div>
-                    <div className="flex items-center space-x-2 overflow-x-auto pb-1 custom-scrollbar no-scrollbar-mobile">
-                        <button onClick={() => setIsPlaying(!isPlaying)} className={`p-2.5 rounded-full flex-shrink-0 transition-all ${isPlaying ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'} text-white shadow-lg`}>{isPlaying ? <Square fill="currentColor" size={12} /> : <Play fill="currentColor" size={12} />}</button>
-                        {timeline.map((_, idx) => (
-                            <button key={idx} onClick={() => jumpToFrame(idx)} className={`w-8 h-12 md:w-10 md:h-14 flex-shrink-0 rounded border-2 transition-all flex flex-col items-center justify-center relative ${currentFrameIndex === idx ? 'border-cyan-500 bg-cyan-500/20 scale-110 shadow-[0_0_10px_rgba(6,182,212,0.3)]' : 'border-slate-700 bg-slate-800 hover:border-slate-500'}`}>
-                            <span className={`text-[10px] font-mono ${currentFrameIndex === idx ? 'text-cyan-300' : 'text-slate-500'}`}>{idx + 1}</span>
-                            </button>
-                        ))}
-                        <button onClick={addKeyframe} className="w-8 h-12 md:w-10 md:h-14 flex-shrink-0 rounded border-2 border-dashed border-slate-600 hover:border-cyan-500 text-slate-600 hover:text-cyan-500 flex items-center justify-center transition-colors"><Plus size={14} /></button>
-                    </div>
-                    <div className="flex justify-between mt-1 pt-1 border-t border-slate-800/50">
-                        <button onClick={deleteKeyframe} className="flex items-center text-[10px] text-red-400 px-2 py-1"><Trash2 size={10} className="mr-1"/> {t('delete')}</button>
-                        <button onClick={updateKeyframe} className="flex items-center text-[10px] text-cyan-400 px-2 py-1"><Layers size={10} className="mr-1"/> {t('update')}</button>
-                    </div>
-                    </div>
-                </div>
-
-                {/* --- BOTTOM/RIGHT PANEL --- */}
-                <div className="w-full md:w-[350px] h-[45%] md:h-full bg-slate-900/95 md:bg-slate-900/80 overflow-y-auto md:border-l border-t md:border-t-0 border-slate-800 custom-scrollbar shadow-[0_-5px_20px_rgba(0,0,0,0.5)] z-20 flex-shrink-0">
-                    <div className="p-4 md:p-6">
-                        <div className="mb-6">
-                        <h2 className="text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-widest mb-3 flex items-center"><RotateCcw className="mr-2" size={12}/> {t('manage')}</h2>
-                        
-                        {/* Custom Preset Input */}
-                        <div className="mb-4 p-3 bg-slate-800/50 rounded-lg border border-slate-700">
-                            <label className="text-[10px] text-slate-400 mb-1 block">{t('savePreset')}</label>
-                            <div className="flex gap-2">
-                                <input type="text" value={presetName} onChange={(e) => setPresetName(e.target.value)} placeholder={t('enterName')} className="flex-1 bg-slate-900 border border-slate-600 rounded px-2 py-1 text-[10px] md:text-xs text-white focus:outline-none focus:border-cyan-500 placeholder-slate-600" />
-                                <button onClick={handleSaveCustomPreset} className="px-2 py-1 bg-cyan-600 hover:bg-cyan-500 text-white rounded text-[10px] md:text-xs flex items-center transition-colors"><Save size={12} className="mr-1" />{t('save')}</button>
                             </div>
                         </div>
 
-                        <div className="mb-3">
-                            <select value={selectedPreset} onChange={handlePresetChange} className="w-full bg-slate-800 border border-slate-700 text-white text-[10px] md:text-xs rounded px-2 py-2 focus:outline-none focus:border-cyan-500" disabled={isPlaying}>
-                            <option value="" disabled>{t('selectPreset')}</option>
-                            <optgroup label={t('presets')}>{Object.keys(PRESETS).map(key => (<option key={key} value={key}>{t(`p_${key}`)}</option>))}</optgroup>
-                            {Object.keys(customPresets).length > 0 && <optgroup label={t('custom')}>{Object.keys(customPresets).map(key => (<option key={key} value={key}>{key}</option>))}</optgroup>}
-                            </select>
-                        </div>
-                        <div className="flex gap-2">
-                            <button onClick={handleExport} className="flex-1 flex items-center justify-center space-x-1 px-2 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded text-[10px] md:text-xs text-cyan-400 font-medium transition-colors"><Download size={12} /><span>{t('export')}</span></button>
-                            <button onClick={() => fileInputRef.current.click()} className="flex-1 flex items-center justify-center space-x-1 px-2 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded text-[10px] md:text-xs text-fuchsia-400 font-medium transition-colors"><Upload size={12} /><span>{t('import')}</span></button>
-                            <input type="file" ref={fileInputRef} onChange={handleImport} accept=".json" className="hidden" />
-                        </div>
-                        </div>
-
-                        <div className="mb-6 border-t border-slate-800 pt-4">
-                            <h2 className="text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-widest mb-3 flex items-center"><Users className="mr-2" size={12}/> {t('formation')}</h2>
-                            <select value={formationType} onChange={(e) => setFormationType(e.target.value)} className="w-full bg-slate-800 border border-slate-700 text-white text-[10px] md:text-xs rounded px-2 py-2 focus:outline-none focus:border-cyan-500">
-                                {['single', 'duo', 'trio', 'triangle', 'row', 'grid'].map(f => (
-                                    <option key={f} value={f}>{t(`f_${f}`)}</option>
+                        {/* Timeline */}
+                        <div className="w-full bg-slate-900/90 p-3 border-t border-slate-800 flex-shrink-0">
+                            <div className="flex flex-wrap justify-between items-center mb-2 gap-2">
+                                <span className="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest">{t('timeline')} ({timeline.length})</span>
+                                <div className="flex items-center space-x-2 md:space-x-4">
+                                    <button onClick={handleAIGenerate} className="flex items-center space-x-1 px-2 py-1 bg-fuchsia-600 hover:bg-fuchsia-500 text-white rounded text-[10px] font-bold transition-all shadow-[0_0_10px_rgba(192,38,211,0.4)]"><Sparkles size={10} /><span>{t('ai')}</span></button>
+                                    <div className="w-px h-3 bg-slate-700 hidden md:block"></div>
+                                    <div className="hidden md:flex items-center space-x-1">
+                                        <Settings size={10} className="text-slate-500" />
+                                        <select value={pose.easing || 'Smooth (流暢)'} onChange={(e) => updatePose('easing', e.target.value)} className="bg-slate-800 border border-slate-700 text-[10px] text-white rounded px-1 py-0.5 focus:outline-none max-w-[80px]">
+                                            {Object.keys(EASING_FUNCTIONS).map(name => (<option key={name} value={name}>{name.split(' ')[0]}</option>))}
+                                        </select>
+                                    </div>
+                                    <div className="flex items-center space-x-1">
+                                        <label className="text-[10px] text-slate-500">{t('bpm')}</label>
+                                        <input type="number" value={bpm} onChange={(e) => setBpm(Number(e.target.value))} className="w-8 md:w-10 bg-slate-800 border border-slate-700 rounded px-1 text-[10px] text-center text-white" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="w-full mb-2 px-1"><input type="range" min={0} max={Math.max(0, timeline.length - 1)} value={currentFrameIndex} onChange={handleTimelineScrub} className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-cyan-500 hover:accent-cyan-400 block" /></div>
+                            <div className="flex items-center space-x-2 overflow-x-auto pb-1 custom-scrollbar no-scrollbar-mobile">
+                                <button onClick={() => setIsPlaying(!isPlaying)} className={`p-2.5 rounded-full flex-shrink-0 transition-all ${isPlaying ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'} text-white shadow-lg`}>{isPlaying ? <Square fill="currentColor" size={12} /> : <Play fill="currentColor" size={12} />}</button>
+                                {timeline.map((_, idx) => (
+                                    <button key={idx} onClick={() => jumpToFrame(idx)} className={`w-8 h-12 md:w-10 md:h-14 flex-shrink-0 rounded border-2 transition-all flex flex-col items-center justify-center relative ${currentFrameIndex === idx ? 'border-cyan-500 bg-cyan-500/20 scale-110 shadow-[0_0_10px_rgba(6,182,212,0.3)]' : 'border-slate-700 bg-slate-800 hover:border-slate-500'}`}>
+                                        <span className={`text-[10px] font-mono ${currentFrameIndex === idx ? 'text-cyan-300' : 'text-slate-500'}`}>{idx + 1}</span>
+                                    </button>
                                 ))}
-                            </select>
-                        </div>
-
-                        <div className="space-y-6 pb-8 border-t border-slate-800 pt-4">
-                        <div>
-                            <h3 className="text-xs font-bold text-slate-300 mb-3 border-b border-slate-700/50 pb-1 flex justify-between items-center"><span>{t('easing')}</span><Settings size={12} className="text-slate-500"/></h3>
-                            <select value={pose.easing || 'Smooth (流暢)'} onChange={(e) => updatePose('easing', e.target.value)} className="w-full bg-slate-800 border border-slate-700 text-white text-[10px] md:text-xs rounded px-2 py-2 focus:outline-none focus:border-cyan-500">
-                            {Object.keys(EASING_FUNCTIONS).map(name => (<option key={name} value={name}>{name}</option>))}
-                            </select>
-                        </div>
-
-                        <div>
-                            <h3 className="text-xs font-bold text-slate-300 mb-3 border-b border-slate-700/50 pb-1 flex justify-between items-center"><span>{t('body')}</span><Move size={12} className="text-slate-500"/></h3>
-                            <div className="grid grid-cols-1 gap-1">
-                            <SliderControl label={t('waist')} value={pose.waist || 0} onChange={(v) => updatePose('waist', v)} min={-45} max={45} step={1} snap={0} />
-                            <SliderControl label={t('bodyX')} value={pose.bodyX || 0} onChange={(v) => updatePose('bodyX', v)} min={-100} max={100} step={1} snap={0} unit="px"/>
-                            <SliderControl label={t('bodyY')} value={pose.bodyY || 0} onChange={(v) => updatePose('bodyY', v)} min={-100} max={100} step={1} snap={0} unit="px"/>
+                                <button onClick={addKeyframe} className="w-8 h-12 md:w-10 md:h-14 flex-shrink-0 rounded border-2 border-dashed border-slate-600 hover:border-cyan-500 text-slate-600 hover:text-cyan-500 flex items-center justify-center transition-colors"><Plus size={14} /></button>
                             </div>
-                        </div>
-                        <div>
-                            <h3 className="text-xs font-bold text-slate-300 mb-3 border-b border-slate-700/50 pb-1 flex justify-between items-center"><span>{t('head')}</span><User size={12} className="text-slate-500"/></h3>
-                            <div className="grid grid-cols-1 gap-1">
-                            <SliderControl label={t('headTilt')} value={pose.headTilt || 0} onChange={(v) => updatePose('headTilt', v)} min={-45} max={45} step={1} snap={0} />
-                            <SliderControl label={t('headSlide')} value={pose.headSlide || 0} onChange={(v) => updatePose('headSlide', v)} min={-30} max={30} step={1} snap={0} unit="px" />
+                            <div className="flex justify-between mt-1 pt-1 border-t border-slate-800/50">
+                                <button onClick={deleteKeyframe} className="flex items-center text-[10px] text-red-400 px-2 py-1"><Trash2 size={10} className="mr-1" /> {t('delete')}</button>
+                                <button onClick={updateKeyframe} className="flex items-center text-[10px] text-cyan-400 px-2 py-1"><Layers size={10} className="mr-1" /> {t('update')}</button>
                             </div>
-                        </div>
-                        <div><h3 className="text-xs font-bold text-cyan-400 mb-3 border-b border-cyan-900/50 pb-1 flex justify-between items-center"><span>{t('rArm')}</span><div className="w-1.5 h-1.5 rounded-full bg-cyan-500"></div></h3><SliderControl label={t('shoulder')} value={pose.lShoulder} onChange={(v) => updatePose('lShoulder', v)} /><SliderControl label={t('elbow')} value={pose.lElbow} onChange={(v) => updatePose('lElbow', v)} /><SliderControl label={t('wrist')} value={pose.lWrist} onChange={(v) => updatePose('lWrist', v)} /></div>
-                        <div><h3 className="text-xs font-bold text-cyan-600 mb-3 border-b border-cyan-900/30 pb-1 flex justify-between items-center"><span>{t('rLeg')}</span><div className="w-1.5 h-1.5 rounded-full bg-cyan-700"></div></h3><SliderControl label={t('hip')} value={pose.lHip ?? 90} onChange={(v) => updatePose('lHip', v)} /><SliderControl label={t('knee')} value={pose.lKnee ?? 90} onChange={(v) => updatePose('lKnee', v)} /><SliderControl label={t('ankle')} value={pose.lAnkle ?? 0} onChange={(v) => updatePose('lAnkle', v)} /></div>
-                        <div><h3 className="text-xs font-bold text-fuchsia-400 mb-3 border-b border-fuchsia-900/50 pb-1 flex justify-between items-center"><span>{t('lArm')}</span><div className="w-1.5 h-1.5 rounded-full bg-fuchsia-500"></div></h3><SliderControl label={t('shoulder')} value={pose.rShoulder} onChange={(v) => updatePose('rShoulder', v)} /><SliderControl label={t('elbow')} value={pose.rElbow} onChange={(v) => updatePose('rElbow', v)} /><SliderControl label={t('wrist')} value={pose.rWrist} onChange={(v) => updatePose('rWrist', v)} /></div>
-                        <div><h3 className="text-xs font-bold text-fuchsia-600 mb-3 border-b border-fuchsia-900/30 pb-1 flex justify-between items-center"><span>{t('lLeg')}</span><div className="w-1.5 h-1.5 rounded-full bg-fuchsia-700"></div></h3><SliderControl label={t('hip')} value={pose.rHip ?? 90} onChange={(v) => updatePose('rHip', v)} /><SliderControl label={t('knee')} value={pose.rKnee ?? 90} onChange={(v) => updatePose('rKnee', v)} /><SliderControl label={t('ankle')} value={pose.rAnkle ?? 180} onChange={(v) => updatePose('rAnkle', v)} /></div>
                         </div>
                     </div>
-                </div>
+
+                    {/* --- BOTTOM/RIGHT PANEL --- */}
+                    <div className="w-full md:w-[350px] h-[45%] md:h-full bg-slate-900/95 md:bg-slate-900/80 overflow-y-auto md:border-l border-t md:border-t-0 border-slate-800 custom-scrollbar shadow-[0_-5px_20px_rgba(0,0,0,0.5)] z-20 flex-shrink-0">
+                        <div className="p-4 md:p-6">
+                            <div className="mb-6">
+                                <h2 className="text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-widest mb-3 flex items-center"><RotateCcw className="mr-2" size={12} /> {t('manage')}</h2>
+
+                                {/* Custom Preset Input */}
+                                <div className="mb-4 p-3 bg-slate-800/50 rounded-lg border border-slate-700">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <label className="text-[10px] text-slate-400 flex items-center"><Clock size={10} className="mr-1"/> {t('duration')}</label>
+                                        <input 
+                                            type="number" 
+                                            value={pose.duration || 1} 
+                                            onChange={(e) => updatePose('duration', Math.max(0.1, parseFloat(e.target.value)))} 
+                                            step={0.1}
+                                            className="w-16 bg-slate-900 border border-slate-600 rounded px-2 py-1 text-[10px] text-right text-cyan-400 focus:outline-none focus:border-cyan-500" 
+                                        />
+                                    </div>
+                                    <div className="w-full h-px bg-slate-700/50 mb-2"></div>
+                                    <label className="text-[10px] text-slate-400 mb-1 block">{t('savePreset')}</label>
+                                    <div className="flex gap-2">
+                                        <input type="text" value={presetName} onChange={(e) => setPresetName(e.target.value)} placeholder={t('enterName')} className="flex-1 bg-slate-900 border border-slate-600 rounded px-2 py-1 text-[10px] md:text-xs text-white focus:outline-none focus:border-cyan-500 placeholder-slate-600" />
+                                        <button onClick={handleSaveCustomPreset} className="px-2 py-1 bg-cyan-600 hover:bg-cyan-500 text-white rounded text-[10px] md:text-xs flex items-center transition-colors"><Save size={12} className="mr-1" />{t('save')}</button>
+                                    </div>
+                                </div>
+
+                                <div className="mb-3">
+                                    <select value={selectedPreset} onChange={handlePresetChange} className="w-full bg-slate-800 border border-slate-700 text-white text-[10px] md:text-xs rounded px-2 py-2 focus:outline-none focus:border-cyan-500" disabled={isPlaying}>
+                                        <option value="" disabled>{t('selectPreset')}</option>
+                                        <optgroup label={t('presets')}>{Object.keys(PRESETS).map(key => (<option key={key} value={key}>{t(`p_${key}`)}</option>))}</optgroup>
+                                        {Object.keys(customPresets).length > 0 && <optgroup label={t('custom')}>{Object.keys(customPresets).map(key => (<option key={key} value={key}>{key}</option>))}</optgroup>}
+                                    </select>
+                                </div>
+                                <div className="flex gap-2">
+                                    <button onClick={handleExport} className="flex-1 flex items-center justify-center space-x-1 px-2 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded text-[10px] md:text-xs text-cyan-400 font-medium transition-colors"><Download size={12} /><span>{t('export')}</span></button>
+                                    <button onClick={() => fileInputRef.current.click()} className="flex-1 flex items-center justify-center space-x-1 px-2 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded text-[10px] md:text-xs text-fuchsia-400 font-medium transition-colors"><Upload size={12} /><span>{t('import')}</span></button>
+                                    <input type="file" ref={fileInputRef} onChange={handleImport} accept=".json" className="hidden" />
+                                </div>
+                            </div>
+
+                            <div className="mb-6 border-t border-slate-800 pt-4">
+                                <h2 className="text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-widest mb-3 flex items-center"><Users className="mr-2" size={12} /> {t('formation')}</h2>
+                                <select value={formationType} onChange={(e) => setFormationType(e.target.value)} className="w-full bg-slate-800 border border-slate-700 text-white text-[10px] md:text-xs rounded px-2 py-2 focus:outline-none focus:border-cyan-500">
+                                    {['single', 'duo', 'trio', 'triangle', 'row', 'grid'].map(f => (
+                                        <option key={f} value={f}>{t(`f_${f}`)}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div className="space-y-6 pb-8 border-t border-slate-800 pt-4">
+                                <div>
+                                    <h3 className="text-xs font-bold text-slate-300 mb-3 border-b border-slate-700/50 pb-1 flex justify-between items-center"><span>{t('easing')}</span><Settings size={12} className="text-slate-500" /></h3>
+                                    <select value={pose.easing || 'Smooth (流暢)'} onChange={(e) => updatePose('easing', e.target.value)} className="w-full bg-slate-800 border border-slate-700 text-white text-[10px] md:text-xs rounded px-2 py-2 focus:outline-none focus:border-cyan-500">
+                                        {Object.keys(EASING_FUNCTIONS).map(name => (<option key={name} value={name}>{name}</option>))}
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <h3 className="text-xs font-bold text-slate-300 mb-3 border-b border-slate-700/50 pb-1 flex justify-between items-center"><span>{t('body')}</span><Move size={12} className="text-slate-500" /></h3>
+                                    
+                                    <button 
+                                        onClick={() => setIsHandSync(!isHandSync)} 
+                                        className={`w-full mb-3 py-1.5 px-2 rounded-md flex items-center justify-center space-x-2 text-[10px] font-bold transition-all border ${isHandSync ? 'bg-cyan-600 border-cyan-500 text-white shadow-[0_0_10px_rgba(8,145,178,0.4)]' : 'bg-slate-800 border-slate-700 text-slate-400 hover:bg-slate-700 hover:text-slate-200'}`}
+                                    >
+                                        <LinkIcon size={12} />
+                                        <span>{t('handSync')} : {isHandSync ? 'ON' : 'OFF'}</span>
+                                    </button>
+
+                                    <div className="grid grid-cols-1 gap-1">
+                                        <SliderControl label={t('waist')} value={pose.waist || 0} onChange={(v) => updatePose('waist', v)} min={-45} max={45} step={1} snap={0} />
+                                        <SliderControl label={t('bodyX')} value={pose.bodyX || 0} onChange={(v) => updatePose('bodyX', v)} min={-100} max={100} step={1} snap={0} unit="px" />
+                                        <SliderControl label={t('bodyY')} value={pose.bodyY || 0} onChange={(v) => updatePose('bodyY', v)} min={-100} max={100} step={1} snap={0} unit="px" />
+                                    </div>
+                                </div>
+                                <div>
+                                    <h3 className="text-xs font-bold text-slate-300 mb-3 border-b border-slate-700/50 pb-1 flex justify-between items-center"><span>{t('head')}</span><User size={12} className="text-slate-500" /></h3>
+                                    <div className="grid grid-cols-1 gap-1">
+                                        <SliderControl label={t('headTilt')} value={pose.headTilt || 0} onChange={(v) => updatePose('headTilt', v)} min={-45} max={45} step={1} snap={0} />
+                                        <SliderControl label={t('headSlide')} value={pose.headSlide || 0} onChange={(v) => updatePose('headSlide', v)} min={-30} max={30} step={1} snap={0} unit="px" />
+                                    </div>
+                                </div>
+                                <div><h3 className="text-xs font-bold text-cyan-400 mb-3 border-b border-cyan-900/50 pb-1 flex justify-between items-center"><span>{t('rArm')}</span><div className="w-1.5 h-1.5 rounded-full bg-cyan-500"></div></h3><SliderControl label={t('shoulder')} value={pose.lShoulder} onChange={(v) => updatePose('lShoulder', v)} /><SliderControl label={t('elbow')} value={pose.lElbow} onChange={(v) => updatePose('lElbow', v)} /><SliderControl label={t('wrist')} value={pose.lWrist} onChange={(v) => updatePose('lWrist', v)} /></div>
+                                <div><h3 className="text-xs font-bold text-cyan-600 mb-3 border-b border-cyan-900/30 pb-1 flex justify-between items-center"><span>{t('rLeg')}</span><div className="w-1.5 h-1.5 rounded-full bg-cyan-700"></div></h3><SliderControl label={t('hip')} value={pose.lHip ?? 90} onChange={(v) => updatePose('lHip', v)} /><SliderControl label={t('knee')} value={pose.lKnee ?? 90} onChange={(v) => updatePose('lKnee', v)} /><SliderControl label={t('ankle')} value={pose.lAnkle ?? 0} onChange={(v) => updatePose('lAnkle', v)} /></div>
+                                <div><h3 className="text-xs font-bold text-fuchsia-400 mb-3 border-b border-fuchsia-900/50 pb-1 flex justify-between items-center"><span>{t('lArm')}</span><div className="w-1.5 h-1.5 rounded-full bg-fuchsia-500"></div></h3><SliderControl label={t('shoulder')} value={pose.rShoulder} onChange={(v) => updatePose('rShoulder', v)} /><SliderControl label={t('elbow')} value={pose.rElbow} onChange={(v) => updatePose('rElbow', v)} /><SliderControl label={t('wrist')} value={pose.rWrist} onChange={(v) => updatePose('rWrist', v)} /></div>
+                                <div><h3 className="text-xs font-bold text-fuchsia-600 mb-3 border-b border-fuchsia-900/30 pb-1 flex justify-between items-center"><span>{t('lLeg')}</span><div className="w-1.5 h-1.5 rounded-full bg-fuchsia-700"></div></h3><SliderControl label={t('hip')} value={pose.rHip ?? 90} onChange={(v) => updatePose('rHip', v)} /><SliderControl label={t('knee')} value={pose.rKnee ?? 90} onChange={(v) => updatePose('rKnee', v)} /><SliderControl label={t('ankle')} value={pose.rAnkle ?? 180} onChange={(v) => updatePose('rAnkle', v)} /></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             );
         }
@@ -1728,4 +1778,5 @@
         root.render(<TuttingSimulator />);
     </script>
 </body>
+
 </html>
