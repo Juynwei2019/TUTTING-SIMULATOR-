@@ -19,17 +19,17 @@
     <style>
         /* Custom Scrollbar for Webkit */
         .custom-scrollbar::-webkit-scrollbar {
-            height: 6px;
-            width: 6px;
+            height: 5px;
+            width: 5px;
         }
 
         .custom-scrollbar::-webkit-scrollbar-track {
-            background: #1e293b;
+            background: rgba(30, 41, 59, 0.5);
         }
 
         .custom-scrollbar::-webkit-scrollbar-thumb {
             background: #475569;
-            border-radius: 3px;
+            border-radius: 10px;
         }
 
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
@@ -49,6 +49,7 @@
         body {
             overflow: hidden;
             touch-action: none;
+            background-color: #020617; /* slate-950 */
         }
 
         /* Hide number input spin buttons */
@@ -69,16 +70,22 @@
         .cursor-grabbing {
             cursor: grabbing;
         }
+        
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
     </style>
 </head>
 
-<body class="bg-slate-950 text-white">
+<body class="text-slate-200">
     <div id="root"></div>
 
     <script type="text/babel">
         const { useState, useEffect, useRef, useMemo } = React;
 
-        // --- Icons (Inline SVG to avoid CDN dependency issues) ---
+        // --- Icons (Inline SVG) ---
         const Icon = ({ children, size = 24, className = "", ...props }) => (
             <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -122,6 +129,18 @@
         const RotateCw = (props) => <Icon {...props}><path d="M23 4v6h-6" /><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" /></Icon>;
         const LinkIcon = (props) => <Icon {...props}><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></Icon>;
         const Clock = (props) => <Icon {...props}><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></Icon>;
+        const Edit = (props) => <Icon {...props}><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></Icon>;
+        const Anchor = (props) => <Icon {...props}><circle cx="12" cy="5" r="3" /><line x1="12" y1="22" x2="12" y2="8" /><path d="M5 12H2a10 10 0 0 0 20 0h-3" /></Icon>;
+        const FlipIcon = (props) => <Icon {...props}><path d="M8 3H5a2 2 0 0 0-2 2v14c0 1.1.9 2 2 2h3" /><path d="M16 3h3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-3" /><path d="M12 3v18" /><path d="m16 9-4-4-4 4" /><path d="m8 15 4 4 4-4" /></Icon>;
+        const CopyRight = (props) => <Icon {...props}><rect width="14" height="14" x="8" y="8" rx="2" ry="2" /><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" /><path d="m14 14 2 2-2 2" /></Icon>;
+        const CopyLeft = (props) => <Icon {...props}><rect width="14" height="14" x="2" y="8" rx="2" ry="2" /><path d="M20 16c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2H10c-1.1 0-2 .9-2 2" /><path d="m10 14-2 2 2 2" /></Icon>;
+        const Activity = (props) => <Icon {...props}><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></Icon>;
+        const ChevronDown = (props) => <Icon {...props}><path d="m6 9 6 6 6-6"/></Icon>;
+        const ChevronRight = (props) => <Icon {...props}><path d="m9 18 6-6-6-6"/></Icon>;
+        const ArrowRightToLine = (props) => <Icon {...props}><path d="M17 12H3" /><path d="m11 18 6-6-6-6" /><path d="M21 5v14" /></Icon>;
+        const ArrowLeftFromLine = (props) => <Icon {...props}><path d="m3 5v14" /><path d="M21 12H7" /><path d="m13 18-6-6 6-6" /></Icon>;
+        const BringToFront = (props) => <Icon {...props}><rect x="8" y="8" width="8" height="8" rx="2" /><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" /></Icon>;
+        const SendToBack = (props) => <Icon {...props}><rect x="4" y="4" width="8" height="8" rx="2" /><path d="M12 8c1.1 0 2 .9 2 2v10c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2" /></Icon>;
 
         // --- Constants & Helper Functions ---
 
@@ -134,6 +153,7 @@
                 ai: 'AI 編舞',
                 delete: '刪除',
                 update: '更新',
+                modify: '動作修改',
                 manage: '動作管理',
                 presets: '快速預設',
                 selectPreset: '選擇預設動作',
@@ -145,17 +165,17 @@
                 custom: '自訂動作',
                 saveSuccess: '動作已儲存！',
                 nameEmpty: '請輸入名稱',
-                body: '身體 (BODY)',
+                body: '身體與頭部',
                 waist: '腰部',
                 bodyX: '水平位移',
                 bodyY: '垂直位移',
                 head: '頭部 (HEAD)',
                 headTilt: '傾斜',
                 headSlide: '平移',
-                rArm: '右臂 (R ARM)',
-                lArm: '左臂 (L ARM)',
-                rLeg: '右腿 (R LEG)',
-                lLeg: '左腿 (L LEG)',
+                rArm: '右臂 (Right)',
+                lArm: '左臂 (Left)',
+                rLeg: '右腿 (Right)',
+                lLeg: '左腿 (Left)',
                 shoulder: '肩',
                 elbow: '肘',
                 wrist: '腕',
@@ -191,6 +211,15 @@
                 resetView: '重置視角',
                 handSync: '手部同步',
                 duration: '持續時間 (秒)',
+                fixedMode: '定點模式 (固定關節)',
+                flip: '水平翻轉',
+                mirrorLR: '左複製到右',
+                mirrorRL: '右複製到左',
+                tools: '編輯工具',
+                motionTrails: '殘影軌跡',
+                depth: '圖層深度',
+                front: '前',
+                back: '後',
             },
             'en': {
                 title: 'GRID FLOW',
@@ -200,6 +229,7 @@
                 ai: 'AI GEN',
                 delete: 'DELETE',
                 update: 'UPDATE',
+                modify: 'MODIFY POSE',
                 manage: 'MANAGE',
                 presets: 'PRESETS',
                 selectPreset: 'Select Preset',
@@ -211,7 +241,7 @@
                 custom: 'Custom',
                 saveSuccess: 'Saved!',
                 nameEmpty: 'Enter a name',
-                body: 'BODY',
+                body: 'BODY & HEAD',
                 waist: 'Waist',
                 bodyX: 'Move X',
                 bodyY: 'Move Y',
@@ -257,6 +287,15 @@
                 resetView: 'Reset View',
                 handSync: 'Hand Sync',
                 duration: 'Duration (s)',
+                fixedMode: 'Fixed Mode (Anchors)',
+                flip: 'Flip L/R',
+                mirrorLR: 'Copy L to R',
+                mirrorRL: 'Copy R to L',
+                tools: 'TOOLS',
+                motionTrails: 'Motion Trails',
+                depth: 'Layer Depth',
+                front: 'Front',
+                back: 'Back',
             },
             'ja': {
                 title: 'GRID FLOW',
@@ -266,6 +305,7 @@
                 ai: 'AI生成',
                 delete: '削除',
                 update: '更新',
+                modify: 'ポーズ修正',
                 manage: '管理',
                 presets: 'プリセット',
                 selectPreset: 'プリセットを選択',
@@ -323,6 +363,15 @@
                 resetView: '視点リセット',
                 handSync: 'ハンド同期',
                 duration: '持続時間 (秒)',
+                fixedMode: '固定モード',
+                flip: '左右反転',
+                mirrorLR: '左を右にコピー',
+                mirrorRL: '右を左にコピー',
+                tools: 'ツール',
+                motionTrails: 'モーション軌跡',
+                depth: 'レイヤー深度',
+                front: '前',
+                back: '後',
             },
             'ko': {
                 title: 'GRID FLOW',
@@ -332,6 +381,7 @@
                 ai: 'AI 생성',
                 delete: '삭제',
                 update: '갱신',
+                modify: '포즈 수정',
                 manage: '관리',
                 presets: '프리셋',
                 selectPreset: '프리셋 선택',
@@ -389,6 +439,15 @@
                 resetView: '뷰 초기화',
                 handSync: '손 동기화',
                 duration: '지속 시간 (초)',
+                fixedMode: '고정 모드',
+                flip: '좌우 반전',
+                mirrorLR: '왼쪽 → 오른쪽',
+                mirrorRL: '오른쪽 → 왼쪽',
+                tools: '도구',
+                motionTrails: '잔상 효과',
+                depth: '레이어 깊이',
+                front: '앞',
+                back: '뒤',
             },
             'es': {
                 title: 'GRID FLOW',
@@ -398,6 +457,7 @@
                 ai: 'GEN IA',
                 delete: 'BORRAR',
                 update: 'ACTUALIZAR',
+                modify: 'MODIFICAR POSE',
                 manage: 'GESTIONAR',
                 presets: 'PREAJUSTES',
                 selectPreset: 'Elegir Preajuste',
@@ -455,6 +515,15 @@
                 resetView: 'Reiniciar Vista',
                 handSync: 'Sincronizar Manos',
                 duration: 'Duración (s)',
+                fixedMode: 'Modo Fijo',
+                flip: 'Voltear',
+                mirrorLR: 'Copiar I a D',
+                mirrorRL: 'Copiar D a I',
+                tools: 'HERRAMIENTAS',
+                motionTrails: 'Rastros',
+                depth: 'Profundidad',
+                front: 'Frente',
+                back: 'Atrás',
             },
             'pt': {
                 title: 'GRID FLOW',
@@ -464,6 +533,7 @@
                 ai: 'GERAR IA',
                 delete: 'EXCLUIR',
                 update: 'ATUALIZAR',
+                modify: 'MODIFICAR POSE',
                 manage: 'GERENCIAR',
                 presets: 'PREDEFINIÇÕES',
                 selectPreset: 'Selecionar',
@@ -521,6 +591,15 @@
                 resetView: 'Redefinir Vista',
                 handSync: 'Sinc. Mãos',
                 duration: 'Duração (s)',
+                fixedMode: 'Modo Fixo',
+                flip: 'Virar',
+                mirrorLR: 'Copiar E p/ D',
+                mirrorRL: 'Copiar D p/ E',
+                tools: 'FERRAMENTAS',
+                motionTrails: 'Rastros',
+                depth: 'Profundidade',
+                front: 'Frente',
+                back: 'Trás',
             },
             'fr': {
                 title: 'GRID FLOW',
@@ -530,6 +609,7 @@
                 ai: 'GEN IA',
                 delete: 'SUPPRIMER',
                 update: 'METTRE À JOUR',
+                modify: 'MODIFIER POSE',
                 manage: 'GÉRER',
                 presets: 'PRÉRÉGLAGES',
                 selectPreset: 'Sélectionner',
@@ -587,6 +667,15 @@
                 resetView: 'Réinit. Vue',
                 handSync: 'Sync Mains',
                 duration: 'Durée (s)',
+                fixedMode: 'Mode Fixe',
+                flip: 'Retourner',
+                mirrorLR: 'Copier G à D',
+                mirrorRL: 'Copier D à G',
+                tools: 'OUTILS',
+                motionTrails: 'Traînées',
+                depth: 'Profondeur',
+                front: 'Avant',
+                back: 'Arrière',
             },
             'de': {
                 title: 'GRID FLOW',
@@ -596,6 +685,7 @@
                 ai: 'KI GEN',
                 delete: 'LÖSCHEN',
                 update: 'AKTUALISIEREN',
+                modify: 'POSE ÄNDERN',
                 manage: 'VERWALTEN',
                 presets: 'VORLAGEN',
                 selectPreset: 'Vorlage wählen',
@@ -653,6 +743,15 @@
                 resetView: 'Ansicht zurücksetzen',
                 handSync: 'Hand-Sync',
                 duration: 'Dauer (s)',
+                fixedMode: 'Fixierter Modus',
+                flip: 'Spiegeln',
+                mirrorLR: 'Kopie L nach R',
+                mirrorRL: 'Kopie R nach L',
+                tools: 'WERKZEUGE',
+                motionTrails: 'Bewegungsspuren',
+                depth: 'Ebene',
+                front: 'Vorne',
+                back: 'Hinten',
             },
             'vi': {
                 title: 'GRID FLOW',
@@ -662,6 +761,7 @@
                 ai: 'TẠO AI',
                 delete: 'XÓA',
                 update: 'CẬP NHẬT',
+                modify: 'SỬA ĐỘNG TÁC',
                 manage: 'QUẢN LÝ',
                 presets: 'MẪU CÓ SẴN',
                 selectPreset: 'Chọn Mẫu',
@@ -719,6 +819,15 @@
                 resetView: 'Đặt lại Chế độ xem',
                 handSync: 'Đồng bộ tay',
                 duration: 'Thời lượng (s)',
+                fixedMode: 'Chế độ Cố định',
+                flip: 'Lật ngang',
+                mirrorLR: 'Chép Trái sang Phải',
+                mirrorRL: 'Chép Phải sang Trái',
+                tools: 'CÔNG CỤ',
+                motionTrails: 'Dấu vết chuyển động',
+                depth: 'Độ sâu lớp',
+                front: 'Trước',
+                back: 'Sau',
             },
             'hi': {
                 title: 'GRID FLOW',
@@ -728,6 +837,7 @@
                 ai: 'AI जनरेट',
                 delete: 'हटाएं',
                 update: 'अपडेट',
+                modify: 'पोज़ बदलें',
                 manage: 'प्रबंधन',
                 presets: 'प्रीसेट',
                 selectPreset: 'प्रीसेट चुनें',
@@ -785,6 +895,15 @@
                 resetView: 'दृश्य रीसेट करें',
                 handSync: 'हाथ सिंक',
                 duration: 'अवधि (s)',
+                fixedMode: 'फिक्स्ड मोड',
+                flip: 'फ्लिप',
+                mirrorLR: 'बाएं से दाएं कॉपी',
+                mirrorRL: 'दाएं से बाएं कॉपी',
+                tools: 'टूल्स',
+                motionTrails: 'मोशन ट्रेल्स',
+                depth: 'परत की गहराई',
+                front: 'सामने',
+                back: 'पीछे',
             },
             'ru': {
                 title: 'GRID FLOW',
@@ -794,6 +913,7 @@
                 ai: 'ИИ',
                 delete: 'УДАЛИТЬ',
                 update: 'ОБНОВИТЬ',
+                modify: 'ИЗМЕНИТЬ ПОЗУ',
                 manage: 'УПРАВЛЕНИЕ',
                 presets: 'ПРЕСЕТЫ',
                 selectPreset: 'Выберите пресет',
@@ -851,6 +971,15 @@
                 resetView: 'Сброс вида',
                 handSync: 'Синх. Рук',
                 duration: 'Длительность (с)',
+                fixedMode: 'Фикс. Режим',
+                flip: 'Отразить',
+                mirrorLR: 'Копия Л -> П',
+                mirrorRL: 'Копия П -> Л',
+                tools: 'ИНСТРУМЕНТЫ',
+                motionTrails: 'Шлейф',
+                depth: 'Глубина слоя',
+                front: 'Перед',
+                back: 'За',
             }
         };
 
@@ -881,17 +1010,17 @@
         };
 
         const PRESETS = {
-            idle: { duration: 1, easing: 'Smooth (流暢)', bodyX: 0, bodyY: 0, waist: 0, headTilt: 0, headSlide: 0, lShoulder: 270, lElbow: 180, lWrist: 180, rShoulder: 270, rElbow: 0, rWrist: 0, lHip: 90, lKnee: 90, lAnkle: 0, rHip: 90, rKnee: 90, rAnkle: 180 },
-            box: { duration: 1, easing: 'Smooth (流暢)', bodyX: 0, bodyY: 0, waist: 0, headTilt: 0, headSlide: 0, lShoulder: 180, lElbow: 90, lWrist: 90, rShoulder: 0, rElbow: 270, rWrist: 270, lHip: 90, lKnee: 90, lAnkle: 0, rHip: 90, rKnee: 90, rAnkle: 180 },
-            prayer: { duration: 1, easing: 'Smooth (流暢)', bodyX: 0, bodyY: 0, waist: 0, headTilt: 15, headSlide: 0, lShoulder: 270, lElbow: 45, lWrist: 270, rShoulder: 270, rElbow: 315, rWrist: 90, lHip: 100, lKnee: 100, lAnkle: 0, rHip: 80, rKnee: 80, rAnkle: 180 },
-            tutting_l: { duration: 1, easing: 'Smooth (流暢)', bodyX: 20, bodyY: 0, waist: -10, headTilt: -10, headSlide: 15, lShoulder: 180, lElbow: 90, lWrist: 180, rShoulder: 90, rElbow: 180, rWrist: 0, lHip: 90, lKnee: 90, lAnkle: 0, rHip: 90, rKnee: 90, rAnkle: 180 },
-            cobra: { duration: 1, easing: 'Smooth (流暢)', bodyX: 0, bodyY: 20, waist: 20, headTilt: 0, headSlide: -10, lShoulder: 315, lElbow: 135, lWrist: 270, rShoulder: 225, rElbow: 225, rWrist: 90, lHip: 70, lKnee: 45, lAnkle: 90, rHip: 110, rKnee: 135, rAnkle: 90 },
-            pharaoh: { duration: 1, easing: 'Smooth (流暢)', bodyX: 0, bodyY: 0, waist: 0, headTilt: 0, headSlide: 0, lShoulder: 0, lElbow: 90, lWrist: 180, rShoulder: 180, rElbow: 270, rWrist: 0, lHip: 90, lKnee: 90, lAnkle: 0, rHip: 90, rKnee: 90, rAnkle: 180 },
-            diamond: { duration: 1, easing: 'Smooth (流暢)', bodyX: 0, bodyY: 0, waist: 0, headTilt: 0, headSlide: 0, lShoulder: 315, lElbow: 225, lWrist: 135, rShoulder: 225, rElbow: 315, rWrist: 45, lHip: 80, lKnee: 80, lAnkle: 0, rHip: 100, rKnee: 100, rAnkle: 180 },
-            stairs: { duration: 1, easing: 'Smooth (流暢)', bodyX: -10, bodyY: 0, waist: 10, headTilt: -5, headSlide: 10, lShoulder: 0, lElbow: 90, lWrist: 0, rShoulder: 180, rElbow: 270, rWrist: 180, lHip: 90, lKnee: 70, lAnkle: 0, rHip: 90, rKnee: 110, rAnkle: 180 },
-            frame: { duration: 1, easing: 'Smooth (流暢)', bodyX: 0, bodyY: 0, waist: 0, headTilt: 0, headSlide: 0, lShoulder: 270, lElbow: 180, lWrist: 90, rShoulder: 270, rElbow: 0, rWrist: 90, lHip: 90, lKnee: 90, lAnkle: 0, rHip: 90, rKnee: 90, rAnkle: 180 },
-            wings: { duration: 1, easing: 'Smooth (流暢)', bodyX: 0, bodyY: -20, waist: 0, headTilt: 0, headSlide: 0, lShoulder: 315, lElbow: 315, lWrist: 315, rShoulder: 225, rElbow: 225, rWrist: 225, lHip: 100, lKnee: 100, lAnkle: 0, rHip: 80, rKnee: 80, rAnkle: 180 },
-            zig_zag: { duration: 1, easing: 'Smooth (流暢)', bodyX: 0, bodyY: 0, waist: -15, headTilt: 10, headSlide: -10, lShoulder: 0, lElbow: 90, lWrist: 0, rShoulder: 180, rElbow: 270, rWrist: 180, lHip: 80, lKnee: 45, lAnkle: 90, rHip: 100, rKnee: 135, rAnkle: 90 }
+            idle: { duration: 1, easing: 'Smooth (流暢)', bodyX: 0, bodyY: 0, waist: 0, headTilt: 0, headSlide: 0, lShoulder: 270, lElbow: 180, lWrist: 180, rShoulder: 270, rElbow: 0, rWrist: 0, lHip: 90, lKnee: 90, lAnkle: 0, rHip: 90, rKnee: 90, rAnkle: 180, lArmZ: 'front', rArmZ: 'front' },
+            box: { duration: 1, easing: 'Smooth (流暢)', bodyX: 0, bodyY: 0, waist: 0, headTilt: 0, headSlide: 0, lShoulder: 180, lElbow: 90, lWrist: 90, rShoulder: 0, rElbow: 270, rWrist: 270, lHip: 90, lKnee: 90, lAnkle: 0, rHip: 90, rKnee: 90, rAnkle: 180, lArmZ: 'front', rArmZ: 'front' },
+            prayer: { duration: 1, easing: 'Smooth (流暢)', bodyX: 0, bodyY: 0, waist: 0, headTilt: 15, headSlide: 0, lShoulder: 270, lElbow: 45, lWrist: 270, rShoulder: 270, rElbow: 315, rWrist: 90, lHip: 100, lKnee: 100, lAnkle: 0, rHip: 80, rKnee: 80, rAnkle: 180, lArmZ: 'front', rArmZ: 'front' },
+            tutting_l: { duration: 1, easing: 'Smooth (流暢)', bodyX: 20, bodyY: 0, waist: -10, headTilt: -10, headSlide: 15, lShoulder: 180, lElbow: 90, lWrist: 180, rShoulder: 90, rElbow: 180, rWrist: 0, lHip: 90, lKnee: 90, lAnkle: 0, rHip: 90, rKnee: 90, rAnkle: 180, lArmZ: 'front', rArmZ: 'front' },
+            cobra: { duration: 1, easing: 'Smooth (流暢)', bodyX: 0, bodyY: 20, waist: 20, headTilt: 0, headSlide: -10, lShoulder: 315, lElbow: 135, lWrist: 270, rShoulder: 225, rElbow: 225, rWrist: 90, lHip: 70, lKnee: 45, lAnkle: 90, rHip: 110, rKnee: 135, rAnkle: 90, lArmZ: 'front', rArmZ: 'front' },
+            pharaoh: { duration: 1, easing: 'Smooth (流暢)', bodyX: 0, bodyY: 0, waist: 0, headTilt: 0, headSlide: 0, lShoulder: 0, lElbow: 90, lWrist: 180, rShoulder: 180, rElbow: 270, rWrist: 0, lHip: 90, lKnee: 90, lAnkle: 0, rHip: 90, rKnee: 90, rAnkle: 180, lArmZ: 'front', rArmZ: 'front' },
+            diamond: { duration: 1, easing: 'Smooth (流暢)', bodyX: 0, bodyY: 0, waist: 0, headTilt: 0, headSlide: 0, lShoulder: 315, lElbow: 225, lWrist: 135, rShoulder: 225, rElbow: 315, rWrist: 45, lHip: 80, lKnee: 80, lAnkle: 0, rHip: 100, rKnee: 100, rAnkle: 180, lArmZ: 'front', rArmZ: 'front' },
+            stairs: { duration: 1, easing: 'Smooth (流暢)', bodyX: -10, bodyY: 0, waist: 10, headTilt: -5, headSlide: 10, lShoulder: 0, lElbow: 90, lWrist: 0, rShoulder: 180, rElbow: 270, rWrist: 180, lHip: 90, lKnee: 70, lAnkle: 0, rHip: 90, rKnee: 110, rAnkle: 180, lArmZ: 'front', rArmZ: 'front' },
+            frame: { duration: 1, easing: 'Smooth (流暢)', bodyX: 0, bodyY: 0, waist: 0, headTilt: 0, headSlide: 0, lShoulder: 270, lElbow: 180, lWrist: 90, rShoulder: 270, rElbow: 0, rWrist: 90, lHip: 90, lKnee: 90, lAnkle: 0, rHip: 90, rKnee: 90, rAnkle: 180, lArmZ: 'front', rArmZ: 'front' },
+            wings: { duration: 1, easing: 'Smooth (流暢)', bodyX: 0, bodyY: -20, waist: 0, headTilt: 0, headSlide: 0, lShoulder: 315, lElbow: 315, lWrist: 315, rShoulder: 225, rElbow: 225, rWrist: 225, lHip: 100, lKnee: 100, lAnkle: 0, rHip: 80, rKnee: 80, rAnkle: 180, lArmZ: 'front', rArmZ: 'front' },
+            zig_zag: { duration: 1, easing: 'Smooth (流暢)', bodyX: 0, bodyY: 0, waist: -15, headTilt: 10, headSlide: -10, lShoulder: 0, lElbow: 90, lWrist: 0, rShoulder: 180, rElbow: 270, rWrist: 180, lHip: 80, lKnee: 45, lAnkle: 90, rHip: 100, rKnee: 135, rAnkle: 90, lArmZ: 'front', rArmZ: 'front' }
         };
 
         const FORMATIONS = {
@@ -958,13 +1087,21 @@
             const newPose = {};
             Object.keys(poseA).forEach(key => {
                 if (key === 'easing') return;
+                // Handle depth toggle specifically (no interpolation, just switch)
+                if (key === 'lArmZ' || key === 'rArmZ') {
+                    newPose[key] = t < 0.5 ? poseA[key] : (poseB[key] || poseA[key]);
+                    return;
+                }
                 const endVal = poseB[key] !== undefined ? poseB[key] : poseA[key];
-                if (['headSlide', 'bodyX', 'bodyY'].includes(key)) {
+                if (['headSlide', 'bodyX', 'bodyY', 'duration'].includes(key)) {
                     newPose[key] = interpolateLinear(poseA[key], endVal, t);
                 } else {
                     newPose[key] = interpolateAngle(poseA[key], endVal, t);
                 }
             });
+            // Ensure armZ properties exist
+            newPose.lArmZ = newPose.lArmZ || 'front';
+            newPose.rArmZ = newPose.rArmZ || 'front';
             return newPose;
         };
 
@@ -1082,7 +1219,7 @@
 
         // --- Components ---
 
-        const SliderControl = ({ label, value, onChange, min = 0, max = 360, step = 1, snap = 90, unit = "°" }) => {
+        const SliderControl = ({ label, value, onChange, min = 0, max = 360, step = 1, snap = 90, unit = "°", accentColor = "cyan" }) => {
             const [localVal, setLocalVal] = useState(value);
             useEffect(() => { setLocalVal(Math.round(value)); }, [value]);
             const handleInput = (e) => {
@@ -1091,19 +1228,46 @@
                 const num = parseFloat(v);
                 if (!isNaN(num)) onChange(num);
             };
+            
+            const accentClass = accentColor === "fuchsia" ? "accent-fuchsia-500 hover:accent-fuchsia-400 text-fuchsia-400 focus-within:border-fuchsia-500" : "accent-cyan-500 hover:accent-cyan-400 text-cyan-400 focus-within:border-cyan-500";
+            const textClass = accentColor === "fuchsia" ? "text-fuchsia-400" : "text-cyan-400";
+
             return (
-                <div className="flex flex-col space-y-1 mb-2">
-                    <div className="flex justify-between items-center text-xs text-cyan-400 font-mono">
-                        <span className="font-bold">{label}</span>
-                        <div className="flex items-center bg-slate-800/50 rounded border border-slate-700 focus-within:border-cyan-500 focus-within:bg-slate-800 transition-colors">
-                            <input type="number" value={localVal} onChange={handleInput} className="w-12 bg-transparent text-right text-cyan-300 focus:text-white focus:outline-none px-1 py-0.5 text-[10px] font-mono" />
+                <div className="flex flex-col space-y-1 mb-3 px-1">
+                    <div className={`flex justify-between items-center text-xs font-mono ${textClass}`}>
+                        <span className="font-bold opacity-90">{label}</span>
+                        <div className={`flex items-center bg-slate-800/50 rounded border border-slate-700 ${accentColor === "fuchsia" ? "focus-within:border-fuchsia-500" : "focus-within:border-cyan-500"} focus-within:bg-slate-800 transition-colors`}>
+                            <input type="number" value={localVal} onChange={handleInput} className={`w-12 bg-transparent text-right ${textClass} focus:text-white focus:outline-none px-1 py-0.5 text-[10px] font-mono`} />
                             <span className="text-[10px] text-slate-500 pr-1 select-none">{unit}</span>
                         </div>
                     </div>
                     <div className="flex items-center space-x-2">
-                        <input type="range" min={min} max={max} step={step} value={value} onChange={(e) => onChange(Number(e.target.value))} className="w-full h-2 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-cyan-500 hover:accent-cyan-400" />
-                        {snap !== null && <button onClick={() => onChange(snap === 0 ? 0 : Math.round(value / snap) * snap)} className="p-1 text-[10px] bg-gray-800 text-cyan-500 border border-cyan-900 rounded hover:bg-cyan-900/50 min-w-[30px] flex-shrink-0" title={`Snap to ${snap}${unit}`}>{snap}{unit}</button>}
+                        <input type="range" min={min} max={max} step={step} value={value} onChange={(e) => onChange(Number(e.target.value))} className={`w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer ${accentClass}`} />
+                        {snap !== null && <button onClick={() => onChange(snap === 0 ? 0 : Math.round(value / snap) * snap)} className={`p-1 text-[9px] bg-slate-800 text-slate-400 border border-slate-700 rounded hover:bg-slate-700 min-w-[28px] flex-shrink-0 transition-colors`} title={`Snap to ${snap}${unit}`}>{snap}</button>}
                     </div>
+                </div>
+            );
+        };
+
+        const AccordionSection = ({ title, icon: SectionIcon, children, isOpen, onToggle, color = "slate" }) => {
+            const headerColor = color === "fuchsia" ? "text-fuchsia-400 border-fuchsia-900/30" : (color === "cyan" ? "text-cyan-400 border-cyan-900/30" : "text-slate-300 border-slate-700/50");
+            const bgHover = color === "fuchsia" ? "hover:bg-fuchsia-900/10" : (color === "cyan" ? "hover:bg-cyan-900/10" : "hover:bg-slate-800/50");
+
+            return (
+                <div className="border-b border-slate-800 last:border-0">
+                    <button 
+                        onClick={onToggle} 
+                        className={`w-full flex items-center justify-between p-3 text-xs font-bold uppercase tracking-wider transition-colors ${headerColor} ${bgHover}`}
+                    >
+                        <div className="flex items-center space-x-2">
+                            {SectionIcon && <SectionIcon size={14} />}
+                            <span>{title}</span>
+                        </div>
+                        {isOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                    </button>
+                    {isOpen && <div className="p-3 pt-0 animate-in slide-in-from-top-2 duration-200">
+                        {children}
+                    </div>}
                 </div>
             );
         };
@@ -1123,13 +1287,35 @@
             </g>
         );
 
-        const DancerFigure = ({ skeleton, opacity = 1 }) => {
+        const DancerFigure = ({ skeleton, lArmZ = 'front', rArmZ = 'front', opacity = 1 }) => {
             const s = skeleton;
+
+            const renderLeftArm = () => (
+                <>
+                    <LimbRenderer start={s.lShoulderBase} end={s.lElbowPos} color="#06b6d4" thickness={8} glow={true} />
+                    <LimbRenderer start={s.lElbowPos} end={s.lWristPos} color="#06b6d4" thickness={6} glow={true} />
+                    <LimbRenderer start={s.lWristPos} end={s.lHandPos} color="#22d3ee" thickness={4} glow={false} />
+                </>
+            );
+
+            const renderRightArm = () => (
+                <>
+                    <LimbRenderer start={s.rShoulderBase} end={s.rElbowPos} color="#d946ef" thickness={8} glow={true} />
+                    <LimbRenderer start={s.rElbowPos} end={s.rWristPos} color="#d946ef" thickness={6} glow={true} />
+                    <LimbRenderer start={s.rWristPos} end={s.rHandPos} color="#e879f9" thickness={4} glow={false} />
+                </>
+            );
+
             return (
                 <g opacity={opacity}>
                     {/* Floor line */}
                     <line x1="-150" y1="190" x2="150" y2="190" stroke="#334155" strokeWidth="2" strokeDasharray="5,5" opacity="0.5" />
 
+                    {/* Render Back Limbs First */}
+                    {lArmZ === 'back' && renderLeftArm()}
+                    {rArmZ === 'back' && renderRightArm()}
+
+                    {/* Body Core Layer (Legs, Torso, Head) */}
                     <LimbRenderer start={s.rHipPos} end={s.rKneePos} color="#c026d3" thickness={9} glow={true} />
                     <LimbRenderer start={s.rKneePos} end={s.rAnklePos} color="#c026d3" thickness={7} glow={true} />
                     <LimbRenderer start={s.rAnklePos} end={s.rFootPos} color="#e879f9" thickness={5} glow={false} />
@@ -1148,13 +1334,9 @@
                         <path d={`M${s.headCenterX + 5} ${s.headCenterY - 5} L${s.headCenterX + 10} ${s.headCenterY - 5}`} stroke="#475569" strokeWidth="2" />
                     </g>
 
-                    <LimbRenderer start={s.rShoulderBase} end={s.rElbowPos} color="#d946ef" thickness={8} glow={true} />
-                    <LimbRenderer start={s.rElbowPos} end={s.rWristPos} color="#d946ef" thickness={6} glow={true} />
-                    <LimbRenderer start={s.rWristPos} end={s.rHandPos} color="#e879f9" thickness={4} glow={false} />
-
-                    <LimbRenderer start={s.lShoulderBase} end={s.lElbowPos} color="#06b6d4" thickness={8} glow={true} />
-                    <LimbRenderer start={s.lElbowPos} end={s.lWristPos} color="#06b6d4" thickness={6} glow={true} />
-                    <LimbRenderer start={s.lWristPos} end={s.lHandPos} color="#22d3ee" thickness={4} glow={false} />
+                    {/* Render Front Limbs Last */}
+                    {lArmZ !== 'back' && renderLeftArm()}
+                    {rArmZ !== 'back' && renderRightArm()}
                 </g>
             );
         }
@@ -1179,11 +1361,29 @@
             const [formationType, setFormationType] = useState('single');
             const [lang, setLang] = useState('zh-TW');
             const [isHandSync, setIsHandSync] = useState(false);
+            const [fixedJoints, setFixedJoints] = useState({ rWrist: false, lWrist: false, rAnkle: false, lAnkle: false });
+            const [showTrails, setShowTrails] = useState(false);
+            const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Sidebar toggle state
+            
+            // Accordion State
+            const [openSections, setOpenSections] = useState({
+                body: true,
+                rArm: true,
+                lArm: true,
+                rLeg: false,
+                lLeg: false
+            });
+
+            const toggleSection = (section) => {
+                setOpenSections(prev => ({ ...prev, [section]: !prev[section] }));
+            };
 
             const fileInputRef = useRef(null);
             const svgRef = useRef(null);
             const mainGroupRef = useRef(null);
             const lastMousePos = useRef({ x: 0, y: 0 });
+            const trailsRef = useRef({ left: [], right: [] });
+            const showTrailsRef = useRef(showTrails);
 
             const timelineRef = useRef(timeline);
             const frameIndexRef = useRef(currentFrameIndex);
@@ -1204,8 +1404,58 @@
             useEffect(() => { isDragModeRef.current = isDragMode; }, [isDragMode]);
             useEffect(() => { poseRef.current = pose; }, [pose]);
             useEffect(() => { dragTypeRef.current = dragType; }, [dragType]);
+            useEffect(() => { showTrailsRef.current = showTrails; }, [showTrails]);
 
             const t = (key) => TRANSLATIONS[lang] ? (TRANSLATIONS[lang][key] || key) : key;
+
+            // Mirror Angle Helper: Reflects angle across the vertical Y-axis
+            // 0 -> 180, 90 -> 90, 270 -> 270
+            const mirrorAngle = (deg) => (540 - deg) % 360;
+
+            const handlePoseOperation = (type) => {
+                if (isPlaying) return;
+                setPose(prev => {
+                    const newPose = { ...prev };
+                    if (type === 'flip') {
+                        // Swap Left and Right limbs with mirroring
+                        newPose.lShoulder = mirrorAngle(prev.rShoulder);
+                        newPose.rShoulder = mirrorAngle(prev.lShoulder);
+                        newPose.lElbow = mirrorAngle(prev.rElbow);
+                        newPose.rElbow = mirrorAngle(prev.lElbow);
+                        newPose.lWrist = mirrorAngle(prev.rWrist);
+                        newPose.rWrist = mirrorAngle(prev.lWrist);
+                        newPose.lHip = mirrorAngle(prev.rHip);
+                        newPose.rHip = mirrorAngle(prev.lHip);
+                        newPose.lKnee = mirrorAngle(prev.rKnee);
+                        newPose.rKnee = mirrorAngle(prev.lKnee);
+                        newPose.lAnkle = mirrorAngle(prev.rAnkle);
+                        newPose.rAnkle = mirrorAngle(prev.lAnkle);
+                        
+                        // Invert Body parameters
+                        newPose.bodyX = -prev.bodyX;
+                        newPose.waist = -prev.waist;
+                        newPose.headTilt = -prev.headTilt;
+                        newPose.headSlide = -prev.headSlide;
+                    } else if (type === 'mirrorLR') {
+                        // Copy Left to Right
+                        newPose.rShoulder = mirrorAngle(prev.lShoulder);
+                        newPose.rElbow = mirrorAngle(prev.lElbow);
+                        newPose.rWrist = mirrorAngle(prev.lWrist);
+                        newPose.rHip = mirrorAngle(prev.lHip);
+                        newPose.rKnee = mirrorAngle(prev.lKnee);
+                        newPose.rAnkle = mirrorAngle(prev.lAnkle);
+                    } else if (type === 'mirrorRL') {
+                        // Copy Right to Left
+                        newPose.lShoulder = mirrorAngle(prev.rShoulder);
+                        newPose.lElbow = mirrorAngle(prev.rElbow);
+                        newPose.lWrist = mirrorAngle(prev.rWrist);
+                        newPose.lHip = mirrorAngle(prev.rHip);
+                        newPose.lKnee = mirrorAngle(prev.rKnee);
+                        newPose.lAnkle = mirrorAngle(prev.rAnkle);
+                    }
+                    return newPose;
+                });
+            };
 
             const updatePose = (key, value) => {
                 if (!isPlaying) {
@@ -1223,6 +1473,53 @@
                                 newPose[armKey] = (prev[armKey] || 0) + delta;
                             });
                         }
+
+                        // --- Fixed Mode Logic (Anchors) ---
+                        // Only trigger if moving bodyX/bodyY and anchors are active
+                        if ((key === 'bodyX' || key === 'bodyY') && Object.values(fixedJoints).some(v => v)) {
+                            // 1. Calculate previous world positions of fixed joints (using PREV pose)
+                            const prevSkeleton = calculateSkeleton(prev);
+                            
+                            // 2. Calculate NEW base positions (shoulders/hips) using NEW pose.
+                            // We need this to know where the body ORIGIN is for the IK calculation.
+                            const newBaseSkeleton = calculateSkeleton(newPose); 
+
+                            // 3. Solve IK for each fixed joint to keep end-effector at prevSkeleton position
+                            
+                            // Right Wrist
+                            if (fixedJoints.rWrist) {
+                                const target = prevSkeleton.rWristPos; // Keep old world pos
+                                const origin = newBaseSkeleton.rShoulderBase; // New shoulder pos
+                                const [s, e] = solveTwoJointIK(target, origin, SEGMENT_LENGTHS.upperArm, SEGMENT_LENGTHS.forearm, prev.rShoulder, prev.rElbow);
+                                newPose.rShoulder = s;
+                                newPose.rElbow = e;
+                            }
+                            // Left Wrist
+                            if (fixedJoints.lWrist) {
+                                const target = prevSkeleton.lWristPos;
+                                const origin = newBaseSkeleton.lShoulderBase;
+                                const [s, e] = solveTwoJointIK(target, origin, SEGMENT_LENGTHS.upperArm, SEGMENT_LENGTHS.forearm, prev.lShoulder, prev.lElbow);
+                                newPose.lShoulder = s;
+                                newPose.lElbow = e;
+                            }
+                            // Right Ankle
+                            if (fixedJoints.rAnkle) {
+                                const target = prevSkeleton.rAnklePos;
+                                const origin = newBaseSkeleton.rHipPos;
+                                const [h, k] = solveTwoJointIK(target, origin, SEGMENT_LENGTHS.thigh, SEGMENT_LENGTHS.shin, prev.rHip ?? 90, prev.rKnee ?? 90);
+                                newPose.rHip = h;
+                                newPose.rKnee = k;
+                            }
+                            // Left Ankle
+                            if (fixedJoints.lAnkle) {
+                                const target = prevSkeleton.lAnklePos;
+                                const origin = newBaseSkeleton.lHipPos;
+                                const [h, k] = solveTwoJointIK(target, origin, SEGMENT_LENGTHS.thigh, SEGMENT_LENGTHS.shin, prev.lHip ?? 90, prev.lKnee ?? 90);
+                                newPose.lHip = h;
+                                newPose.lKnee = k;
+                            }
+                        }
+
                         return newPose;
                     });
                 }
@@ -1408,6 +1705,9 @@
                     if (Math.random() > 0.6) basePose.headSlide = Math.floor(Math.random() * 40) - 20; else basePose.headSlide = 0;
                     if (Math.random() > 0.6) basePose.waist = Math.floor(Math.random() * 40) - 20;
                     if (Math.random() > 0.7) { if (Math.random() > 0.5) basePose.bodyX = Math.floor(Math.random() * 60) - 30; else basePose.bodyY = Math.floor(Math.random() * 40) - 20; } else { basePose.bodyX = 0; basePose.bodyY = 0; }
+                    basePose.duration = 1; // Default duration
+                    basePose.lArmZ = 'front'; // Reset depth
+                    basePose.rArmZ = 'front';
                     return basePose;
                 });
                 setTimeline(newTimeline);
@@ -1459,16 +1759,18 @@
                 const key = e.target.value;
                 setSelectedPreset(key);
                 if (isPlaying) return;
-                // Preserve current duration when switching presets if desired, or reset.
-                // Here we'll merge the preset with the current duration to allow quick swapping without resetting time.
-                // Or simply use the preset's duration (default 1).
-                // Let's use the preset duration for cleaner state, but user can edit it.
                 if (PRESETS[key]) setPose({ ...PRESETS[key] });
                 else if (customPresets[key]) setPose(customPresets[key]);
             };
 
             useEffect(() => {
-                if (!isPlaying) { if (requestRef.current) cancelAnimationFrame(requestRef.current); return; }
+                if (!isPlaying) { 
+                    if (requestRef.current) cancelAnimationFrame(requestRef.current); 
+                    return; 
+                }
+                
+                // Clear trails on start
+                trailsRef.current = { left: [], right: [] };
                 startTimeRef.current = performance.now();
                 
                 const animate = (time) => {
@@ -1504,13 +1806,25 @@
                     
                     const easedProgress = easeFn(progress);
                     if (currentStartPose && currentEndPose) {
-                        setPose(interpolatePose(currentStartPose, currentEndPose, easedProgress));
+                        const newPose = interpolatePose(currentStartPose, currentEndPose, easedProgress);
+                        
+                        // --- Trail Logic ---
+                        if (showTrailsRef.current) {
+                            const skel = calculateSkeleton(newPose);
+                            trailsRef.current.left.push(skel.lWristPos);
+                            trailsRef.current.right.push(skel.rWristPos);
+                            // Limit trail length to avoid clutter/perf issues (e.g., last 40 frames)
+                            if (trailsRef.current.left.length > 40) trailsRef.current.left.shift();
+                            if (trailsRef.current.right.length > 40) trailsRef.current.right.shift();
+                        }
+
+                        setPose(newPose);
                     }
                     requestRef.current = requestAnimationFrame(animate);
                 };
                 requestRef.current = requestAnimationFrame(animate);
                 return () => { if (requestRef.current) cancelAnimationFrame(requestRef.current); };
-            }, [isPlaying, bpm]); // Added bpm dependency, though bpm effect is minimized if duration is used
+            }, [isPlaying, bpm]); 
 
             const handleZoomIn = () => setZoom(z => Math.min(5, z + 0.2));
             const handleZoomOut = () => setZoom(z => Math.max(0.1, z - 0.2));
@@ -1526,22 +1840,31 @@
             const mainDancer = formationData.find(d => d.main) || formationData[0];
 
             return (
-                <div className="h-[100dvh] bg-slate-950 text-white font-sans selection:bg-cyan-500/30 flex flex-col md:flex-row overflow-hidden">
+                <div className="h-[100dvh] bg-slate-950 text-slate-200 font-sans selection:bg-cyan-500/30 flex flex-col md:flex-row overflow-hidden">
 
                     {/* --- TOP/LEFT PANEL --- */}
-                    <div className="w-full md:flex-1 h-[55%] md:h-full flex flex-col relative border-b md:border-b-0 md:border-r border-slate-800 z-10 bg-slate-950 min-w-0">
+                    <div className="flex-1 h-[50%] md:h-full flex flex-col relative border-b md:border-b-0 md:border-r border-slate-800 z-10 bg-slate-900 min-w-0 transition-all duration-300">
 
-                        <div className="absolute top-3 left-3 z-10 flex items-start gap-4 pointer-events-none">
+                        <div className="absolute top-4 left-4 z-10 flex items-start gap-4 pointer-events-none">
                             <div>
-                                <h1 className="text-xl md:text-3xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-fuchsia-500">{t('title')}</h1>
-                                <p className="text-[10px] md:text-xs text-slate-500 font-mono mt-0.5">{t('subtitle')}</p>
+                                <h1 className="text-xl md:text-3xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-fuchsia-500 filter drop-shadow-lg">{t('title')}</h1>
+                                <p className="text-[10px] md:text-xs text-slate-400 font-mono mt-0.5 tracking-widest opacity-80">{t('subtitle')}</p>
                             </div>
                         </div>
 
-                        <div className="absolute top-3 right-3 z-10">
-                            <div className="flex items-center bg-slate-800/80 backdrop-blur-sm border border-slate-700 rounded-full px-2 py-1 cursor-pointer hover:bg-slate-700 transition-colors">
-                                <Globe size={14} className="text-slate-400 mr-1" />
-                                <select value={lang} onChange={(e) => setLang(e.target.value)} className="bg-transparent text-[10px] md:text-xs text-slate-300 focus:outline-none cursor-pointer appearance-none pr-2">
+                        <div className="absolute top-4 right-4 z-10 flex gap-2">
+                            {!isSidebarOpen && (
+                                <button 
+                                    onClick={() => setIsSidebarOpen(true)} 
+                                    className="flex items-center justify-center p-2 bg-slate-800/80 backdrop-blur-md border border-slate-700/50 rounded-full cursor-pointer hover:bg-slate-700/80 transition-all shadow-lg text-cyan-400 animate-in fade-in zoom-in duration-200"
+                                    title="Open Sidebar"
+                                >
+                                    <ArrowLeftFromLine size={16} />
+                                </button>
+                            )}
+                            <div className="flex items-center bg-slate-800/80 backdrop-blur-md border border-slate-700/50 rounded-full px-3 py-1.5 cursor-pointer hover:bg-slate-700/80 transition-all shadow-lg">
+                                <Globe size={14} className="text-slate-400 mr-2" />
+                                <select value={lang} onChange={(e) => setLang(e.target.value)} className="bg-transparent text-[10px] md:text-xs text-slate-300 focus:outline-none cursor-pointer appearance-none pr-2 font-medium">
                                     <option value="zh-TW">繁體中文</option>
                                     <option value="en">English</option>
                                     <option value="ja">日本語</option>
@@ -1557,18 +1880,18 @@
                             </div>
                         </div>
 
-                        <div className={`flex-1 w-full flex items-center justify-center overflow-hidden relative p-2 bg-slate-900 ${isPanning ? 'cursor-grabbing' : 'cursor-grab'}`}>
+                        <div className={`flex-1 w-full flex items-center justify-center overflow-hidden relative p-2 bg-gradient-to-b from-slate-900 to-slate-950 ${isPanning ? 'cursor-grabbing' : 'cursor-grab'}`}>
                             {showGrid && (
-                                <div className="absolute inset-0 opacity-20 pointer-events-none"
+                                <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
                                     style={{
-                                        backgroundImage: 'linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px)',
+                                        backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)',
                                         backgroundSize: '40px 40px',
                                     }}>
                                 </div>
                             )}
 
                             <div className="relative h-full w-full flex items-center justify-center" onWheel={handleWheel} onMouseDown={handleSvgMouseDown}>
-                                <svg ref={svgRef} className="w-full h-full select-none" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid meet">
+                                <svg ref={svgRef} className="w-full h-full select-none filter drop-shadow-[0_0_15px_rgba(0,0,0,0.5)]" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid meet">
                                     <defs>
                                         <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
                                             <feGaussianBlur stdDeviation="4" result="coloredBlur" />
@@ -1576,44 +1899,44 @@
                                         </filter>
                                     </defs>
 
-                                    {/* Correct Coordinate System:
-                                    1. Translate to Screen Center (200, 200) + Pan Offset.
-                                    2. Scale (Zoom).
-                                    (No negative translate needed because skeleton is 0-based)
-                                */}
                                     <g ref={mainGroupRef} transform={`translate(${200 + pan.x}, ${200 + pan.y}) scale(${zoom})`}>
+                                        {/* Trails Rendering */}
+                                        {showTrails && (
+                                            <g>
+                                                <polyline points={trailsRef.current.left.map(p => `${p.x},${p.y}`).join(' ')} fill="none" stroke="#d946ef" strokeWidth="2" strokeOpacity="0.4" strokeLinecap="round" strokeLinejoin="round" />
+                                                <polyline points={trailsRef.current.right.map(p => `${p.x},${p.y}`).join(' ')} fill="none" stroke="#06b6d4" strokeWidth="2" strokeOpacity="0.4" strokeLinecap="round" strokeLinejoin="round" />
+                                            </g>
+                                        )}
 
-                                        {/* Render Formation Dancers */}
                                         {formationData.map((dancer, idx) => (
                                             <g key={idx} transform={`translate(${dancer.x}, ${dancer.y}) scale(${dancer.scale})`}>
-                                                <DancerFigure skeleton={skeleton} opacity={dancer.opacity} />
+                                                <DancerFigure 
+                                                    skeleton={skeleton} 
+                                                    opacity={dancer.opacity} 
+                                                    lArmZ={pose.lArmZ} 
+                                                    rArmZ={pose.rArmZ}
+                                                />
                                             </g>
                                         ))}
 
-                                        {/* Interactive Handles (Transformed by Main Dancer's Position) */}
                                         {isDragMode && mainDancer && (
                                             <g transform={`translate(${mainDancer.x}, ${mainDancer.y}) scale(${mainDancer.scale})`}>
-                                                {/* Body Center */}
                                                 <DraggableJoint x={skeleton.hipCenterX} y={skeleton.hipCenterY} isActive={activeJoint?.name === 'bodyX'} onMouseDown={(e) => handleJointDown(e, 'bodyX', null, 'pos')} onTouchStart={(e) => handleJointDown(e, 'bodyX', null, 'pos')} />
                                                 <DraggableJoint x={skeleton.headCenterX} y={skeleton.headCenterY} isActive={activeJoint?.type === 'headPos'} onMouseDown={(e) => handleJointDown(e, 'head', skeleton.neckBase, 'headPos')} onTouchStart={(e) => handleJointDown(e, 'head', skeleton.neckBase, 'headPos')} />
                                                 <DraggableJoint x={skeleton.tiltHandleX} y={skeleton.tiltHandleY} isActive={activeJoint?.type === 'headTilt'} onMouseDown={(e) => handleJointDown(e, 'headTilt', { x: skeleton.headCenterX, y: skeleton.headCenterY }, 'headTilt')} onTouchStart={(e) => handleJointDown(e, 'headTilt', { x: skeleton.headCenterX, y: skeleton.headCenterY }, 'headTilt')} isFK={false} />
 
-                                                {/* Right Arm */}
                                                 <DraggableJoint x={skeleton.rElbowPos.x} y={skeleton.rElbowPos.y} isActive={activeJoint?.name === 'rShoulder'} onMouseDown={(e) => handleJointDown(e, 'rShoulder', skeleton.rShoulderBase)} onTouchStart={(e) => handleJointDown(e, 'rShoulder', skeleton.rShoulderBase)} />
                                                 <DraggableJoint x={skeleton.rWristPos.x} y={skeleton.rWristPos.y} isActive={activeJoint?.name === (dragType === 'IK' ? 'rWrist' : 'rElbow')} onMouseDown={(e) => handleJointDown(e, dragType === 'IK' ? 'rWrist' : 'rElbow', dragType === 'IK' ? skeleton.rShoulderBase : skeleton.rElbowPos, dragType === 'IK' ? 'ik' : 'angle', skeleton.rShoulderBase)} onTouchStart={(e) => handleJointDown(e, dragType === 'IK' ? 'rWrist' : 'rElbow', dragType === 'IK' ? skeleton.rShoulderBase : skeleton.rElbowPos, dragType === 'IK' ? 'ik' : 'angle', skeleton.rShoulderBase)} isFK={dragType === 'FK'} />
                                                 <DraggableJoint x={skeleton.rHandPos.x} y={skeleton.rHandPos.y} isActive={activeJoint?.name === 'rWrist'} onMouseDown={(e) => handleJointDown(e, 'rWrist', skeleton.rWristPos)} onTouchStart={(e) => handleJointDown(e, 'rWrist', skeleton.rWristPos)} />
 
-                                                {/* Left Arm */}
                                                 <DraggableJoint x={skeleton.lElbowPos.x} y={skeleton.lElbowPos.y} isActive={activeJoint?.name === 'lShoulder'} onMouseDown={(e) => handleJointDown(e, 'lShoulder', skeleton.lShoulderBase)} onTouchStart={(e) => handleJointDown(e, 'lShoulder', skeleton.lShoulderBase)} />
                                                 <DraggableJoint x={skeleton.lWristPos.x} y={skeleton.lWristPos.y} isActive={activeJoint?.name === (dragType === 'IK' ? 'lWrist' : 'lElbow')} onMouseDown={(e) => handleJointDown(e, dragType === 'IK' ? 'lWrist' : 'lElbow', dragType === 'IK' ? skeleton.lShoulderBase : skeleton.lElbowPos, dragType === 'IK' ? 'ik' : 'angle', skeleton.lShoulderBase)} onTouchStart={(e) => handleJointDown(e, dragType === 'IK' ? 'lWrist' : 'lElbow', dragType === 'IK' ? skeleton.lShoulderBase : skeleton.lElbowPos, dragType === 'IK' ? 'ik' : 'angle', skeleton.lShoulderBase)} isFK={dragType === 'FK'} />
                                                 <DraggableJoint x={skeleton.lHandPos.x} y={skeleton.lHandPos.y} isActive={activeJoint?.name === 'lWrist'} onMouseDown={(e) => handleJointDown(e, 'lWrist', skeleton.lWristPos)} onTouchStart={(e) => handleJointDown(e, 'lWrist', skeleton.lWristPos)} />
 
-                                                {/* Right Leg */}
                                                 <DraggableJoint x={skeleton.rKneePos.x} y={skeleton.rKneePos.y} isActive={activeJoint?.name === 'rHip'} onMouseDown={(e) => handleJointDown(e, 'rHip', skeleton.rHipPos)} onTouchStart={(e) => handleJointDown(e, 'rHip', skeleton.rHipPos)} />
                                                 <DraggableJoint x={skeleton.rAnklePos.x} y={skeleton.rAnklePos.y} isActive={activeJoint?.name === (dragType === 'IK' ? 'rAnkle' : 'rKnee')} onMouseDown={(e) => handleJointDown(e, dragType === 'IK' ? 'rAnkle' : 'rKnee', dragType === 'IK' ? skeleton.rHipPos : skeleton.rKneePos, dragType === 'IK' ? 'ik' : 'angle', skeleton.rHipPos)} onTouchStart={(e) => handleJointDown(e, dragType === 'IK' ? 'rAnkle' : 'rKnee', dragType === 'IK' ? skeleton.rHipPos : skeleton.rKneePos, dragType === 'IK' ? 'ik' : 'angle', skeleton.rHipPos)} isFK={dragType === 'FK'} />
                                                 <DraggableJoint x={skeleton.rFootPos.x} y={skeleton.rFootPos.y} isActive={activeJoint?.name === 'rAnkle'} onMouseDown={(e) => handleJointDown(e, 'rAnkle', skeleton.rAnklePos)} onTouchStart={(e) => handleJointDown(e, 'rAnkle', skeleton.rAnklePos)} />
 
-                                                {/* Left Leg */}
                                                 <DraggableJoint x={skeleton.lKneePos.x} y={skeleton.lKneePos.y} isActive={activeJoint?.name === 'lHip'} onMouseDown={(e) => handleJointDown(e, 'lHip', skeleton.lHipPos)} onTouchStart={(e) => handleJointDown(e, 'lHip', skeleton.lHipPos)} />
                                                 <DraggableJoint x={skeleton.lAnklePos.x} y={skeleton.lAnklePos.y} isActive={activeJoint?.name === (dragType === 'IK' ? 'lAnkle' : 'lKnee')} onMouseDown={(e) => handleJointDown(e, dragType === 'IK' ? 'lAnkle' : 'lKnee', dragType === 'IK' ? skeleton.lHipPos : skeleton.lKneePos, dragType === 'IK' ? 'ik' : 'angle', skeleton.lHipPos)} onTouchStart={(e) => handleJointDown(e, dragType === 'IK' ? 'lAnkle' : 'lKnee', dragType === 'IK' ? skeleton.lHipPos : skeleton.lKneePos, dragType === 'IK' ? 'ik' : 'angle', skeleton.lHipPos)} isFK={dragType === 'FK'} />
                                                 <DraggableJoint x={skeleton.lFootPos.x} y={skeleton.lFootPos.y} isActive={activeJoint?.name === 'lAnkle'} onMouseDown={(e) => handleJointDown(e, 'lAnkle', skeleton.lAnklePos)} onTouchStart={(e) => handleJointDown(e, 'lAnkle', skeleton.lAnklePos)} />
@@ -1623,151 +1946,269 @@
                                 </svg>
 
                                 {/* Overlay Controls */}
-                                <div className="absolute bottom-2 right-2 md:bottom-4 md:right-4 flex space-x-1 md:space-x-2 pointer-events-auto">
-                                    <div className="flex items-center bg-slate-800 rounded-lg border border-slate-700 overflow-hidden">
-                                        <button onClick={() => setIsDragMode(!isDragMode)} className={`p-1.5 md:p-2 transition-all ${isDragMode ? 'bg-fuchsia-500 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-700'}`} title={isDragMode ? t('dragModeOn') : t('dragModeOff')}>
-                                            <Hand size={16} className="md:w-5 md:h-5" />
+                                <div className="absolute bottom-4 right-4 flex space-x-2 pointer-events-auto">
+                                    <div className="glass-panel rounded-xl border border-slate-700/50 flex items-center p-1 shadow-lg">
+                                        <button onClick={() => setIsDragMode(!isDragMode)} className={`p-2 rounded-lg transition-all ${isDragMode ? 'bg-fuchsia-500 text-white shadow-lg shadow-fuchsia-500/30' : 'text-slate-400 hover:text-white hover:bg-slate-700/50'}`} title={isDragMode ? t('dragModeOn') : t('dragModeOff')}>
+                                            <Hand size={18} />
                                         </button>
                                         {isDragMode && (
-                                            <button onClick={() => setDragType(prev => prev === 'FK' ? 'IK' : 'FK')} className="px-2 py-1.5 md:px-3 md:py-2 text-[10px] md:text-xs font-mono font-bold text-slate-300 border-l border-slate-600 hover:bg-slate-700 transition-colors w-[40px]" title={t(dragType.toLowerCase())}>
-                                                {dragType}
-                                            </button>
+                                            <>
+                                                <div className="w-px h-6 bg-slate-700/50 mx-1"></div>
+                                                <button onClick={() => setDragType(prev => prev === 'FK' ? 'IK' : 'FK')} className="px-2 py-1 text-[10px] font-mono font-bold text-slate-300 hover:bg-slate-700/50 rounded transition-colors min-w-[36px]" title={t(dragType.toLowerCase())}>
+                                                    {dragType}
+                                                </button>
+                                            </>
                                         )}
                                     </div>
-                                    <div className="w-px h-6 md:h-8 bg-slate-700 mx-1"></div>
-                                    <button onClick={handleZoomOut} className="p-1.5 md:p-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-400 hover:text-white hover:border-slate-500"><ZoomOut size={16} className="md:w-5 md:h-5" /></button>
-                                    <button onClick={handleResetView} className="px-2 py-1.5 md:px-3 md:py-2 rounded-lg bg-slate-800 border border-slate-700 text-[10px] md:text-xs font-mono text-slate-300 min-w-[60px] md:min-w-[80px] flex items-center justify-center gap-1" title={t('resetView')}>
-                                        <RotateCw size={10} /> {Math.round(zoom * 100)}%
-                                    </button>
-                                    <button onClick={handleZoomIn} className="p-1.5 md:p-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-400 hover:text-white hover:border-slate-500"><ZoomIn size={16} className="md:w-5 md:h-5" /></button>
-                                    <div className="w-px h-6 md:h-8 bg-slate-700 mx-1"></div>
-                                    <button onClick={() => setShowGrid(!showGrid)} className={`p-1.5 md:p-2 rounded-lg border ${showGrid ? 'bg-cyan-500/20 border-cyan-500 text-cyan-400' : 'bg-slate-800 border-slate-700 text-slate-400'}`}><Grid size={16} className="md:w-5 md:h-5" /></button>
+                                    
+                                    <div className="glass-panel rounded-xl border border-slate-700/50 flex items-center p-1 shadow-lg">
+                                        <button onClick={handleZoomOut} className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-700/50 transition-colors"><ZoomOut size={18} /></button>
+                                        <button onClick={handleResetView} className="px-2 py-1 text-[10px] font-mono text-slate-300 min-w-[50px] hover:bg-slate-700/50 rounded transition-colors" title={t('resetView')}>
+                                            {Math.round(zoom * 100)}%
+                                        </button>
+                                        <button onClick={handleZoomIn} className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-700/50 transition-colors"><ZoomIn size={18} /></button>
+                                    </div>
+
+                                    <div className="glass-panel rounded-xl border border-slate-700/50 flex items-center p-1 shadow-lg">
+                                        <button onClick={() => setShowTrails(!showTrails)} className={`p-2 rounded-lg transition-colors ${showTrails ? 'text-fuchsia-400 bg-fuchsia-500/10' : 'text-slate-400 hover:text-white hover:bg-slate-700/50'}`} title={t('motionTrails')}><Activity size={18} /></button>
+                                        <div className="w-px h-6 bg-slate-700/50 mx-1"></div>
+                                        <button onClick={() => setShowGrid(!showGrid)} className={`p-2 rounded-lg transition-colors ${showGrid ? 'text-cyan-400 bg-cyan-500/10' : 'text-slate-400 hover:text-white hover:bg-slate-700/50'}`}><Grid size={18} /></button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
                         {/* Timeline */}
-                        <div className="w-full bg-slate-900/90 p-3 border-t border-slate-800 flex-shrink-0">
+                        <div className="w-full bg-slate-900/95 backdrop-blur p-3 border-t border-slate-800/80 flex-shrink-0 z-20 shadow-[0_-1px_10px_rgba(0,0,0,0.3)]">
                             <div className="flex flex-wrap justify-between items-center mb-2 gap-2">
-                                <span className="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest">{t('timeline')} ({timeline.length})</span>
+                                <span className="text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center"><Layers size={12} className="mr-1"/>{t('timeline')} ({timeline.length})</span>
                                 <div className="flex items-center space-x-2 md:space-x-4">
-                                    <button onClick={handleAIGenerate} className="flex items-center space-x-1 px-2 py-1 bg-fuchsia-600 hover:bg-fuchsia-500 text-white rounded text-[10px] font-bold transition-all shadow-[0_0_10px_rgba(192,38,211,0.4)]"><Sparkles size={10} /><span>{t('ai')}</span></button>
-                                    <div className="w-px h-3 bg-slate-700 hidden md:block"></div>
-                                    <div className="hidden md:flex items-center space-x-1">
-                                        <Settings size={10} className="text-slate-500" />
-                                        <select value={pose.easing || 'Smooth (流暢)'} onChange={(e) => updatePose('easing', e.target.value)} className="bg-slate-800 border border-slate-700 text-[10px] text-white rounded px-1 py-0.5 focus:outline-none max-w-[80px]">
+                                    <button onClick={handleAIGenerate} className="flex items-center space-x-1 px-3 py-1 bg-gradient-to-r from-fuchsia-600 to-purple-600 hover:from-fuchsia-500 hover:to-purple-500 text-white rounded-full text-[10px] font-bold transition-all shadow-lg shadow-fuchsia-900/50"><Sparkles size={12} /><span>{t('ai')}</span></button>
+                                    <div className="w-px h-4 bg-slate-700/50 hidden md:block"></div>
+                                    <div className="hidden md:flex items-center space-x-2">
+                                        <Settings size={12} className="text-slate-500" />
+                                        <select value={pose.easing || 'Smooth (流暢)'} onChange={(e) => updatePose('easing', e.target.value)} className="bg-slate-800 border border-slate-700 text-[10px] text-slate-300 rounded px-2 py-1 focus:outline-none hover:border-slate-600 cursor-pointer">
                                             {Object.keys(EASING_FUNCTIONS).map(name => (<option key={name} value={name}>{name.split(' ')[0]}</option>))}
                                         </select>
                                     </div>
-                                    <div className="flex items-center space-x-1">
-                                        <label className="text-[10px] text-slate-500">{t('bpm')}</label>
-                                        <input type="number" value={bpm} onChange={(e) => setBpm(Number(e.target.value))} className="w-8 md:w-10 bg-slate-800 border border-slate-700 rounded px-1 text-[10px] text-center text-white" />
+                                    <div className="flex items-center space-x-2 bg-slate-800/50 rounded px-2 py-1 border border-slate-700/50">
+                                        <label className="text-[10px] text-slate-500 font-mono">{t('bpm')}</label>
+                                        <input type="number" value={bpm} onChange={(e) => setBpm(Number(e.target.value))} className="w-8 bg-transparent text-[10px] text-center text-cyan-400 font-mono focus:outline-none" />
                                     </div>
                                 </div>
                             </div>
-                            <div className="w-full mb-2 px-1"><input type="range" min={0} max={Math.max(0, timeline.length - 1)} value={currentFrameIndex} onChange={handleTimelineScrub} className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-cyan-500 hover:accent-cyan-400 block" /></div>
-                            <div className="flex items-center space-x-2 overflow-x-auto pb-1 custom-scrollbar no-scrollbar-mobile">
-                                <button onClick={() => setIsPlaying(!isPlaying)} className={`p-2.5 rounded-full flex-shrink-0 transition-all ${isPlaying ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'} text-white shadow-lg`}>{isPlaying ? <Square fill="currentColor" size={12} /> : <Play fill="currentColor" size={12} />}</button>
-                                {timeline.map((_, idx) => (
-                                    <button key={idx} onClick={() => jumpToFrame(idx)} className={`w-8 h-12 md:w-10 md:h-14 flex-shrink-0 rounded border-2 transition-all flex flex-col items-center justify-center relative ${currentFrameIndex === idx ? 'border-cyan-500 bg-cyan-500/20 scale-110 shadow-[0_0_10px_rgba(6,182,212,0.3)]' : 'border-slate-700 bg-slate-800 hover:border-slate-500'}`}>
-                                        <span className={`text-[10px] font-mono ${currentFrameIndex === idx ? 'text-cyan-300' : 'text-slate-500'}`}>{idx + 1}</span>
-                                    </button>
-                                ))}
-                                <button onClick={addKeyframe} className="w-8 h-12 md:w-10 md:h-14 flex-shrink-0 rounded border-2 border-dashed border-slate-600 hover:border-cyan-500 text-slate-600 hover:text-cyan-500 flex items-center justify-center transition-colors"><Plus size={14} /></button>
+                            <div className="w-full mb-3 px-1">
+                                <input type="range" min={0} max={Math.max(0, timeline.length - 1)} value={currentFrameIndex} onChange={handleTimelineScrub} className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-cyan-500 hover:accent-cyan-400 block" />
                             </div>
-                            <div className="flex justify-between mt-1 pt-1 border-t border-slate-800/50">
-                                <button onClick={deleteKeyframe} className="flex items-center text-[10px] text-red-400 px-2 py-1"><Trash2 size={10} className="mr-1" /> {t('delete')}</button>
-                                <button onClick={updateKeyframe} className="flex items-center text-[10px] text-cyan-400 px-2 py-1"><Layers size={10} className="mr-1" /> {t('update')}</button>
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-3 overflow-x-auto pb-2 custom-scrollbar no-scrollbar-mobile pr-4 mask-image-right">
+                                    <button onClick={() => setIsPlaying(!isPlaying)} className={`p-3 rounded-full flex-shrink-0 transition-all transform hover:scale-105 active:scale-95 ${isPlaying ? 'bg-red-500/90 hover:bg-red-500 text-white shadow-lg shadow-red-500/30' : 'bg-emerald-500/90 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-500/30'}`}>{isPlaying ? <Square fill="currentColor" size={12} /> : <Play fill="currentColor" size={14} className="ml-0.5" />}</button>
+                                    <div className="flex space-x-1">
+                                        {timeline.map((_, idx) => (
+                                            <button key={idx} onClick={() => jumpToFrame(idx)} className={`w-8 h-12 md:w-10 md:h-14 flex-shrink-0 rounded-md border transition-all flex flex-col items-center justify-center relative group ${currentFrameIndex === idx ? 'border-cyan-500/50 bg-cyan-500/10 scale-105 z-10' : 'border-slate-700/50 bg-slate-800/30 hover:bg-slate-800 hover:border-slate-600'}`}>
+                                                <span className={`text-[10px] font-mono ${currentFrameIndex === idx ? 'text-cyan-400 font-bold' : 'text-slate-600 group-hover:text-slate-400'}`}>{idx + 1}</span>
+                                                {currentFrameIndex === idx && <div className="absolute bottom-1 w-1 h-1 rounded-full bg-cyan-500 shadow-[0_0_5px_cyan]"></div>}
+                                            </button>
+                                        ))}
+                                        <button onClick={addKeyframe} className="w-8 h-12 md:w-10 md:h-14 flex-shrink-0 rounded-md border border-dashed border-slate-700 hover:border-cyan-500/50 text-slate-600 hover:text-cyan-500 flex items-center justify-center transition-all hover:bg-slate-800"><Plus size={16} /></button>
+                                    </div>
+                                </div>
+                                <div className="flex space-x-2 pl-4 border-l border-slate-800">
+                                    <button onClick={updateKeyframe} className="p-2 rounded hover:bg-cyan-500/10 text-cyan-500 transition-colors" title={t('modify')}><Edit size={16} /></button>
+                                    <button onClick={deleteKeyframe} className="p-2 rounded hover:bg-red-500/10 text-red-500 transition-colors" title={t('delete')}><Trash2 size={16} /></button>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     {/* --- BOTTOM/RIGHT PANEL --- */}
-                    <div className="w-full md:w-[350px] h-[45%] md:h-full bg-slate-900/95 md:bg-slate-900/80 overflow-y-auto md:border-l border-t md:border-t-0 border-slate-800 custom-scrollbar shadow-[0_-5px_20px_rgba(0,0,0,0.5)] z-20 flex-shrink-0">
-                        <div className="p-4 md:p-6">
-                            <div className="mb-6">
-                                <h2 className="text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-widest mb-3 flex items-center"><RotateCcw className="mr-2" size={12} /> {t('manage')}</h2>
-
-                                {/* Custom Preset Input */}
-                                <div className="mb-4 p-3 bg-slate-800/50 rounded-lg border border-slate-700">
-                                    <div className="flex items-center justify-between mb-2">
-                                        <label className="text-[10px] text-slate-400 flex items-center"><Clock size={10} className="mr-1"/> {t('duration')}</label>
-                                        <input 
-                                            type="number" 
-                                            value={pose.duration || 1} 
-                                            onChange={(e) => updatePose('duration', Math.max(0.1, parseFloat(e.target.value)))} 
-                                            step={0.1}
-                                            className="w-16 bg-slate-900 border border-slate-600 rounded px-2 py-1 text-[10px] text-right text-cyan-400 focus:outline-none focus:border-cyan-500" 
-                                        />
-                                    </div>
-                                    <div className="w-full h-px bg-slate-700/50 mb-2"></div>
-                                    <label className="text-[10px] text-slate-400 mb-1 block">{t('savePreset')}</label>
-                                    <div className="flex gap-2">
-                                        <input type="text" value={presetName} onChange={(e) => setPresetName(e.target.value)} placeholder={t('enterName')} className="flex-1 bg-slate-900 border border-slate-600 rounded px-2 py-1 text-[10px] md:text-xs text-white focus:outline-none focus:border-cyan-500 placeholder-slate-600" />
-                                        <button onClick={handleSaveCustomPreset} className="px-2 py-1 bg-cyan-600 hover:bg-cyan-500 text-white rounded text-[10px] md:text-xs flex items-center transition-colors"><Save size={12} className="mr-1" />{t('save')}</button>
-                                    </div>
+                    <div className={`
+                        transition-all duration-500 ease-in-out flex flex-col shadow-2xl z-30 bg-slate-900/95 md:bg-[#0b1120] border-t md:border-t-0 md:border-l border-slate-800
+                        ${isSidebarOpen ? 'w-full md:w-[360px] h-[50%] md:h-full opacity-100' : 'w-full md:w-0 h-0 md:h-full opacity-0 overflow-hidden border-0'}
+                    `}>
+                        
+                        {/* Fixed Header: Tools & Global Settings */}
+                        <div className="p-4 border-b border-slate-800 bg-slate-900/50 backdrop-blur-sm z-10">
+                            <div className="flex justify-between items-center mb-3">
+                                <div className="flex items-center">
+                                    <button onClick={() => setIsSidebarOpen(false)} className="mr-2 text-slate-500 hover:text-white transition-colors" title="Collapse Sidebar"><ArrowRightToLine size={16}/></button>
+                                    <h2 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center"><RotateCcw className="mr-2" size={12} /> {t('manage')}</h2>
                                 </div>
-
-                                <div className="mb-3">
-                                    <select value={selectedPreset} onChange={handlePresetChange} className="w-full bg-slate-800 border border-slate-700 text-white text-[10px] md:text-xs rounded px-2 py-2 focus:outline-none focus:border-cyan-500" disabled={isPlaying}>
-                                        <option value="" disabled>{t('selectPreset')}</option>
-                                        <optgroup label={t('presets')}>{Object.keys(PRESETS).map(key => (<option key={key} value={key}>{t(`p_${key}`)}</option>))}</optgroup>
-                                        {Object.keys(customPresets).length > 0 && <optgroup label={t('custom')}>{Object.keys(customPresets).map(key => (<option key={key} value={key}>{key}</option>))}</optgroup>}
-                                    </select>
-                                </div>
-                                <div className="flex gap-2">
-                                    <button onClick={handleExport} className="flex-1 flex items-center justify-center space-x-1 px-2 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded text-[10px] md:text-xs text-cyan-400 font-medium transition-colors"><Download size={12} /><span>{t('export')}</span></button>
-                                    <button onClick={() => fileInputRef.current.click()} className="flex-1 flex items-center justify-center space-x-1 px-2 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded text-[10px] md:text-xs text-fuchsia-400 font-medium transition-colors"><Upload size={12} /><span>{t('import')}</span></button>
+                                <div className="flex space-x-1">
+                                    <button onClick={handleExport} className="p-1.5 text-slate-400 hover:text-cyan-400 hover:bg-slate-800 rounded transition-colors" title={t('export')}><Download size={14}/></button>
+                                    <button onClick={() => fileInputRef.current.click()} className="p-1.5 text-slate-400 hover:text-fuchsia-400 hover:bg-slate-800 rounded transition-colors" title={t('import')}><Upload size={14}/></button>
                                     <input type="file" ref={fileInputRef} onChange={handleImport} accept=".json" className="hidden" />
                                 </div>
                             </div>
 
-                            <div className="mb-6 border-t border-slate-800 pt-4">
-                                <h2 className="text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-widest mb-3 flex items-center"><Users className="mr-2" size={12} /> {t('formation')}</h2>
-                                <select value={formationType} onChange={(e) => setFormationType(e.target.value)} className="w-full bg-slate-800 border border-slate-700 text-white text-[10px] md:text-xs rounded px-2 py-2 focus:outline-none focus:border-cyan-500">
-                                    {['single', 'duo', 'trio', 'triangle', 'row', 'grid'].map(f => (
-                                        <option key={f} value={f}>{t(`f_${f}`)}</option>
-                                    ))}
-                                </select>
+                            {/* Tools Grid */}
+                            <div className="grid grid-cols-3 gap-2 mb-4">
+                                <button onClick={() => handlePoseOperation('flip')} className="flex items-center justify-center space-x-2 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-md transition-all group">
+                                    <FlipIcon size={14} className="text-slate-400 group-hover:text-white" />
+                                    <span className="text-[10px] font-medium text-slate-400 group-hover:text-white">{t('flip')}</span>
+                                </button>
+                                <button onClick={() => handlePoseOperation('mirrorLR')} className="flex items-center justify-center space-x-2 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-md transition-all group">
+                                    <div className="flex text-[10px] font-bold"><span className="text-fuchsia-500">L</span><span className="text-slate-500 mx-0.5">→</span><span className="text-cyan-500">R</span></div>
+                                </button>
+                                <button onClick={() => handlePoseOperation('mirrorRL')} className="flex items-center justify-center space-x-2 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-md transition-all group">
+                                    <div className="flex text-[10px] font-bold"><span className="text-cyan-500">R</span><span className="text-slate-500 mx-0.5">→</span><span className="text-fuchsia-500">L</span></div>
+                                </button>
                             </div>
 
-                            <div className="space-y-6 pb-8 border-t border-slate-800 pt-4">
-                                <div>
-                                    <h3 className="text-xs font-bold text-slate-300 mb-3 border-b border-slate-700/50 pb-1 flex justify-between items-center"><span>{t('easing')}</span><Settings size={12} className="text-slate-500" /></h3>
-                                    <select value={pose.easing || 'Smooth (流暢)'} onChange={(e) => updatePose('easing', e.target.value)} className="w-full bg-slate-800 border border-slate-700 text-white text-[10px] md:text-xs rounded px-2 py-2 focus:outline-none focus:border-cyan-500">
-                                        {Object.keys(EASING_FUNCTIONS).map(name => (<option key={name} value={name}>{name}</option>))}
+                            {/* Preset & Duration */}
+                            <div className="bg-slate-800/40 rounded-lg p-2 border border-slate-700/50 space-y-2">
+                                <div className="flex gap-2">
+                                    <select value={selectedPreset} onChange={handlePresetChange} className="flex-1 bg-slate-900 border border-slate-700 text-slate-300 text-[10px] rounded px-2 py-1.5 focus:outline-none focus:border-cyan-500/50">
+                                        <option value="" disabled>{t('selectPreset')}</option>
+                                        <optgroup label={t('presets')}>{Object.keys(PRESETS).map(key => (<option key={key} value={key}>{t(`p_${key}`)}</option>))}</optgroup>
+                                        {Object.keys(customPresets).length > 0 && <optgroup label={t('custom')}>{Object.keys(customPresets).map(key => (<option key={key} value={key}>{key}</option>))}</optgroup>}
+                                    </select>
+                                    <div className="flex items-center bg-slate-900 border border-slate-700 rounded px-2 w-20">
+                                        <Clock size={10} className="text-slate-500 mr-1"/>
+                                        <input type="number" value={pose.duration || 1} onChange={(e) => updatePose('duration', Math.max(0.1, parseFloat(e.target.value)))} step={0.1} className="w-full bg-transparent text-[10px] text-right text-cyan-400 focus:outline-none" />
+                                        <span className="text-[8px] text-slate-600 ml-1">s</span>
+                                    </div>
+                                </div>
+                                <div className="flex gap-2">
+                                    <input type="text" value={presetName} onChange={(e) => setPresetName(e.target.value)} placeholder={t('enterName')} className="flex-1 bg-slate-900 border border-slate-700 rounded px-2 py-1.5 text-[10px] text-slate-200 focus:outline-none focus:border-fuchsia-500/50 placeholder-slate-600" />
+                                    <button onClick={handleSaveCustomPreset} className="px-3 bg-slate-700 hover:bg-fuchsia-600 text-white rounded text-[10px] transition-colors"><Save size={12}/></button>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Scrollable Controls Area (Accordion) */}
+                        <div className="flex-1 overflow-y-auto custom-scrollbar p-0">
+                            
+                            {/* Body & Head Section */}
+                            <AccordionSection title={t('body')} icon={Move} isOpen={openSections.body} onToggle={() => toggleSection('body')} color="slate">
+                                <div className="space-y-3 pt-2">
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <button onClick={() => setIsHandSync(!isHandSync)} className={`py-1.5 px-2 rounded border text-[10px] font-bold flex items-center justify-center space-x-1 transition-all ${isHandSync ? 'bg-cyan-500/20 border-cyan-500 text-cyan-400' : 'bg-slate-800 border-slate-700 text-slate-500 hover:border-slate-600'}`}>
+                                            <LinkIcon size={12} /><span>{t('handSync')}</span>
+                                        </button>
+                                        <div className="flex items-center justify-center space-x-1 bg-slate-800 border border-slate-700 rounded">
+                                            <Anchor size={12} className="text-slate-500"/>
+                                            <span className="text-[10px] text-slate-500 font-bold">FIXED</span>
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Fixed Mode toggles simplified */}
+                                    <div className="grid grid-cols-4 gap-1 p-1 bg-slate-800/50 rounded border border-slate-700/30">
+                                        {['lWrist', 'rWrist', 'lAnkle', 'rAnkle'].map(joint => (
+                                            <button 
+                                                key={joint}
+                                                onClick={() => setFixedJoints(p => ({...p, [joint]: !p[joint]}))} 
+                                                className={`h-6 rounded text-[9px] font-bold border transition-all ${fixedJoints[joint] ? (joint.startsWith('l') ? 'bg-cyan-500/20 border-cyan-500 text-cyan-400' : 'bg-fuchsia-500/20 border-fuchsia-500 text-fuchsia-400') : 'bg-transparent border-transparent text-slate-600 hover:bg-slate-700'}`}
+                                            >
+                                                {joint.startsWith('l') ? 'L' : 'R'} {joint.includes('Wrist') ? 'Hand' : 'Foot'}
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    <div className="space-y-1">
+                                        <SliderControl label={t('waist')} value={pose.waist || 0} onChange={(v) => updatePose('waist', v)} min={-45} max={45} step={1} snap={0} accentColor="slate" />
+                                        <SliderControl label={t('bodyX')} value={pose.bodyX || 0} onChange={(v) => updatePose('bodyX', v)} min={-100} max={100} step={1} snap={0} unit="px" accentColor="slate" />
+                                        <SliderControl label={t('bodyY')} value={pose.bodyY || 0} onChange={(v) => updatePose('bodyY', v)} min={-100} max={100} step={1} snap={0} unit="px" accentColor="slate" />
+                                    </div>
+                                    <div className="border-t border-slate-800/50 pt-2 space-y-1">
+                                        <SliderControl label={t('headTilt')} value={pose.headTilt || 0} onChange={(v) => updatePose('headTilt', v)} min={-45} max={45} step={1} snap={0} accentColor="slate" />
+                                        <SliderControl label={t('headSlide')} value={pose.headSlide || 0} onChange={(v) => updatePose('headSlide', v)} min={-30} max={30} step={1} snap={0} unit="px" accentColor="slate" />
+                                    </div>
+                                </div>
+                            </AccordionSection>
+
+                            {/* Left Arm (Cyan) */}
+                            <AccordionSection title={t('lArm')} icon={User} isOpen={openSections.lArm} onToggle={() => toggleSection('lArm')} color="cyan">
+                                <div className="space-y-1 pt-2 border-l-2 border-cyan-500/20 pl-2">
+                                    <div className="flex items-center justify-between mb-2 pr-2">
+                                        <span className="text-[10px] text-cyan-400 font-bold uppercase">{t('depth')}</span>
+                                        <div className="flex bg-slate-800 rounded border border-slate-700 p-0.5">
+                                            <button 
+                                                onClick={() => updatePose('lArmZ', 'back')} 
+                                                className={`px-2 py-0.5 rounded text-[9px] transition-colors ${pose.lArmZ === 'back' ? 'bg-cyan-600 text-white' : 'text-slate-400 hover:text-white'}`}
+                                                title={t('back')}
+                                            >
+                                                <SendToBack size={12} />
+                                            </button>
+                                            <button 
+                                                onClick={() => updatePose('lArmZ', 'front')} 
+                                                className={`px-2 py-0.5 rounded text-[9px] transition-colors ${(!pose.lArmZ || pose.lArmZ === 'front') ? 'bg-cyan-600 text-white' : 'text-slate-400 hover:text-white'}`}
+                                                title={t('front')}
+                                            >
+                                                <BringToFront size={12} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <SliderControl label={t('shoulder')} value={pose.lShoulder} onChange={(v) => updatePose('lShoulder', v)} accentColor="cyan" />
+                                    <SliderControl label={t('elbow')} value={pose.lElbow} onChange={(v) => updatePose('lElbow', v)} accentColor="cyan" />
+                                    <SliderControl label={t('wrist')} value={pose.lWrist} onChange={(v) => updatePose('lWrist', v)} accentColor="cyan" />
+                                </div>
+                            </AccordionSection>
+
+                            {/* Right Arm (Fuchsia) */}
+                            <AccordionSection title={t('rArm')} icon={User} isOpen={openSections.rArm} onToggle={() => toggleSection('rArm')} color="fuchsia">
+                                <div className="space-y-1 pt-2 border-l-2 border-fuchsia-500/20 pl-2">
+                                    <div className="flex items-center justify-between mb-2 pr-2">
+                                        <span className="text-[10px] text-fuchsia-400 font-bold uppercase">{t('depth')}</span>
+                                        <div className="flex bg-slate-800 rounded border border-slate-700 p-0.5">
+                                            <button 
+                                                onClick={() => updatePose('rArmZ', 'back')} 
+                                                className={`px-2 py-0.5 rounded text-[9px] transition-colors ${pose.rArmZ === 'back' ? 'bg-fuchsia-600 text-white' : 'text-slate-400 hover:text-white'}`}
+                                                title={t('back')}
+                                            >
+                                                <SendToBack size={12} />
+                                            </button>
+                                            <button 
+                                                onClick={() => updatePose('rArmZ', 'front')} 
+                                                className={`px-2 py-0.5 rounded text-[9px] transition-colors ${(!pose.rArmZ || pose.rArmZ === 'front') ? 'bg-fuchsia-600 text-white' : 'text-slate-400 hover:text-white'}`}
+                                                title={t('front')}
+                                            >
+                                                <BringToFront size={12} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <SliderControl label={t('shoulder')} value={pose.rShoulder} onChange={(v) => updatePose('rShoulder', v)} accentColor="fuchsia" />
+                                    <SliderControl label={t('elbow')} value={pose.rElbow} onChange={(v) => updatePose('rElbow', v)} accentColor="fuchsia" />
+                                    <SliderControl label={t('wrist')} value={pose.rWrist} onChange={(v) => updatePose('rWrist', v)} accentColor="fuchsia" />
+                                </div>
+                            </AccordionSection>
+
+                            {/* Left Leg (Cyan) */}
+                            <AccordionSection title={t('lLeg')} icon={Move} isOpen={openSections.lLeg} onToggle={() => toggleSection('lLeg')} color="cyan">
+                                <div className="space-y-1 pt-2 border-l-2 border-cyan-900/20 pl-2">
+                                    <SliderControl label={t('hip')} value={pose.lHip ?? 90} onChange={(v) => updatePose('lHip', v)} accentColor="cyan" />
+                                    <SliderControl label={t('knee')} value={pose.lKnee ?? 90} onChange={(v) => updatePose('lKnee', v)} accentColor="cyan" />
+                                    <SliderControl label={t('ankle')} value={pose.lAnkle ?? 0} onChange={(v) => updatePose('lAnkle', v)} accentColor="cyan" />
+                                </div>
+                            </AccordionSection>
+
+                            {/* Right Leg (Fuchsia) */}
+                            <AccordionSection title={t('rLeg')} icon={Move} isOpen={openSections.rLeg} onToggle={() => toggleSection('rLeg')} color="fuchsia">
+                                <div className="space-y-1 pt-2 border-l-2 border-fuchsia-900/20 pl-2">
+                                    <SliderControl label={t('hip')} value={pose.rHip ?? 90} onChange={(v) => updatePose('rHip', v)} accentColor="fuchsia" />
+                                    <SliderControl label={t('knee')} value={pose.rKnee ?? 90} onChange={(v) => updatePose('rKnee', v)} accentColor="fuchsia" />
+                                    <SliderControl label={t('ankle')} value={pose.rAnkle ?? 180} onChange={(v) => updatePose('rAnkle', v)} accentColor="fuchsia" />
+                                </div>
+                            </AccordionSection>
+
+                            {/* Formation Settings */}
+                            <AccordionSection title={t('formation')} icon={Users} isOpen={openSections.formation} onToggle={() => toggleSection('formation')} color="slate">
+                                <div className="pt-2 pb-4">
+                                    <select value={formationType} onChange={(e) => setFormationType(e.target.value)} className="w-full bg-slate-800 border border-slate-700 text-slate-300 text-xs rounded px-2 py-2 focus:outline-none focus:border-slate-500">
+                                        {['single', 'duo', 'trio', 'triangle', 'row', 'grid'].map(f => (
+                                            <option key={f} value={f}>{t(`f_${f}`)}</option>
+                                        ))}
                                     </select>
                                 </div>
+                            </AccordionSection>
 
-                                <div>
-                                    <h3 className="text-xs font-bold text-slate-300 mb-3 border-b border-slate-700/50 pb-1 flex justify-between items-center"><span>{t('body')}</span><Move size={12} className="text-slate-500" /></h3>
-                                    
-                                    <button 
-                                        onClick={() => setIsHandSync(!isHandSync)} 
-                                        className={`w-full mb-3 py-1.5 px-2 rounded-md flex items-center justify-center space-x-2 text-[10px] font-bold transition-all border ${isHandSync ? 'bg-cyan-600 border-cyan-500 text-white shadow-[0_0_10px_rgba(8,145,178,0.4)]' : 'bg-slate-800 border-slate-700 text-slate-400 hover:bg-slate-700 hover:text-slate-200'}`}
-                                    >
-                                        <LinkIcon size={12} />
-                                        <span>{t('handSync')} : {isHandSync ? 'ON' : 'OFF'}</span>
-                                    </button>
-
-                                    <div className="grid grid-cols-1 gap-1">
-                                        <SliderControl label={t('waist')} value={pose.waist || 0} onChange={(v) => updatePose('waist', v)} min={-45} max={45} step={1} snap={0} />
-                                        <SliderControl label={t('bodyX')} value={pose.bodyX || 0} onChange={(v) => updatePose('bodyX', v)} min={-100} max={100} step={1} snap={0} unit="px" />
-                                        <SliderControl label={t('bodyY')} value={pose.bodyY || 0} onChange={(v) => updatePose('bodyY', v)} min={-100} max={100} step={1} snap={0} unit="px" />
-                                    </div>
-                                </div>
-                                <div>
-                                    <h3 className="text-xs font-bold text-slate-300 mb-3 border-b border-slate-700/50 pb-1 flex justify-between items-center"><span>{t('head')}</span><User size={12} className="text-slate-500" /></h3>
-                                    <div className="grid grid-cols-1 gap-1">
-                                        <SliderControl label={t('headTilt')} value={pose.headTilt || 0} onChange={(v) => updatePose('headTilt', v)} min={-45} max={45} step={1} snap={0} />
-                                        <SliderControl label={t('headSlide')} value={pose.headSlide || 0} onChange={(v) => updatePose('headSlide', v)} min={-30} max={30} step={1} snap={0} unit="px" />
-                                    </div>
-                                </div>
-                                <div><h3 className="text-xs font-bold text-cyan-400 mb-3 border-b border-cyan-900/50 pb-1 flex justify-between items-center"><span>{t('rArm')}</span><div className="w-1.5 h-1.5 rounded-full bg-cyan-500"></div></h3><SliderControl label={t('shoulder')} value={pose.lShoulder} onChange={(v) => updatePose('lShoulder', v)} /><SliderControl label={t('elbow')} value={pose.lElbow} onChange={(v) => updatePose('lElbow', v)} /><SliderControl label={t('wrist')} value={pose.lWrist} onChange={(v) => updatePose('lWrist', v)} /></div>
-                                <div><h3 className="text-xs font-bold text-cyan-600 mb-3 border-b border-cyan-900/30 pb-1 flex justify-between items-center"><span>{t('rLeg')}</span><div className="w-1.5 h-1.5 rounded-full bg-cyan-700"></div></h3><SliderControl label={t('hip')} value={pose.lHip ?? 90} onChange={(v) => updatePose('lHip', v)} /><SliderControl label={t('knee')} value={pose.lKnee ?? 90} onChange={(v) => updatePose('lKnee', v)} /><SliderControl label={t('ankle')} value={pose.lAnkle ?? 0} onChange={(v) => updatePose('lAnkle', v)} /></div>
-                                <div><h3 className="text-xs font-bold text-fuchsia-400 mb-3 border-b border-fuchsia-900/50 pb-1 flex justify-between items-center"><span>{t('lArm')}</span><div className="w-1.5 h-1.5 rounded-full bg-fuchsia-500"></div></h3><SliderControl label={t('shoulder')} value={pose.rShoulder} onChange={(v) => updatePose('rShoulder', v)} /><SliderControl label={t('elbow')} value={pose.rElbow} onChange={(v) => updatePose('rElbow', v)} /><SliderControl label={t('wrist')} value={pose.rWrist} onChange={(v) => updatePose('rWrist', v)} /></div>
-                                <div><h3 className="text-xs font-bold text-fuchsia-600 mb-3 border-b border-fuchsia-900/30 pb-1 flex justify-between items-center"><span>{t('lLeg')}</span><div className="w-1.5 h-1.5 rounded-full bg-fuchsia-700"></div></h3><SliderControl label={t('hip')} value={pose.rHip ?? 90} onChange={(v) => updatePose('rHip', v)} /><SliderControl label={t('knee')} value={pose.rKnee ?? 90} onChange={(v) => updatePose('rKnee', v)} /><SliderControl label={t('ankle')} value={pose.rAnkle ?? 180} onChange={(v) => updatePose('rAnkle', v)} /></div>
-                            </div>
+                        </div>
+                        
+                        {/* Bottom Action Bar */}
+                        <div className="p-3 border-t border-slate-800 bg-slate-900/80 backdrop-blur-sm">
+                            <button onClick={updateKeyframe} className="w-full py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-md text-xs font-bold tracking-wider uppercase transition-all shadow-lg shadow-cyan-900/20 flex items-center justify-center">
+                                <Edit size={14} className="mr-2" /> {t('modify')}
+                            </button>
                         </div>
                     </div>
                 </div>
