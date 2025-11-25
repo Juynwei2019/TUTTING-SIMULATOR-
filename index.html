@@ -83,7 +83,7 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect, useRef, useMemo } = React;
+        const { useState, useEffect, useRef, useMemo, useCallback } = React;
 
         // --- Icons (Inline SVG) ---
         const Icon = ({ children, size = 24, className = "", ...props }) => (
@@ -143,6 +143,8 @@
         const SendToBack = (props) => <Icon {...props}><rect x="4" y="4" width="8" height="8" rx="2" /><path d="M12 8c1.1 0 2 .9 2 2v10c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2" /></Icon>;
         const Palette = (props) => <Icon {...props}><circle cx="13.5" cy="6.5" r=".5" /><circle cx="17.5" cy="10.5" r=".5" /><circle cx="8.5" cy="7.5" r=".5" /><circle cx="6.5" cy="12.5" r=".5" /><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" /></Icon>;
         const OnionSkinIcon = (props) => <Icon {...props}><path d="M21 14.8v3.7a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-3.7" /><path d="m12 2 8.5 5-8.5 5-8.5-5Z" /><path d="m3 9.7 9 5.3 9-5.3" /></Icon>;
+        const Undo2 = (props) => <Icon {...props}><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"/></Icon>;
+        const Redo2 = (props) => <Icon {...props}><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5A5.5 5.5 0 0 0 4 14.5v0A5.5 5.5 0 0 0 9.5 20H13"/></Icon>;
 
         // --- THEMES CONFIGURATION ---
         const THEMES = {
@@ -278,6 +280,8 @@
                 t_cyberpunk: 'Cyberpunk',
                 t_minimalist: '極簡黑白',
                 onionSkin: '洋蔥皮模式',
+                undo: '復原',
+                redo: '重做',
             },
             'en': {
                 title: 'GRID FLOW',
@@ -358,8 +362,10 @@
                 t_cyberpunk: 'Cyberpunk',
                 t_minimalist: 'Minimalist Mono',
                 onionSkin: 'Onion Skin',
+                undo: 'Undo',
+                redo: 'Redo',
             },
-            // ... (Other languages defaulting to EN for new keys)
+            // ... (Other languages defaulting to EN)
         };
 
         const SEGMENT_LENGTHS = {
@@ -673,7 +679,7 @@
                     core: ghostColor,
                     glow: false
                 };
-                currentOpacity = 0.3; // Fixed low opacity for ghosts
+                currentOpacity = 0.3; 
             }
 
             const renderLeftArm = () => (
@@ -692,7 +698,6 @@
                 </>
             );
 
-            // Simplified structure for Ghost to reduce clutter? No, keeping full structure for accuracy.
             return (
                 <g opacity={currentOpacity} style={{ pointerEvents: isGhost ? 'none' : 'auto' }}>
                     {!isGhost && <line x1="-150" y1="190" x2="150" y2="190" stroke={theme === 'minimalist' ? '#333' : "#334155"} strokeWidth="2" strokeDasharray="5,5" opacity="0.5" />}
@@ -725,6 +730,7 @@
         }
 
         function TuttingSimulator() {
+            // State
             const [pose, setPose] = useState(PRESETS.idle);
             const [timeline, setTimeline] = useState([PRESETS.idle]);
             const [currentFrameIndex, setCurrentFrameIndex] = useState(0);
@@ -745,9 +751,13 @@
             const [isHandSync, setIsHandSync] = useState(false);
             const [fixedJoints, setFixedJoints] = useState({ rWrist: false, lWrist: false, rAnkle: false, lAnkle: false });
             const [showTrails, setShowTrails] = useState(false);
-            const [showOnionSkin, setShowOnionSkin] = useState(false); // NEW: Onion Skin State
+            const [showOnionSkin, setShowOnionSkin] = useState(false); 
             const [isSidebarOpen, setIsSidebarOpen] = useState(true);
             const [theme, setTheme] = useState('cyberpunk');
+            
+            // HISTORY STATE
+            const [history, setHistory] = useState([{ timeline: [PRESETS.idle], currentFrameIndex: 0 }]);
+            const [historyStep, setHistoryStep] = useState(0);
             
             const [openSections, setOpenSections] = useState({
                 body: true,
@@ -790,6 +800,61 @@
 
             const t = (key) => TRANSLATIONS[lang] ? (TRANSLATIONS[lang][key] || key) : key;
             const currentThemeConfig = THEMES[theme];
+
+            // --- Undo/Redo Logic ---
+            const recordHistory = useCallback((newTimeline, newIndex) => {
+                const newState = { 
+                    timeline: JSON.parse(JSON.stringify(newTimeline)), 
+                    currentFrameIndex: newIndex 
+                };
+                
+                setHistory(prev => {
+                    const newHistory = prev.slice(0, historyStep + 1);
+                    newHistory.push(newState);
+                    // Limit history size to prevent memory issues
+                    if (newHistory.length > 50) newHistory.shift();
+                    return newHistory;
+                });
+                setHistoryStep(prev => Math.min(prev + 1, 49)); // Adjust if shift happened
+            }, [historyStep]);
+
+            const undo = () => {
+                if (historyStep > 0) {
+                    const prevStep = historyStep - 1;
+                    const state = history[prevStep];
+                    setTimeline(state.timeline);
+                    setCurrentFrameIndex(state.currentFrameIndex);
+                    setPose(state.timeline[state.currentFrameIndex]);
+                    setHistoryStep(prevStep);
+                }
+            };
+
+            const redo = () => {
+                if (historyStep < history.length - 1) {
+                    const nextStep = historyStep + 1;
+                    const state = history[nextStep];
+                    setTimeline(state.timeline);
+                    setCurrentFrameIndex(state.currentFrameIndex);
+                    setPose(state.timeline[state.currentFrameIndex]);
+                    setHistoryStep(nextStep);
+                }
+            };
+
+            // Keyboard Shortcuts
+            useEffect(() => {
+                const handleKeyDown = (e) => {
+                    if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+                        e.preventDefault();
+                        if (e.shiftKey) redo();
+                        else undo();
+                    } else if ((e.ctrlKey || e.metaKey) && e.key === 'y') {
+                        e.preventDefault();
+                        redo();
+                    }
+                };
+                window.addEventListener('keydown', handleKeyDown);
+                return () => window.removeEventListener('keydown', handleKeyDown);
+            }, [historyStep, history]);
 
             const mirrorAngle = (deg) => (540 - deg) % 360;
 
@@ -996,13 +1061,16 @@
             const addKeyframe = () => {
                 const newTimeline = [...timeline, { ...pose }];
                 setTimeline(newTimeline);
-                setCurrentFrameIndex(newTimeline.length - 1);
+                const newIndex = newTimeline.length - 1;
+                setCurrentFrameIndex(newIndex);
+                recordHistory(newTimeline, newIndex);
             };
 
             const updateKeyframe = () => {
                 const newTimeline = [...timeline];
                 newTimeline[currentFrameIndex] = { ...pose };
                 setTimeline(newTimeline);
+                recordHistory(newTimeline, currentFrameIndex);
             };
 
             const deleteKeyframe = () => {
@@ -1012,6 +1080,7 @@
                 const newIndex = Math.min(currentFrameIndex, newTimeline.length - 1);
                 setCurrentFrameIndex(newIndex);
                 setPose(newTimeline[newIndex]);
+                recordHistory(newTimeline, newIndex);
             };
 
             const handleAIGenerate = () => {
@@ -1037,6 +1106,7 @@
                 setTimeline(newTimeline);
                 setCurrentFrameIndex(0);
                 setPose(newTimeline[0]);
+                recordHistory(newTimeline, 0);
                 setTimeout(() => setIsPlaying(true), 500);
             };
 
@@ -1063,6 +1133,7 @@
                             setTimeline(importedTimeline);
                             setPose(importedTimeline[0]);
                             setCurrentFrameIndex(0);
+                            recordHistory(importedTimeline, 0);
                             alert(t('importSuccess'));
                         } else {
                             alert(t('importError'));
@@ -1174,6 +1245,17 @@
                         </div>
 
                         <div className="absolute top-4 right-4 z-10 flex gap-2">
+                            {/* UNDO / REDO BUTTONS */}
+                            <div className={`flex items-center ${currentThemeConfig.headerBg} backdrop-blur-md border ${currentThemeConfig.borderColor} rounded-full px-1 py-1 cursor-pointer hover:opacity-80 transition-all shadow-lg`}>
+                                <button onClick={undo} disabled={historyStep <= 0} className={`p-1.5 rounded-full ${historyStep > 0 ? (theme === 'minimalist' ? 'text-white hover:bg-white/10' : 'text-cyan-400 hover:bg-cyan-500/20') : 'text-slate-600 cursor-not-allowed'} transition-colors`} title={`${t('undo')} (Ctrl+Z)`}>
+                                    <Undo2 size={14} />
+                                </button>
+                                <div className={`w-px h-4 ${theme === 'minimalist' ? 'bg-neutral-700' : 'bg-slate-700'} mx-1`}></div>
+                                <button onClick={redo} disabled={historyStep >= history.length - 1} className={`p-1.5 rounded-full ${historyStep < history.length - 1 ? (theme === 'minimalist' ? 'text-white hover:bg-white/10' : 'text-fuchsia-400 hover:bg-fuchsia-500/20') : 'text-slate-600 cursor-not-allowed'} transition-colors`} title={`${t('redo')} (Ctrl+Y)`}>
+                                    <Redo2 size={14} />
+                                </button>
+                            </div>
+
                             {!isSidebarOpen && (
                                 <button 
                                     onClick={() => setIsSidebarOpen(true)} 
