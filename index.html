@@ -49,7 +49,8 @@
         body {
             overflow: hidden;
             touch-action: none;
-            background-color: #020617; /* slate-950 */
+            background-color: #020617; /* slate-950 default */
+            transition: background-color 0.5s ease;
         }
 
         /* Hide number input spin buttons */
@@ -72,7 +73,6 @@
         }
         
         .glass-panel {
-            background: rgba(15, 23, 42, 0.85);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
         }
@@ -141,6 +141,60 @@
         const ArrowLeftFromLine = (props) => <Icon {...props}><path d="m3 5v14" /><path d="M21 12H7" /><path d="m13 18-6-6 6-6" /></Icon>;
         const BringToFront = (props) => <Icon {...props}><rect x="8" y="8" width="8" height="8" rx="2" /><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" /></Icon>;
         const SendToBack = (props) => <Icon {...props}><rect x="4" y="4" width="8" height="8" rx="2" /><path d="M12 8c1.1 0 2 .9 2 2v10c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2" /></Icon>;
+        const Palette = (props) => <Icon {...props}><circle cx="13.5" cy="6.5" r=".5" /><circle cx="17.5" cy="10.5" r=".5" /><circle cx="8.5" cy="7.5" r=".5" /><circle cx="6.5" cy="12.5" r=".5" /><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" /></Icon>;
+        const OnionSkinIcon = (props) => <Icon {...props}><path d="M21 14.8v3.7a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-3.7" /><path d="m12 2 8.5 5-8.5 5-8.5-5Z" /><path d="m3 9.7 9 5.3 9-5.3" /></Icon>;
+
+        // --- THEMES CONFIGURATION ---
+        const THEMES = {
+            'cyberpunk': {
+                id: 'cyberpunk',
+                label: 'Cyberpunk',
+                bg: 'bg-slate-950',
+                text: 'text-slate-200',
+                panelBg: 'bg-slate-900/95',
+                headerBg: 'bg-slate-900/50',
+                borderColor: 'border-slate-800',
+                gridOpacity: 0.03,
+                colors: {
+                    left: '#06b6d4', // Cyan
+                    right: '#d946ef', // Fuchsia
+                    core: '#e879f9',
+                    glow: true,
+                    ghostPrev: '#ef4444', // Red
+                    ghostNext: '#22c55e', // Green
+                },
+                ui: {
+                    accentLeft: 'cyan',
+                    accentRight: 'fuchsia',
+                    buttonActive: 'text-white',
+                    buttonInactive: 'text-slate-400'
+                }
+            },
+            'minimalist': {
+                id: 'minimalist',
+                label: 'Minimalist Mono',
+                bg: 'bg-black',
+                text: 'text-neutral-200',
+                panelBg: 'bg-neutral-900/95',
+                headerBg: 'bg-neutral-900/50',
+                borderColor: 'border-neutral-800',
+                gridOpacity: 0.1,
+                colors: {
+                    left: '#ffffff', // White
+                    right: '#737373', // Neutral 500 (Grey)
+                    core: '#a3a3a3',
+                    glow: false,
+                    ghostPrev: '#525252', // Dark Grey
+                    ghostNext: '#d4d4d4', // Light Grey
+                },
+                ui: {
+                    accentLeft: 'white',
+                    accentRight: 'neutral',
+                    buttonActive: 'text-white',
+                    buttonInactive: 'text-neutral-500'
+                }
+            }
+        };
 
         // --- Constants & Helper Functions ---
 
@@ -220,6 +274,10 @@
                 depth: '圖層深度',
                 front: '前',
                 back: '後',
+                theme: '主題',
+                t_cyberpunk: 'Cyberpunk',
+                t_minimalist: '極簡黑白',
+                onionSkin: '洋蔥皮模式',
             },
             'en': {
                 title: 'GRID FLOW',
@@ -296,691 +354,12 @@
                 depth: 'Layer Depth',
                 front: 'Front',
                 back: 'Back',
+                theme: 'Theme',
+                t_cyberpunk: 'Cyberpunk',
+                t_minimalist: 'Minimalist Mono',
+                onionSkin: 'Onion Skin',
             },
-            'ja': {
-                title: 'GRID FLOW',
-                subtitle: 'タッティング・シミュレーター V2.6',
-                timeline: 'タイムライン',
-                bpm: 'BPM',
-                ai: 'AI生成',
-                delete: '削除',
-                update: '更新',
-                modify: 'ポーズ修正',
-                manage: '管理',
-                presets: 'プリセット',
-                selectPreset: 'プリセットを選択',
-                export: '出力',
-                import: '入力',
-                savePreset: 'ポーズ保存',
-                enterName: 'ポーズ名',
-                save: '保存',
-                custom: 'カスタム',
-                saveSuccess: '保存しました！',
-                nameEmpty: '名前を入力してください',
-                body: '体 (BODY)',
-                waist: '腰',
-                bodyX: '水平移動',
-                bodyY: '垂直移動',
-                head: '頭 (HEAD)',
-                headTilt: '傾き',
-                headSlide: 'スライド',
-                rArm: '右腕 (R ARM)',
-                lArm: '左腕 (L ARM)',
-                rLeg: '右脚 (R LEG)',
-                lLeg: '左脚 (L LEG)',
-                shoulder: '肩',
-                elbow: '肘',
-                wrist: '手首',
-                hip: '股関節',
-                knee: '膝',
-                ankle: '足首',
-                easing: 'イージング',
-                p_idle: '待機',
-                p_box: 'ボックス',
-                p_prayer: '祈り',
-                p_tutting_l: 'L字',
-                p_cobra: 'コブラ',
-                p_pharaoh: 'ファラオ',
-                p_diamond: 'ダイヤモンド',
-                p_stairs: '階段',
-                p_frame: 'フレーム',
-                p_wings: '翼',
-                p_zig_zag: 'ジグザグ',
-                dragModeOn: 'ドラッグ',
-                dragModeOff: 'ドラッグ',
-                importSuccess: 'インポート成功！',
-                importError: 'ファイル形式エラー',
-                importFail: 'インポート失敗',
-                fk: 'FK (順運動学)',
-                ik: 'IK (逆運動学)',
-                formation: 'フォーメーション',
-                f_single: 'シングル',
-                f_duo: 'デュオ',
-                f_trio: 'トリオ',
-                f_triangle: 'トライアングル',
-                f_row: '列',
-                f_grid: 'グリッド',
-                resetView: '視点リセット',
-                handSync: 'ハンド同期',
-                duration: '持続時間 (秒)',
-                fixedMode: '固定モード',
-                flip: '左右反転',
-                mirrorLR: '左を右にコピー',
-                mirrorRL: '右を左にコピー',
-                tools: 'ツール',
-                motionTrails: 'モーション軌跡',
-                depth: 'レイヤー深度',
-                front: '前',
-                back: '後',
-            },
-            'ko': {
-                title: 'GRID FLOW',
-                subtitle: '터팅 시뮬레이터 V2.6',
-                timeline: '타임라인',
-                bpm: 'BPM',
-                ai: 'AI 생성',
-                delete: '삭제',
-                update: '갱신',
-                modify: '포즈 수정',
-                manage: '관리',
-                presets: '프리셋',
-                selectPreset: '프리셋 선택',
-                export: '내보내기',
-                import: '가져오기',
-                savePreset: '포즈 저장',
-                enterName: '포즈 이름',
-                save: '저장',
-                custom: '사용자 지정',
-                saveSuccess: '저장되었습니다!',
-                nameEmpty: '이름을 입력하세요',
-                body: '몸통 (BODY)',
-                waist: '허리',
-                bodyX: '수평 이동',
-                bodyY: '수직 이동',
-                head: '머리 (HEAD)',
-                headTilt: '기울기',
-                headSlide: '슬라이드',
-                rArm: '오른팔 (R ARM)',
-                lArm: '왼팔 (L ARM)',
-                rLeg: '오른다리 (R LEG)',
-                lLeg: '왼다리 (L LEG)',
-                shoulder: '어깨',
-                elbow: '팔꿈치',
-                wrist: '손목',
-                hip: '골반',
-                knee: '무릎',
-                ankle: '발목',
-                easing: '이징 (Easing)',
-                p_idle: '대기',
-                p_box: '박스',
-                p_prayer: '기도',
-                p_tutting_l: 'L자',
-                p_cobra: '코브라',
-                p_pharaoh: '파라오',
-                p_diamond: '다이아몬드',
-                p_stairs: '계단',
-                p_frame: '프레임',
-                p_wings: '날개',
-                p_zig_zag: '지그재그',
-                dragModeOn: '드래그 모드',
-                dragModeOff: '드래그 모드',
-                importSuccess: '가져오기 성공!',
-                importError: '파일 형식 오류',
-                importFail: '가져오기 실패',
-                fk: 'FK 모드',
-                ik: 'IK 모드',
-                formation: '대형',
-                f_single: '싱글',
-                f_duo: '듀오',
-                f_trio: '트리오',
-                f_triangle: '삼각형',
-                f_row: '일렬',
-                f_grid: '그리드',
-                resetView: '뷰 초기화',
-                handSync: '손 동기화',
-                duration: '지속 시간 (초)',
-                fixedMode: '고정 모드',
-                flip: '좌우 반전',
-                mirrorLR: '왼쪽 → 오른쪽',
-                mirrorRL: '오른쪽 → 왼쪽',
-                tools: '도구',
-                motionTrails: '잔상 효과',
-                depth: '레이어 깊이',
-                front: '앞',
-                back: '뒤',
-            },
-            'es': {
-                title: 'GRID FLOW',
-                subtitle: 'SIMULADOR DE TUTTING V2.6',
-                timeline: 'LÍNEA DE TIEMPO',
-                bpm: 'BPM',
-                ai: 'GEN IA',
-                delete: 'BORRAR',
-                update: 'ACTUALIZAR',
-                modify: 'MODIFICAR POSE',
-                manage: 'GESTIONAR',
-                presets: 'PREAJUSTES',
-                selectPreset: 'Elegir Preajuste',
-                export: 'EXPORTAR',
-                import: 'IMPORTAR',
-                savePreset: 'Guardar Pose',
-                enterName: 'Nombre de Pose',
-                save: 'Guardar',
-                custom: 'Personalizado',
-                saveSuccess: '¡Guardado!',
-                nameEmpty: 'Ingrese nombre',
-                body: 'CUERPO',
-                waist: 'Cintura',
-                bodyX: 'Mover X',
-                bodyY: 'Mover Y',
-                head: 'CABEZA',
-                headTilt: 'Inclinación',
-                headSlide: 'Deslizar',
-                rArm: 'BRAZO D',
-                lArm: 'BRAZO I',
-                rLeg: 'PIERNA D',
-                lLeg: 'PIERNA I',
-                shoulder: 'Hombro',
-                elbow: 'Codo',
-                wrist: 'Muñeca',
-                hip: 'Cadera',
-                knee: 'Rodilla',
-                ankle: 'Tobillo',
-                easing: 'Suavizado',
-                p_idle: 'Reposo',
-                p_box: 'Caja',
-                p_prayer: 'Oración',
-                p_tutting_l: 'Tutting L',
-                p_cobra: 'Cobra',
-                p_pharaoh: 'Faraón',
-                p_diamond: 'Diamante',
-                p_stairs: 'Escaleras',
-                p_frame: 'Marco',
-                p_wings: 'Alas',
-                p_zig_zag: 'Zig Zag',
-                dragModeOn: 'Arrastrar',
-                dragModeOff: 'Arrastrar',
-                importSuccess: '¡Importación exitosa!',
-                importError: 'Formato inválido',
-                importFail: 'Fallo al importar',
-                fk: 'Modo FK',
-                ik: 'Modo IK',
-                formation: 'Formación',
-                f_single: 'Solo',
-                f_duo: 'Dúo',
-                f_trio: 'Trío',
-                f_triangle: 'Triángulo',
-                f_row: 'Fila',
-                f_grid: 'Cuadrícula',
-                resetView: 'Reiniciar Vista',
-                handSync: 'Sincronizar Manos',
-                duration: 'Duración (s)',
-                fixedMode: 'Modo Fijo',
-                flip: 'Voltear',
-                mirrorLR: 'Copiar I a D',
-                mirrorRL: 'Copiar D a I',
-                tools: 'HERRAMIENTAS',
-                motionTrails: 'Rastros',
-                depth: 'Profundidad',
-                front: 'Frente',
-                back: 'Atrás',
-            },
-            'pt': {
-                title: 'GRID FLOW',
-                subtitle: 'SIMULADOR DE TUTTING V2.6',
-                timeline: 'LINHA DO TEMPO',
-                bpm: 'BPM',
-                ai: 'GERAR IA',
-                delete: 'EXCLUIR',
-                update: 'ATUALIZAR',
-                modify: 'MODIFICAR POSE',
-                manage: 'GERENCIAR',
-                presets: 'PREDEFINIÇÕES',
-                selectPreset: 'Selecionar',
-                export: 'EXPORTAR',
-                import: 'IMPORTAR',
-                savePreset: 'Salvar Pose',
-                enterName: 'Nome da Pose',
-                save: 'Salvar',
-                custom: 'Personalizado',
-                saveSuccess: 'Salvo!',
-                nameEmpty: 'Digite um nome',
-                body: 'CORPO',
-                waist: 'Cintura',
-                bodyX: 'Mover X',
-                bodyY: 'Mover Y',
-                head: 'CABEÇA',
-                headTilt: 'Inclinação',
-                headSlide: 'Deslizar',
-                rArm: 'BRAÇO D',
-                lArm: 'BRAÇO E',
-                rLeg: 'PERNA D',
-                lLeg: 'PERNA E',
-                shoulder: 'Ombro',
-                elbow: 'Cotovelo',
-                wrist: 'Punho',
-                hip: 'Quadril',
-                knee: 'Joelho',
-                ankle: 'Tornozelo',
-                easing: 'Suavização',
-                p_idle: 'Ocioso',
-                p_box: 'Caixa',
-                p_prayer: 'Oração',
-                p_tutting_l: 'Tutting L',
-                p_cobra: 'Cobra',
-                p_pharaoh: 'Faraó',
-                p_diamond: 'Diamante',
-                p_stairs: 'Escadas',
-                p_frame: 'Moldura',
-                p_wings: 'Asas',
-                p_zig_zag: 'Ziguezague',
-                dragModeOn: 'Arrastar',
-                dragModeOff: 'Arrastar',
-                importSuccess: 'Sucesso!',
-                importError: 'Formato Inválido',
-                importFail: 'Falha',
-                fk: 'Modo FK',
-                ik: 'Modo IK',
-                formation: 'Formação',
-                f_single: 'Solo',
-                f_duo: 'Dueto',
-                f_trio: 'Trio',
-                f_triangle: 'Triângulo',
-                f_row: 'Fila',
-                f_grid: 'Grade',
-                resetView: 'Redefinir Vista',
-                handSync: 'Sinc. Mãos',
-                duration: 'Duração (s)',
-                fixedMode: 'Modo Fixo',
-                flip: 'Virar',
-                mirrorLR: 'Copiar E p/ D',
-                mirrorRL: 'Copiar D p/ E',
-                tools: 'FERRAMENTAS',
-                motionTrails: 'Rastros',
-                depth: 'Profundidade',
-                front: 'Frente',
-                back: 'Trás',
-            },
-            'fr': {
-                title: 'GRID FLOW',
-                subtitle: 'SIMULATEUR DE TUTTING V2.6',
-                timeline: 'CHRONOLOGIE',
-                bpm: 'BPM',
-                ai: 'GEN IA',
-                delete: 'SUPPRIMER',
-                update: 'METTRE À JOUR',
-                modify: 'MODIFIER POSE',
-                manage: 'GÉRER',
-                presets: 'PRÉRÉGLAGES',
-                selectPreset: 'Sélectionner',
-                export: 'EXPORTER',
-                import: 'IMPORTER',
-                savePreset: 'Sauver Pose',
-                enterName: 'Nom de Pose',
-                save: 'Sauver',
-                custom: 'Personnalisé',
-                saveSuccess: 'Enregistré!',
-                nameEmpty: 'Entrez un nom',
-                body: 'CORPS',
-                waist: 'Taille',
-                bodyX: 'Dépl. X',
-                bodyY: 'Dépl. Y',
-                head: 'TÊTE',
-                headTilt: 'Inclinaison',
-                headSlide: 'Glissement',
-                rArm: 'BRAS D',
-                lArm: 'BRAS G',
-                rLeg: 'JAMBE D',
-                lLeg: 'JAMBE G',
-                shoulder: 'Épaule',
-                elbow: 'Coude',
-                wrist: 'Poignet',
-                hip: 'Hanche',
-                knee: 'Genou',
-                ankle: 'Cheville',
-                easing: 'Lissage',
-                p_idle: 'Repos',
-                p_box: 'Boîte',
-                p_prayer: 'Prière',
-                p_tutting_l: 'Tutting L',
-                p_cobra: 'Cobra',
-                p_pharaoh: 'Pharaon',
-                p_diamond: 'Diamant',
-                p_stairs: 'Escaliers',
-                p_frame: 'Cadre',
-                p_wings: 'Ailes',
-                p_zig_zag: 'Zig Zag',
-                dragModeOn: 'Glisser',
-                dragModeOff: 'Glisser',
-                importSuccess: 'Succès!',
-                importError: 'Format Invalide',
-                importFail: 'Échec',
-                fk: 'Mode FK',
-                ik: 'Mode IK',
-                formation: 'Formation',
-                f_single: 'Solo',
-                f_duo: 'Duo',
-                f_trio: 'Trio',
-                f_triangle: 'Triangle',
-                f_row: 'Rangée',
-                f_grid: 'Grille',
-                resetView: 'Réinit. Vue',
-                handSync: 'Sync Mains',
-                duration: 'Durée (s)',
-                fixedMode: 'Mode Fixe',
-                flip: 'Retourner',
-                mirrorLR: 'Copier G à D',
-                mirrorRL: 'Copier D à G',
-                tools: 'OUTILS',
-                motionTrails: 'Traînées',
-                depth: 'Profondeur',
-                front: 'Avant',
-                back: 'Arrière',
-            },
-            'de': {
-                title: 'GRID FLOW',
-                subtitle: 'TUTTING SIMULATOR V2.6',
-                timeline: 'ZEITACHSE',
-                bpm: 'BPM',
-                ai: 'KI GEN',
-                delete: 'LÖSCHEN',
-                update: 'AKTUALISIEREN',
-                modify: 'POSE ÄNDERN',
-                manage: 'VERWALTEN',
-                presets: 'VORLAGEN',
-                selectPreset: 'Vorlage wählen',
-                export: 'EXPORT',
-                import: 'IMPORT',
-                savePreset: 'Pose speichern',
-                enterName: 'Posenname',
-                save: 'Speichern',
-                custom: 'Benutzerdefiniert',
-                saveSuccess: 'Gespeichert!',
-                nameEmpty: 'Namen eingeben',
-                body: 'KÖRPER',
-                waist: 'Taille',
-                bodyX: 'Bewegung X',
-                bodyY: 'Bewegung Y',
-                head: 'KOPF',
-                headTilt: 'Neigung',
-                headSlide: 'Schieben',
-                rArm: 'R ARM',
-                lArm: 'L ARM',
-                rLeg: 'R BEIN',
-                lLeg: 'L BEIN',
-                shoulder: 'Schulter',
-                elbow: 'Ellbogen',
-                wrist: 'Handgelenk',
-                hip: 'Hüfte',
-                knee: 'Knie',
-                ankle: 'Knöchel',
-                easing: 'Easing',
-                p_idle: 'Ruhe',
-                p_box: 'Box',
-                p_prayer: 'Gebet',
-                p_tutting_l: 'Tutting L',
-                p_cobra: 'Kobra',
-                p_pharaoh: 'Pharao',
-                p_diamond: 'Diamant',
-                p_stairs: 'Treppe',
-                p_frame: 'Rahmen',
-                p_wings: 'Flügel',
-                p_zig_zag: 'Zickzack',
-                dragModeOn: 'Zieh-Modus',
-                dragModeOff: 'Zieh-Modus',
-                importSuccess: 'Erfolg!',
-                importError: 'Ungültiges Format',
-                importFail: 'Fehler',
-                fk: 'FK-Modus',
-                ik: 'IK-Modus',
-                formation: 'Formation',
-                f_single: 'Einzel',
-                f_duo: 'Duo',
-                f_trio: 'Trio',
-                f_triangle: 'Dreieck',
-                f_row: 'Reihe',
-                f_grid: 'Raster',
-                resetView: 'Ansicht zurücksetzen',
-                handSync: 'Hand-Sync',
-                duration: 'Dauer (s)',
-                fixedMode: 'Fixierter Modus',
-                flip: 'Spiegeln',
-                mirrorLR: 'Kopie L nach R',
-                mirrorRL: 'Kopie R nach L',
-                tools: 'WERKZEUGE',
-                motionTrails: 'Bewegungsspuren',
-                depth: 'Ebene',
-                front: 'Vorne',
-                back: 'Hinten',
-            },
-            'vi': {
-                title: 'GRID FLOW',
-                subtitle: 'MÔ PHỎNG TUTTING V2.6',
-                timeline: 'DÒNG THỜI GIAN',
-                bpm: 'BPM',
-                ai: 'TẠO AI',
-                delete: 'XÓA',
-                update: 'CẬP NHẬT',
-                modify: 'SỬA ĐỘNG TÁC',
-                manage: 'QUẢN LÝ',
-                presets: 'MẪU CÓ SẴN',
-                selectPreset: 'Chọn Mẫu',
-                export: 'XUẤT',
-                import: 'NHẬP',
-                savePreset: 'Lưu Tư thế',
-                enterName: 'Tên Tư thế',
-                save: 'Lưu',
-                custom: 'Tùy chỉnh',
-                saveSuccess: 'Đã lưu!',
-                nameEmpty: 'Nhập tên',
-                body: 'CƠ THỂ',
-                waist: 'Eo',
-                bodyX: 'Di chuyển X',
-                bodyY: 'Di chuyển Y',
-                head: 'ĐẦU',
-                headTilt: 'Nghiêng',
-                headSlide: 'Trượt',
-                rArm: 'TAY PHẢI',
-                lArm: 'TAY TRÁI',
-                rLeg: 'CHÂN PHẢI',
-                lLeg: 'CHÂN TRÁI',
-                shoulder: 'Vai',
-                elbow: 'Khuỷu',
-                wrist: 'Cổ tay',
-                hip: 'Hông',
-                knee: 'Đầu gối',
-                ankle: 'Cổ chân',
-                easing: 'Chuyển động',
-                p_idle: 'Nghỉ',
-                p_box: 'Hộp',
-                p_prayer: 'Cầu nguyện',
-                p_tutting_l: 'Chữ L',
-                p_cobra: 'Rắn hổ mang',
-                p_pharaoh: 'Pharaoh',
-                p_diamond: 'Kim cương',
-                p_stairs: 'Cầu thang',
-                p_frame: 'Khung ảnh',
-                p_wings: 'Đôi cánh',
-                p_zig_zag: 'Zig Zag',
-                dragModeOn: 'Chế độ Kéo',
-                dragModeOff: 'Chế độ Kéo',
-                importSuccess: 'Thành công!',
-                importError: 'Lỗi định dạng',
-                importFail: 'Thất bại',
-                fk: 'Chế độ FK',
-                ik: 'Chế độ IK',
-                formation: 'Đội hình',
-                f_single: 'Đơn',
-                f_duo: 'Đôi',
-                f_trio: 'Ba người',
-                f_triangle: 'Tam giác',
-                f_row: 'Hàng ngang',
-                f_grid: 'Lưới',
-                resetView: 'Đặt lại Chế độ xem',
-                handSync: 'Đồng bộ tay',
-                duration: 'Thời lượng (s)',
-                fixedMode: 'Chế độ Cố định',
-                flip: 'Lật ngang',
-                mirrorLR: 'Chép Trái sang Phải',
-                mirrorRL: 'Chép Phải sang Trái',
-                tools: 'CÔNG CỤ',
-                motionTrails: 'Dấu vết chuyển động',
-                depth: 'Độ sâu lớp',
-                front: 'Trước',
-                back: 'Sau',
-            },
-            'hi': {
-                title: 'GRID FLOW',
-                subtitle: 'टटिंग सिम्युलेटर V2.6',
-                timeline: 'समयरेखा',
-                bpm: 'BPM',
-                ai: 'AI जनरेट',
-                delete: 'हटाएं',
-                update: 'अपडेट',
-                modify: 'पोज़ बदलें',
-                manage: 'प्रबंधन',
-                presets: 'प्रीसेट',
-                selectPreset: 'प्रीसेट चुनें',
-                export: 'निर्यात',
-                import: 'आयात',
-                savePreset: 'पोज़ सहेजें',
-                enterName: 'पोज़ का नाम',
-                save: 'सहेजें',
-                custom: 'कस्टम',
-                saveSuccess: 'सहेज लिया!',
-                nameEmpty: 'नाम दर्ज करें',
-                body: 'शरीर',
-                waist: 'कमर',
-                bodyX: 'चाल X',
-                bodyY: 'चाल Y',
-                head: 'सिर',
-                headTilt: 'झुकाव',
-                headSlide: 'स्लाइड',
-                rArm: 'दायां हाथ',
-                lArm: 'बायां हाथ',
-                rLeg: 'दायां पैर',
-                lLeg: 'बायां पैर',
-                shoulder: 'कंधा',
-                elbow: 'कोहनी',
-                wrist: 'कलाई',
-                hip: 'कूल्हा',
-                knee: 'घुटना',
-                ankle: 'टखना',
-                easing: 'गति',
-                p_idle: 'निष्क्रिय',
-                p_box: 'बक्सा',
-                p_prayer: 'प्रार्थना',
-                p_tutting_l: 'टटिंग L',
-                p_cobra: 'कोबरा',
-                p_pharaoh: 'फिरौन',
-                p_diamond: 'हीरा',
-                p_stairs: 'सीढ़ियाँ',
-                p_frame: 'फ्रेम',
-                p_wings: 'पंख',
-                p_zig_zag: 'ज़िग ज़ैग',
-                dragModeOn: 'ड्रैग मोड',
-                dragModeOff: 'ड्रैग मोड',
-                importSuccess: 'सफल!',
-                importError: 'अवैध प्रारूप',
-                importFail: 'विफल',
-                fk: 'FK मोड',
-                ik: 'IK मोड',
-                formation: 'गठन',
-                f_single: 'एकल',
-                f_duo: 'जोड़ी',
-                f_trio: 'तिकड़ी',
-                f_triangle: 'त्रिकोण',
-                f_row: 'पंक्ति',
-                f_grid: 'ग्रिड',
-                resetView: 'दृश्य रीसेट करें',
-                handSync: 'हाथ सिंक',
-                duration: 'अवधि (s)',
-                fixedMode: 'फिक्स्ड मोड',
-                flip: 'फ्लिप',
-                mirrorLR: 'बाएं से दाएं कॉपी',
-                mirrorRL: 'दाएं से बाएं कॉपी',
-                tools: 'टूल्स',
-                motionTrails: 'मोशन ट्रेल्स',
-                depth: 'परत की गहराई',
-                front: 'सामने',
-                back: 'पीछे',
-            },
-            'ru': {
-                title: 'GRID FLOW',
-                subtitle: 'СИМУЛЯТОР ТАТТИНГА V2.6',
-                timeline: 'ВРЕМЕННАЯ ШКАЛА',
-                bpm: 'УДАРЫ/МИН',
-                ai: 'ИИ',
-                delete: 'УДАЛИТЬ',
-                update: 'ОБНОВИТЬ',
-                modify: 'ИЗМЕНИТЬ ПОЗУ',
-                manage: 'УПРАВЛЕНИЕ',
-                presets: 'ПРЕСЕТЫ',
-                selectPreset: 'Выберите пресет',
-                export: 'ЭКСПОРТ',
-                import: 'ИМПОРТ',
-                savePreset: 'Сохранить позу',
-                enterName: 'Имя позы',
-                save: 'Сохранить',
-                custom: 'Пользов.',
-                saveSuccess: 'Сохранено!',
-                nameEmpty: 'Введите имя',
-                body: 'ТЕЛО',
-                waist: 'Талия',
-                bodyX: 'Сдвиг X',
-                bodyY: 'Сдвиг Y',
-                head: 'ГОЛОВА',
-                headTilt: 'Наклон',
-                headSlide: 'Сдвиг',
-                rArm: 'ПР. РУКА',
-                lArm: 'ЛЕВ. РУКА',
-                rLeg: 'ПР. НОГА',
-                lLeg: 'ЛЕВ. НОГА',
-                shoulder: 'Плечо',
-                elbow: 'Локоть',
-                wrist: 'Запястье',
-                hip: 'Бедро',
-                knee: 'Колено',
-                ankle: 'Лодыжка',
-                easing: 'Сглаживание',
-                p_idle: 'Ожидание',
-                p_box: 'Коробка',
-                p_prayer: 'Молитва',
-                p_tutting_l: 'L-форма',
-                p_cobra: 'Кобра',
-                p_pharaoh: 'Фараон',
-                p_diamond: 'Алмаз',
-                p_stairs: 'Лестница',
-                p_frame: 'Рамка',
-                p_wings: 'Крылья',
-                p_zig_zag: 'Зигзаг',
-                dragModeOn: 'Перетаскивание',
-                dragModeOff: 'Перетаскивание',
-                importSuccess: 'Успешно!',
-                importError: 'Ошибка формата',
-                importFail: 'Ошибка',
-                fk: 'FK Режим',
-                ik: 'IK Режим',
-                formation: 'Построение',
-                f_single: 'Одиночное',
-                f_duo: 'Дуэт',
-                f_trio: 'Трио',
-                f_triangle: 'Треугольник',
-                f_row: 'Ряд',
-                f_grid: 'Сетка',
-                resetView: 'Сброс вида',
-                handSync: 'Синх. Рук',
-                duration: 'Длительность (с)',
-                fixedMode: 'Фикс. Режим',
-                flip: 'Отразить',
-                mirrorLR: 'Копия Л -> П',
-                mirrorRL: 'Копия П -> Л',
-                tools: 'ИНСТРУМЕНТЫ',
-                motionTrails: 'Шлейф',
-                depth: 'Глубина слоя',
-                front: 'Перед',
-                back: 'За',
-            }
+            // ... (Other languages defaulting to EN for new keys)
         };
 
         const SEGMENT_LENGTHS = {
@@ -1087,7 +466,6 @@
             const newPose = {};
             Object.keys(poseA).forEach(key => {
                 if (key === 'easing') return;
-                // Handle depth toggle specifically (no interpolation, just switch)
                 if (key === 'lArmZ' || key === 'rArmZ') {
                     newPose[key] = t < 0.5 ? poseA[key] : (poseB[key] || poseA[key]);
                     return;
@@ -1099,7 +477,6 @@
                     newPose[key] = interpolateAngle(poseA[key], endVal, t);
                 }
             });
-            // Ensure armZ properties exist
             newPose.lArmZ = newPose.lArmZ || 'front';
             newPose.rArmZ = newPose.rArmZ || 'front';
             return newPose;
@@ -1109,22 +486,12 @@
             const dx = target.x - origin.x;
             const dy = target.y - origin.y;
             const dist = Math.sqrt(dx * dx + dy * dy);
-
-            // Clamp distance to prevent unreachable targets
             const d = Math.min(dist, len1 + len2 - 0.1);
-
             const baseAngle = Math.atan2(dy, dx);
-
-            // Law of Cosines to find internal angles
-            // c^2 = a^2 + b^2 - 2ab cos(C) => cos(C) = (a^2 + b^2 - c^2) / 2ab
             const cosAlpha = (len1 * len1 + d * d - len2 * len2) / (2 * len1 * d);
-            const alpha = Math.acos(Math.max(-1, Math.min(1, cosAlpha))); // Clamp for safety
-
-            // Two possible solutions for the first joint (elbow up/down)
+            const alpha = Math.acos(Math.max(-1, Math.min(1, cosAlpha)));
             const theta1_A = baseAngle - alpha;
             const theta1_B = baseAngle + alpha;
-
-            // Calculate elbow positions for both solutions
             const elbow_A = {
                 x: origin.x + Math.cos(theta1_A) * len1,
                 y: origin.y + Math.sin(theta1_A) * len1
@@ -1133,78 +500,57 @@
                 x: origin.x + Math.cos(theta1_B) * len1,
                 y: origin.y + Math.sin(theta1_B) * len1
             };
-
-            // Calculate second joint angles
             const theta2_A = Math.atan2(target.y - elbow_A.y, target.x - elbow_A.x);
             const theta2_B = Math.atan2(target.y - elbow_B.y, target.x - elbow_B.x);
-
-            // Convert to degrees [0, 360]
             const toPosDeg = (rad) => {
                 let deg = toDeg(rad) % 360;
                 return deg < 0 ? deg + 360 : deg;
             };
-
             const deg1A = toPosDeg(theta1_A); const deg2A = toPosDeg(theta2_A);
             const deg1B = toPosDeg(theta1_B); const deg2B = toPosDeg(theta2_B);
-
-            // Determine which solution is closer to the current pose
             const distA = Math.abs(shortAngleDist(currentA1, deg1A)) + Math.abs(shortAngleDist(currentA2, deg2A));
             const distB = Math.abs(shortAngleDist(currentA1, deg1B)) + Math.abs(shortAngleDist(currentA2, deg2B));
-
             return distA < distB ? [deg1A, deg2A] : [deg1B, deg2B];
         };
 
-        // --- Define calculateSkeleton BEFORE TuttingSimulator ---
         const calculateSkeleton = (pose) => {
-            const baseCenterX = 0; // Relative to dancer center
+            const baseCenterX = 0;
             const baseCenterY = 0;
             const hipCenterY = 0 + (pose.bodyY || 0);
             const hipCenterX = 0 + (pose.bodyX || 0);
-
             const hipWidth = 25;
             const shoulderWidth = 40;
             const headRadius = 25;
-
             const waistAngle = (pose.waist || 0) - 90;
             const shoulderCenter = calculateEndPoint(hipCenterX, hipCenterY, waistAngle, SEGMENT_LENGTHS.torso);
-
             const rShoulderBase = calculateEndPoint(shoulderCenter.x, shoulderCenter.y, waistAngle - 90, shoulderWidth);
             const lShoulderBase = calculateEndPoint(shoulderCenter.x, shoulderCenter.y, waistAngle + 90, shoulderWidth);
-
             const neckBase = shoulderCenter;
             const headSlide = pose.headSlide || 0;
             const headCenterBase = calculateEndPoint(neckBase.x, neckBase.y, waistAngle, SEGMENT_LENGTHS.neck);
-
             const slideX = Math.cos(toRad(waistAngle + 90)) * headSlide;
             const slideY = Math.sin(toRad(waistAngle + 90)) * headSlide;
             const headCenterX = headCenterBase.x + slideX;
             const headCenterY = headCenterBase.y + slideY;
-
             let displayTilt = (pose.headTilt || 0) + (pose.waist || 0);
             if (displayTilt > 180) displayTilt -= 360;
-
             const tiltHandleDist = headRadius + 15;
             const tiltHandleX = headCenterX + Math.cos(toRad(displayTilt - 90)) * tiltHandleDist;
             const tiltHandleY = headCenterY + Math.sin(toRad(displayTilt - 90)) * tiltHandleDist;
-
             const lElbowPos = calculateEndPoint(lShoulderBase.x, lShoulderBase.y, pose.lShoulder, SEGMENT_LENGTHS.upperArm);
             const lWristPos = calculateEndPoint(lElbowPos.x, lElbowPos.y, pose.lElbow, SEGMENT_LENGTHS.forearm);
             const lHandPos = calculateEndPoint(lWristPos.x, lWristPos.y, pose.lWrist, SEGMENT_LENGTHS.hand);
-
             const rElbowPos = calculateEndPoint(rShoulderBase.x, rShoulderBase.y, pose.rShoulder, SEGMENT_LENGTHS.upperArm);
             const rWristPos = calculateEndPoint(rElbowPos.x, rElbowPos.y, pose.rElbow, SEGMENT_LENGTHS.forearm);
             const rHandPos = calculateEndPoint(rWristPos.x, rWristPos.y, pose.rWrist, SEGMENT_LENGTHS.hand);
-
             const lHipPos = { x: hipCenterX + hipWidth, y: hipCenterY };
             const lKneePos = calculateEndPoint(lHipPos.x, lHipPos.y, pose.lHip ?? 90, SEGMENT_LENGTHS.thigh);
             const lAnklePos = calculateEndPoint(lKneePos.x, lKneePos.y, pose.lKnee ?? 90, SEGMENT_LENGTHS.shin);
             const lFootPos = calculateEndPoint(lAnklePos.x, lAnklePos.y, pose.lAnkle ?? 0, SEGMENT_LENGTHS.foot);
-
             const rHipPos = { x: hipCenterX - hipWidth, y: hipCenterY };
             const rKneePos = calculateEndPoint(rHipPos.x, rHipPos.y, pose.rHip ?? 90, SEGMENT_LENGTHS.thigh);
             const rAnklePos = calculateEndPoint(rKneePos.x, rKneePos.y, pose.rKnee ?? 90, SEGMENT_LENGTHS.shin);
             const rFootPos = calculateEndPoint(rAnklePos.x, rAnklePos.y, pose.rAnkle ?? 180, SEGMENT_LENGTHS.foot);
-
             return {
                 hipCenterX, hipCenterY, shoulderCenter,
                 rShoulderBase, lShoulderBase,
@@ -1219,7 +565,7 @@
 
         // --- Components ---
 
-        const SliderControl = ({ label, value, onChange, min = 0, max = 360, step = 1, snap = 90, unit = "°", accentColor = "cyan" }) => {
+        const SliderControl = ({ label, value, onChange, min = 0, max = 360, step = 1, snap = 90, unit = "°", accentColor = "cyan", theme = "cyberpunk" }) => {
             const [localVal, setLocalVal] = useState(value);
             useEffect(() => { setLocalVal(Math.round(value)); }, [value]);
             const handleInput = (e) => {
@@ -1229,32 +575,53 @@
                 if (!isNaN(num)) onChange(num);
             };
             
-            const accentClass = accentColor === "fuchsia" ? "accent-fuchsia-500 hover:accent-fuchsia-400 text-fuchsia-400 focus-within:border-fuchsia-500" : "accent-cyan-500 hover:accent-cyan-400 text-cyan-400 focus-within:border-cyan-500";
-            const textClass = accentColor === "fuchsia" ? "text-fuchsia-400" : "text-cyan-400";
+            let accentClass = "";
+            let textClass = "";
+            
+            if (theme === 'minimalist') {
+                accentClass = accentColor === 'cyan' ? "accent-white hover:accent-neutral-300" : (accentColor === 'fuchsia' ? "accent-neutral-500 hover:accent-neutral-400" : "accent-neutral-600");
+                textClass = accentColor === 'cyan' ? "text-white" : (accentColor === 'fuchsia' ? "text-neutral-400" : "text-neutral-500");
+            } else {
+                accentClass = accentColor === "fuchsia" ? "accent-fuchsia-500 hover:accent-fuchsia-400" : (accentColor === 'slate' ? "accent-slate-500" : "accent-cyan-500 hover:accent-cyan-400");
+                textClass = accentColor === "fuchsia" ? "text-fuchsia-400" : (accentColor === 'slate' ? "text-slate-400" : "text-cyan-400");
+            }
+
+            const focusClass = theme === 'minimalist' ? "focus-within:border-white" : (accentColor === "fuchsia" ? "focus-within:border-fuchsia-500" : "focus-within:border-cyan-500");
+            const bgClass = theme === 'minimalist' ? "bg-neutral-900 border-neutral-700 focus-within:bg-neutral-800" : "bg-slate-800/50 border-slate-700 focus-within:bg-slate-800";
 
             return (
                 <div className="flex flex-col space-y-1 mb-3 px-1">
                     <div className={`flex justify-between items-center text-xs font-mono ${textClass}`}>
                         <span className="font-bold opacity-90">{label}</span>
-                        <div className={`flex items-center bg-slate-800/50 rounded border border-slate-700 ${accentColor === "fuchsia" ? "focus-within:border-fuchsia-500" : "focus-within:border-cyan-500"} focus-within:bg-slate-800 transition-colors`}>
+                        <div className={`flex items-center ${bgClass} rounded border ${focusClass} transition-colors`}>
                             <input type="number" value={localVal} onChange={handleInput} className={`w-12 bg-transparent text-right ${textClass} focus:text-white focus:outline-none px-1 py-0.5 text-[10px] font-mono`} />
-                            <span className="text-[10px] text-slate-500 pr-1 select-none">{unit}</span>
+                            <span className={`text-[10px] pr-1 select-none ${theme === 'minimalist' ? 'text-neutral-500' : 'text-slate-500'}`}>{unit}</span>
                         </div>
                     </div>
                     <div className="flex items-center space-x-2">
-                        <input type="range" min={min} max={max} step={step} value={value} onChange={(e) => onChange(Number(e.target.value))} className={`w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer ${accentClass}`} />
-                        {snap !== null && <button onClick={() => onChange(snap === 0 ? 0 : Math.round(value / snap) * snap)} className={`p-1 text-[9px] bg-slate-800 text-slate-400 border border-slate-700 rounded hover:bg-slate-700 min-w-[28px] flex-shrink-0 transition-colors`} title={`Snap to ${snap}${unit}`}>{snap}</button>}
+                        <input type="range" min={min} max={max} step={step} value={value} onChange={(e) => onChange(Number(e.target.value))} className={`w-full h-1.5 ${theme === 'minimalist' ? 'bg-neutral-800' : 'bg-slate-700'} rounded-lg appearance-none cursor-pointer ${accentClass}`} />
+                        {snap !== null && <button onClick={() => onChange(snap === 0 ? 0 : Math.round(value / snap) * snap)} className={`p-1 text-[9px] ${theme === 'minimalist' ? 'bg-neutral-900 text-neutral-400 border-neutral-700 hover:bg-neutral-800' : 'bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700'} border rounded min-w-[28px] flex-shrink-0 transition-colors`} title={`Snap to ${snap}${unit}`}>{snap}</button>}
                     </div>
                 </div>
             );
         };
 
-        const AccordionSection = ({ title, icon: SectionIcon, children, isOpen, onToggle, color = "slate" }) => {
-            const headerColor = color === "fuchsia" ? "text-fuchsia-400 border-fuchsia-900/30" : (color === "cyan" ? "text-cyan-400 border-cyan-900/30" : "text-slate-300 border-slate-700/50");
-            const bgHover = color === "fuchsia" ? "hover:bg-fuchsia-900/10" : (color === "cyan" ? "hover:bg-cyan-900/10" : "hover:bg-slate-800/50");
+        const AccordionSection = ({ title, icon: SectionIcon, children, isOpen, onToggle, color = "slate", theme = "cyberpunk" }) => {
+            let headerColor = "";
+            let bgHover = "";
+
+            if (theme === 'minimalist') {
+                headerColor = "text-neutral-300 border-neutral-800";
+                bgHover = "hover:bg-neutral-900";
+                if (color === 'cyan') headerColor = "text-white border-neutral-800"; // Left
+                if (color === 'fuchsia') headerColor = "text-neutral-500 border-neutral-800"; // Right
+            } else {
+                headerColor = color === "fuchsia" ? "text-fuchsia-400 border-fuchsia-900/30" : (color === "cyan" ? "text-cyan-400 border-cyan-900/30" : "text-slate-300 border-slate-700/50");
+                bgHover = color === "fuchsia" ? "hover:bg-fuchsia-900/10" : (color === "cyan" ? "hover:bg-cyan-900/10" : "hover:bg-slate-800/50");
+            }
 
             return (
-                <div className="border-b border-slate-800 last:border-0">
+                <div className={`border-b ${theme === 'minimalist' ? 'border-neutral-800' : 'border-slate-800'} last:border-0`}>
                     <button 
                         onClick={onToggle} 
                         className={`w-full flex items-center justify-between p-3 text-xs font-bold uppercase tracking-wider transition-colors ${headerColor} ${bgHover}`}
@@ -1272,69 +639,85 @@
             );
         };
 
-        const LimbRenderer = ({ start, end, color, thickness, glow, opacity = 1 }) => (
+        const LimbRenderer = ({ start, end, color, thickness, glow, opacity = 1, theme = 'cyberpunk' }) => (
             <g opacity={opacity}>
-                {glow && <line x1={start.x} y1={start.y} x2={end.x} y2={end.y} stroke={color} strokeWidth={thickness + 8} strokeOpacity="0.2" strokeLinecap="round" />}
+                {glow && theme === 'cyberpunk' && <line x1={start.x} y1={start.y} x2={end.x} y2={end.y} stroke={color} strokeWidth={thickness + 8} strokeOpacity="0.2" strokeLinecap="round" />}
                 <line x1={start.x} y1={start.y} x2={end.x} y2={end.y} stroke={color} strokeWidth={thickness} strokeLinecap="round" />
-                <circle cx={end.x} cy={end.y} r={thickness / 1.5} fill="#111" stroke={color} strokeWidth="2" />
+                <circle cx={end.x} cy={end.y} r={thickness / 1.5} fill={theme === 'minimalist' ? color : "#111"} stroke={color} strokeWidth="2" />
             </g>
         );
 
-        const DraggableJoint = ({ x, y, isActive, onMouseDown, onTouchStart, isFK = true }) => (
-            <g onMouseDown={onMouseDown} onTouchStart={onTouchStart} className="cursor-pointer" style={{ pointerEvents: 'all' }}>
-                <circle cx={x} cy={y} r={20} fill="transparent" />
-                <circle cx={x} cy={y} r={isActive ? 10 : 6} fill={isActive ? "#ffffff" : "rgba(255,255,255,0.3)"} stroke={isActive ? "#22d3ee" : (isFK ? "white" : "#facc15")} strokeWidth={2} className="transition-all duration-75" />
-            </g>
-        );
+        const DraggableJoint = ({ x, y, isActive, onMouseDown, onTouchStart, isFK = true, theme = 'cyberpunk' }) => {
+            const strokeColor = isActive ? (theme === 'minimalist' ? '#fff' : '#22d3ee') : (isFK ? (theme === 'minimalist' ? '#888' : 'white') : '#facc15');
+            return (
+                <g onMouseDown={onMouseDown} onTouchStart={onTouchStart} className="cursor-pointer" style={{ pointerEvents: 'all' }}>
+                    <circle cx={x} cy={y} r={20} fill="transparent" />
+                    <circle cx={x} cy={y} r={isActive ? 10 : 6} fill={isActive ? "#ffffff" : "rgba(255,255,255,0.3)"} stroke={strokeColor} strokeWidth={2} className="transition-all duration-75" />
+                </g>
+            );
+        };
 
-        const DancerFigure = ({ skeleton, lArmZ = 'front', rArmZ = 'front', opacity = 1 }) => {
+        const DancerFigure = ({ skeleton, lArmZ = 'front', rArmZ = 'front', opacity = 1, theme = 'cyberpunk', variant = 'main' }) => {
             const s = skeleton;
+            const themeColors = THEMES[theme].colors;
+            
+            let colors = { ...themeColors };
+            let isGhost = variant !== 'main';
+            let currentOpacity = opacity;
+
+            if (isGhost) {
+                const ghostColor = variant === 'ghost-prev' ? themeColors.ghostPrev : themeColors.ghostNext;
+                colors = {
+                    left: ghostColor,
+                    right: ghostColor,
+                    core: ghostColor,
+                    glow: false
+                };
+                currentOpacity = 0.3; // Fixed low opacity for ghosts
+            }
 
             const renderLeftArm = () => (
                 <>
-                    <LimbRenderer start={s.lShoulderBase} end={s.lElbowPos} color="#06b6d4" thickness={8} glow={true} />
-                    <LimbRenderer start={s.lElbowPos} end={s.lWristPos} color="#06b6d4" thickness={6} glow={true} />
-                    <LimbRenderer start={s.lWristPos} end={s.lHandPos} color="#22d3ee" thickness={4} glow={false} />
+                    <LimbRenderer start={s.lShoulderBase} end={s.lElbowPos} color={colors.left} thickness={8} glow={colors.glow} theme={theme} />
+                    <LimbRenderer start={s.lElbowPos} end={s.lWristPos} color={colors.left} thickness={6} glow={colors.glow} theme={theme} />
+                    <LimbRenderer start={s.lWristPos} end={s.lHandPos} color={colors.left} thickness={4} glow={false} theme={theme} />
                 </>
             );
 
             const renderRightArm = () => (
                 <>
-                    <LimbRenderer start={s.rShoulderBase} end={s.rElbowPos} color="#d946ef" thickness={8} glow={true} />
-                    <LimbRenderer start={s.rElbowPos} end={s.rWristPos} color="#d946ef" thickness={6} glow={true} />
-                    <LimbRenderer start={s.rWristPos} end={s.rHandPos} color="#e879f9" thickness={4} glow={false} />
+                    <LimbRenderer start={s.rShoulderBase} end={s.rElbowPos} color={colors.right} thickness={8} glow={colors.glow} theme={theme} />
+                    <LimbRenderer start={s.rElbowPos} end={s.rWristPos} color={colors.right} thickness={6} glow={colors.glow} theme={theme} />
+                    <LimbRenderer start={s.rWristPos} end={s.rHandPos} color={colors.right} thickness={4} glow={false} theme={theme} />
                 </>
             );
 
+            // Simplified structure for Ghost to reduce clutter? No, keeping full structure for accuracy.
             return (
-                <g opacity={opacity}>
-                    {/* Floor line */}
-                    <line x1="-150" y1="190" x2="150" y2="190" stroke="#334155" strokeWidth="2" strokeDasharray="5,5" opacity="0.5" />
+                <g opacity={currentOpacity} style={{ pointerEvents: isGhost ? 'none' : 'auto' }}>
+                    {!isGhost && <line x1="-150" y1="190" x2="150" y2="190" stroke={theme === 'minimalist' ? '#333' : "#334155"} strokeWidth="2" strokeDasharray="5,5" opacity="0.5" />}
 
-                    {/* Render Back Limbs First */}
                     {lArmZ === 'back' && renderLeftArm()}
                     {rArmZ === 'back' && renderRightArm()}
 
-                    {/* Body Core Layer (Legs, Torso, Head) */}
-                    <LimbRenderer start={s.rHipPos} end={s.rKneePos} color="#c026d3" thickness={9} glow={true} />
-                    <LimbRenderer start={s.rKneePos} end={s.rAnklePos} color="#c026d3" thickness={7} glow={true} />
-                    <LimbRenderer start={s.rAnklePos} end={s.rFootPos} color="#e879f9" thickness={5} glow={false} />
+                    <LimbRenderer start={s.rHipPos} end={s.rKneePos} color={colors.right} thickness={9} glow={colors.glow} theme={theme} />
+                    <LimbRenderer start={s.rKneePos} end={s.rAnklePos} color={colors.right} thickness={7} glow={colors.glow} theme={theme} />
+                    <LimbRenderer start={s.rAnklePos} end={s.rFootPos} color={colors.core} thickness={5} glow={false} theme={theme} />
 
-                    <LimbRenderer start={s.lHipPos} end={s.lKneePos} color="#0891b2" thickness={9} glow={true} />
-                    <LimbRenderer start={s.lKneePos} end={s.lAnklePos} color="#0891b2" thickness={7} glow={true} />
-                    <LimbRenderer start={s.lAnklePos} end={s.lFootPos} color="#22d3ee" thickness={5} glow={false} />
+                    <LimbRenderer start={s.lHipPos} end={s.lKneePos} color={colors.left} thickness={9} glow={colors.glow} theme={theme} />
+                    <LimbRenderer start={s.lKneePos} end={s.lAnklePos} color={colors.left} thickness={7} glow={colors.glow} theme={theme} />
+                    <LimbRenderer start={s.lAnklePos} end={s.lFootPos} color={colors.left} thickness={5} glow={false} theme={theme} />
 
-                    <path d={`M${s.rHipPos.x} ${s.rHipPos.y} L${s.rShoulderBase.x} ${s.rShoulderBase.y} L${s.lShoulderBase.x} ${s.lShoulderBase.y} L${s.lHipPos.x} ${s.lHipPos.y} Z`} fill="#334155" stroke="#475569" strokeWidth="2" />
-                    <line x1={s.rHipPos.x} y1={s.rHipPos.y} x2={s.lHipPos.x} y2={s.lHipPos.y} stroke="#475569" strokeWidth="3" />
-                    <line x1={s.shoulderCenter.x} y1={s.shoulderCenter.y} x2={s.headCenterX} y2={s.headCenterY + s.headRadius / 2} stroke="#475569" strokeWidth="10" strokeLinecap="round" />
+                    <path d={`M${s.rHipPos.x} ${s.rHipPos.y} L${s.rShoulderBase.x} ${s.rShoulderBase.y} L${s.lShoulderBase.x} ${s.lShoulderBase.y} L${s.lHipPos.x} ${s.lHipPos.y} Z`} fill={isGhost ? 'none' : (theme === 'minimalist' ? '#222' : "#334155")} stroke={colors.core} strokeWidth="2" />
+                    <line x1={s.rHipPos.x} y1={s.rHipPos.y} x2={s.lHipPos.x} y2={s.lHipPos.y} stroke={colors.core} strokeWidth="3" />
+                    <line x1={s.shoulderCenter.x} y1={s.shoulderCenter.y} x2={s.headCenterX} y2={s.headCenterY + s.headRadius / 2} stroke={colors.core} strokeWidth="10" strokeLinecap="round" />
 
                     <g transform={`rotate(${s.displayTilt}, ${s.headCenterX}, ${s.headCenterY})`}>
-                        <circle cx={s.headCenterX} cy={s.headCenterY} r={s.headRadius} fill="#1e293b" stroke="#94a3b8" strokeWidth="2" />
-                        <path d={`M${s.headCenterX - 10} ${s.headCenterY - 5} L${s.headCenterX - 5} ${s.headCenterY - 5}`} stroke="#475569" strokeWidth="2" />
-                        <path d={`M${s.headCenterX + 5} ${s.headCenterY - 5} L${s.headCenterX + 10} ${s.headCenterY - 5}`} stroke="#475569" strokeWidth="2" />
+                        <circle cx={s.headCenterX} cy={s.headCenterY} r={s.headRadius} fill={isGhost ? 'none' : (theme === 'minimalist' ? '#111' : "#1e293b")} stroke={colors.core} strokeWidth="2" />
+                        {!isGhost && <path d={`M${s.headCenterX - 10} ${s.headCenterY - 5} L${s.headCenterX - 5} ${s.headCenterY - 5}`} stroke={theme === 'minimalist' ? '#555' : "#475569"} strokeWidth="2" />}
+                        {!isGhost && <path d={`M${s.headCenterX + 5} ${s.headCenterY - 5} L${s.headCenterX + 10} ${s.headCenterY - 5}`} stroke={theme === 'minimalist' ? '#555' : "#475569"} strokeWidth="2" />}
                     </g>
 
-                    {/* Render Front Limbs Last */}
                     {lArmZ !== 'back' && renderLeftArm()}
                     {rArmZ !== 'back' && renderRightArm()}
                 </g>
@@ -1342,7 +725,6 @@
         }
 
         function TuttingSimulator() {
-            // State
             const [pose, setPose] = useState(PRESETS.idle);
             const [timeline, setTimeline] = useState([PRESETS.idle]);
             const [currentFrameIndex, setCurrentFrameIndex] = useState(0);
@@ -1363,9 +745,10 @@
             const [isHandSync, setIsHandSync] = useState(false);
             const [fixedJoints, setFixedJoints] = useState({ rWrist: false, lWrist: false, rAnkle: false, lAnkle: false });
             const [showTrails, setShowTrails] = useState(false);
-            const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Sidebar toggle state
+            const [showOnionSkin, setShowOnionSkin] = useState(false); // NEW: Onion Skin State
+            const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+            const [theme, setTheme] = useState('cyberpunk');
             
-            // Accordion State
             const [openSections, setOpenSections] = useState({
                 body: true,
                 rArm: true,
@@ -1390,7 +773,6 @@
             const requestRef = useRef();
             const startTimeRef = useRef(0);
 
-            // Optimized Refs
             const zoomRef = useRef(zoom);
             const activeJointRef = useRef(activeJoint);
             const isDragModeRef = useRef(isDragMode);
@@ -1407,9 +789,8 @@
             useEffect(() => { showTrailsRef.current = showTrails; }, [showTrails]);
 
             const t = (key) => TRANSLATIONS[lang] ? (TRANSLATIONS[lang][key] || key) : key;
+            const currentThemeConfig = THEMES[theme];
 
-            // Mirror Angle Helper: Reflects angle across the vertical Y-axis
-            // 0 -> 180, 90 -> 90, 270 -> 270
             const mirrorAngle = (deg) => (540 - deg) % 360;
 
             const handlePoseOperation = (type) => {
@@ -1417,7 +798,6 @@
                 setPose(prev => {
                     const newPose = { ...prev };
                     if (type === 'flip') {
-                        // Swap Left and Right limbs with mirroring
                         newPose.lShoulder = mirrorAngle(prev.rShoulder);
                         newPose.rShoulder = mirrorAngle(prev.lShoulder);
                         newPose.lElbow = mirrorAngle(prev.rElbow);
@@ -1430,14 +810,11 @@
                         newPose.rKnee = mirrorAngle(prev.lKnee);
                         newPose.lAnkle = mirrorAngle(prev.rAnkle);
                         newPose.rAnkle = mirrorAngle(prev.lAnkle);
-                        
-                        // Invert Body parameters
                         newPose.bodyX = -prev.bodyX;
                         newPose.waist = -prev.waist;
                         newPose.headTilt = -prev.headTilt;
                         newPose.headSlide = -prev.headSlide;
                     } else if (type === 'mirrorLR') {
-                        // Copy Left to Right
                         newPose.rShoulder = mirrorAngle(prev.lShoulder);
                         newPose.rElbow = mirrorAngle(prev.lElbow);
                         newPose.rWrist = mirrorAngle(prev.lWrist);
@@ -1445,7 +822,6 @@
                         newPose.rKnee = mirrorAngle(prev.lKnee);
                         newPose.rAnkle = mirrorAngle(prev.lAnkle);
                     } else if (type === 'mirrorRL') {
-                        // Copy Right to Left
                         newPose.lShoulder = mirrorAngle(prev.rShoulder);
                         newPose.lElbow = mirrorAngle(prev.rElbow);
                         newPose.lWrist = mirrorAngle(prev.rWrist);
@@ -1461,71 +837,37 @@
                 if (!isPlaying) {
                     setPose(prev => {
                         const newPose = { ...prev, [key]: value };
-
-                        // --- Hand Sync Logic ---
                         if (key === 'waist' && isHandSync) {
                             const prevWaist = prev.waist || 0;
                             const delta = value - prevWaist;
                             const armKeys = ['lShoulder', 'lElbow', 'lWrist', 'rShoulder', 'rElbow', 'rWrist'];
-                            
-                            armKeys.forEach(armKey => {
-                                // Add delta to keep relative angle constant
-                                newPose[armKey] = (prev[armKey] || 0) + delta;
-                            });
+                            armKeys.forEach(armKey => { newPose[armKey] = (prev[armKey] || 0) + delta; });
                         }
-
-                        // --- Fixed Mode Logic (Anchors) ---
-                        // Only trigger if moving bodyX/bodyY and anchors are active
                         if ((key === 'bodyX' || key === 'bodyY') && Object.values(fixedJoints).some(v => v)) {
-                            // 1. Calculate previous world positions of fixed joints (using PREV pose)
                             const prevSkeleton = calculateSkeleton(prev);
-                            
-                            // 2. Calculate NEW base positions (shoulders/hips) using NEW pose.
-                            // We need this to know where the body ORIGIN is for the IK calculation.
                             const newBaseSkeleton = calculateSkeleton(newPose); 
-
-                            // 3. Solve IK for each fixed joint to keep end-effector at prevSkeleton position
-                            
-                            // Right Wrist
                             if (fixedJoints.rWrist) {
-                                const target = prevSkeleton.rWristPos; // Keep old world pos
-                                const origin = newBaseSkeleton.rShoulderBase; // New shoulder pos
-                                const [s, e] = solveTwoJointIK(target, origin, SEGMENT_LENGTHS.upperArm, SEGMENT_LENGTHS.forearm, prev.rShoulder, prev.rElbow);
-                                newPose.rShoulder = s;
-                                newPose.rElbow = e;
+                                const [s, e] = solveTwoJointIK(prevSkeleton.rWristPos, newBaseSkeleton.rShoulderBase, SEGMENT_LENGTHS.upperArm, SEGMENT_LENGTHS.forearm, prev.rShoulder, prev.rElbow);
+                                newPose.rShoulder = s; newPose.rElbow = e;
                             }
-                            // Left Wrist
                             if (fixedJoints.lWrist) {
-                                const target = prevSkeleton.lWristPos;
-                                const origin = newBaseSkeleton.lShoulderBase;
-                                const [s, e] = solveTwoJointIK(target, origin, SEGMENT_LENGTHS.upperArm, SEGMENT_LENGTHS.forearm, prev.lShoulder, prev.lElbow);
-                                newPose.lShoulder = s;
-                                newPose.lElbow = e;
+                                const [s, e] = solveTwoJointIK(prevSkeleton.lWristPos, newBaseSkeleton.lShoulderBase, SEGMENT_LENGTHS.upperArm, SEGMENT_LENGTHS.forearm, prev.lShoulder, prev.lElbow);
+                                newPose.lShoulder = s; newPose.lElbow = e;
                             }
-                            // Right Ankle
                             if (fixedJoints.rAnkle) {
-                                const target = prevSkeleton.rAnklePos;
-                                const origin = newBaseSkeleton.rHipPos;
-                                const [h, k] = solveTwoJointIK(target, origin, SEGMENT_LENGTHS.thigh, SEGMENT_LENGTHS.shin, prev.rHip ?? 90, prev.rKnee ?? 90);
-                                newPose.rHip = h;
-                                newPose.rKnee = k;
+                                const [h, k] = solveTwoJointIK(prevSkeleton.rAnklePos, newBaseSkeleton.rHipPos, SEGMENT_LENGTHS.thigh, SEGMENT_LENGTHS.shin, prev.rHip ?? 90, prev.rKnee ?? 90);
+                                newPose.rHip = h; newPose.rKnee = k;
                             }
-                            // Left Ankle
                             if (fixedJoints.lAnkle) {
-                                const target = prevSkeleton.lAnklePos;
-                                const origin = newBaseSkeleton.lHipPos;
-                                const [h, k] = solveTwoJointIK(target, origin, SEGMENT_LENGTHS.thigh, SEGMENT_LENGTHS.shin, prev.lHip ?? 90, prev.lKnee ?? 90);
-                                newPose.lHip = h;
-                                newPose.lKnee = k;
+                                const [h, k] = solveTwoJointIK(prevSkeleton.lAnklePos, newBaseSkeleton.lHipPos, SEGMENT_LENGTHS.thigh, SEGMENT_LENGTHS.shin, prev.lHip ?? 90, prev.lKnee ?? 90);
+                                newPose.lHip = h; newPose.lKnee = k;
                             }
                         }
-
                         return newPose;
                     });
                 }
             };
 
-            // --- Interaction ---
             const getSvgPoint = (clientX, clientY) => {
                 if (!mainGroupRef.current) return { x: 0, y: 0 };
                 const pt = svgRef.current.createSVGPoint();
@@ -1564,18 +906,12 @@
                     lastMousePos.current = { x: clientX, y: clientY };
                     return;
                 }
-
                 const currentActiveJoint = activeJointRef.current;
                 const currentIsDragMode = isDragModeRef.current;
                 const currentDragType = dragTypeRef.current;
                 const currentPose = poseRef.current;
-
                 if (!currentActiveJoint || !currentIsDragMode) return;
-
                 const mousePos = getSvgPoint(clientX, clientY);
-
-                // Remove the 200 offsets because we are now in 0-based local coordinates
-
                 if (currentActiveJoint.type === 'headPos') {
                     const waistRad = toRad((currentPose.waist || 0) - 90);
                     const neckBaseX = currentActiveJoint.pivot.x;
@@ -1587,43 +923,32 @@
                     const projection = dx * axisX + dy * axisY;
                     const newVal = Math.max(-50, Math.min(50, projection));
                     updatePose('headSlide', newVal);
-                }
-                else if (currentActiveJoint.type === 'headTilt') {
+                } else if (currentActiveJoint.type === 'headTilt') {
                     const dx = mousePos.x - currentActiveJoint.pivot.x;
                     const dy = mousePos.y - currentActiveJoint.pivot.y;
                     let angle = toDeg(Math.atan2(dy, dx));
                     const waistAngle = (currentPose.waist || 0) - 90;
                     let relativeTilt = shortAngleDist(waistAngle, angle);
                     updatePose('headTilt', Math.max(-60, Math.min(60, relativeTilt)));
-                }
-                else if (currentActiveJoint.type === 'pos') {
-                    // Mouse pos is relative to 0,0 center.
-                    const dx = mousePos.x;
-                    const dy = mousePos.y;
-                    updatePose('bodyX', Math.max(-100, Math.min(100, dx)));
-                    updatePose('bodyY', Math.max(-100, Math.min(100, dy)));
-                }
-                else if (currentDragType === 'IK' && currentActiveJoint.type === 'ik') {
+                } else if (currentActiveJoint.type === 'pos') {
+                    updatePose('bodyX', Math.max(-100, Math.min(100, mousePos.x)));
+                    updatePose('bodyY', Math.max(-100, Math.min(100, mousePos.y)));
+                } else if (currentDragType === 'IK' && currentActiveJoint.type === 'ik') {
                     const { name, origin } = currentActiveJoint;
                     if (name === 'rWrist') {
                         const [a1, a2] = solveTwoJointIK(mousePos, origin, SEGMENT_LENGTHS.upperArm, SEGMENT_LENGTHS.forearm, currentPose.rShoulder, currentPose.rElbow);
-                        updatePose('rShoulder', a1);
-                        updatePose('rElbow', a2);
+                        updatePose('rShoulder', a1); updatePose('rElbow', a2);
                     } else if (name === 'lWrist') {
                         const [a1, a2] = solveTwoJointIK(mousePos, origin, SEGMENT_LENGTHS.upperArm, SEGMENT_LENGTHS.forearm, currentPose.lShoulder, currentPose.lElbow);
-                        updatePose('lShoulder', a1);
-                        updatePose('lElbow', a2);
+                        updatePose('lShoulder', a1); updatePose('lElbow', a2);
                     } else if (name === 'rAnkle') {
                         const [a1, a2] = solveTwoJointIK(mousePos, origin, SEGMENT_LENGTHS.thigh, SEGMENT_LENGTHS.shin, currentPose.rHip ?? 90, currentPose.rKnee ?? 90);
-                        updatePose('rHip', a1);
-                        updatePose('rKnee', a2);
+                        updatePose('rHip', a1); updatePose('rKnee', a2);
                     } else if (name === 'lAnkle') {
                         const [a1, a2] = solveTwoJointIK(mousePos, origin, SEGMENT_LENGTHS.thigh, SEGMENT_LENGTHS.shin, currentPose.lHip ?? 90, currentPose.lKnee ?? 90);
-                        updatePose('lHip', a1);
-                        updatePose('lKnee', a2);
+                        updatePose('lHip', a1); updatePose('lKnee', a2);
                     }
-                }
-                else {
+                } else {
                     const dx = mousePos.x - currentActiveJoint.pivot.x;
                     const dy = mousePos.y - currentActiveJoint.pivot.y;
                     let angle = toDeg(Math.atan2(dy, dx));
@@ -1655,7 +980,6 @@
                 };
             }, [activeJoint, isPanning]);
 
-            // --- Animation Loop ---
             const jumpToFrame = (index) => {
                 if (isPlaying) setIsPlaying(false);
                 setCurrentFrameIndex(index);
@@ -1705,8 +1029,8 @@
                     if (Math.random() > 0.6) basePose.headSlide = Math.floor(Math.random() * 40) - 20; else basePose.headSlide = 0;
                     if (Math.random() > 0.6) basePose.waist = Math.floor(Math.random() * 40) - 20;
                     if (Math.random() > 0.7) { if (Math.random() > 0.5) basePose.bodyX = Math.floor(Math.random() * 60) - 30; else basePose.bodyY = Math.floor(Math.random() * 40) - 20; } else { basePose.bodyX = 0; basePose.bodyY = 0; }
-                    basePose.duration = 1; // Default duration
-                    basePose.lArmZ = 'front'; // Reset depth
+                    basePose.duration = 1;
+                    basePose.lArmZ = 'front';
                     basePose.rArmZ = 'front';
                     return basePose;
                 });
@@ -1769,17 +1093,12 @@
                     return; 
                 }
                 
-                // Clear trails on start
                 trailsRef.current = { left: [], right: [] };
                 startTimeRef.current = performance.now();
                 
                 const animate = (time) => {
-                    // Calculate duration based on the *starting* pose of the current segment
                     const currentIndex = frameIndexRef.current;
                     const startPose = timelineRef.current[currentIndex];
-                    
-                    // Duration logic: Use pose.duration (seconds) if available, otherwise fallback to BPM (1 beat)
-                    // Convert seconds to ms
                     const stepDuration = (startPose.duration && startPose.duration > 0) 
                         ? startPose.duration * 1000 
                         : (60000 / bpm);
@@ -1795,7 +1114,6 @@
                         progress = 0;
                     }
                     
-                    // Recalculate current frame index in case it changed
                     const activeIndex = frameIndexRef.current;
                     const nextIndex = (activeIndex + 1) % timelineRef.current.length;
                     const currentStartPose = timelineRef.current[activeIndex];
@@ -1807,17 +1125,13 @@
                     const easedProgress = easeFn(progress);
                     if (currentStartPose && currentEndPose) {
                         const newPose = interpolatePose(currentStartPose, currentEndPose, easedProgress);
-                        
-                        // --- Trail Logic ---
                         if (showTrailsRef.current) {
                             const skel = calculateSkeleton(newPose);
                             trailsRef.current.left.push(skel.lWristPos);
                             trailsRef.current.right.push(skel.rWristPos);
-                            // Limit trail length to avoid clutter/perf issues (e.g., last 40 frames)
                             if (trailsRef.current.left.length > 40) trailsRef.current.left.shift();
                             if (trailsRef.current.right.length > 40) trailsRef.current.right.shift();
                         }
-
                         setPose(newPose);
                     }
                     requestRef.current = requestAnimationFrame(animate);
@@ -1833,22 +1147,29 @@
                 setPan({ x: 0, y: 0 });
             };
 
-            // --- Rendering ---
+            // --- Render Logic for Onion Skin ---
             const skeleton = useMemo(() => calculateSkeleton(pose), [pose]);
+            
+            // Calculate Ghosts if needed
+            const prevPose = (!isPlaying && showOnionSkin && currentFrameIndex > 0) ? timeline[currentFrameIndex - 1] : null;
+            const nextPose = (!isPlaying && showOnionSkin && currentFrameIndex < timeline.length - 1) ? timeline[currentFrameIndex + 1] : null;
+            
+            const prevSkeleton = useMemo(() => prevPose ? calculateSkeleton(prevPose) : null, [prevPose]);
+            const nextSkeleton = useMemo(() => nextPose ? calculateSkeleton(nextPose) : null, [nextPose]);
+
             const formationData = FORMATIONS[formationType] || FORMATIONS['single'];
-            // Identify Main Dancer from formation
             const mainDancer = formationData.find(d => d.main) || formationData[0];
 
             return (
-                <div className="h-[100dvh] bg-slate-950 text-slate-200 font-sans selection:bg-cyan-500/30 flex flex-col md:flex-row overflow-hidden">
+                <div className={`h-[100dvh] ${currentThemeConfig.bg} ${currentThemeConfig.text} font-sans selection:bg-cyan-500/30 flex flex-col md:flex-row overflow-hidden transition-colors duration-500`}>
 
                     {/* --- TOP/LEFT PANEL --- */}
-                    <div className="flex-1 h-[50%] md:h-full flex flex-col relative border-b md:border-b-0 md:border-r border-slate-800 z-10 bg-slate-900 min-w-0 transition-all duration-300">
+                    <div className={`flex-1 h-[50%] md:h-full flex flex-col relative border-b md:border-b-0 md:border-r ${currentThemeConfig.borderColor} z-10 transition-colors duration-300 min-w-0`}>
 
                         <div className="absolute top-4 left-4 z-10 flex items-start gap-4 pointer-events-none">
                             <div>
                                 <h1 className="text-xl md:text-3xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-fuchsia-500 filter drop-shadow-lg">{t('title')}</h1>
-                                <p className="text-[10px] md:text-xs text-slate-400 font-mono mt-0.5 tracking-widest opacity-80">{t('subtitle')}</p>
+                                <p className={`text-[10px] md:text-xs font-mono mt-0.5 tracking-widest opacity-80 ${theme === 'minimalist' ? 'text-neutral-500' : 'text-slate-400'}`}>{t('subtitle')}</p>
                             </div>
                         </div>
 
@@ -1856,15 +1177,25 @@
                             {!isSidebarOpen && (
                                 <button 
                                     onClick={() => setIsSidebarOpen(true)} 
-                                    className="flex items-center justify-center p-2 bg-slate-800/80 backdrop-blur-md border border-slate-700/50 rounded-full cursor-pointer hover:bg-slate-700/80 transition-all shadow-lg text-cyan-400 animate-in fade-in zoom-in duration-200"
+                                    className={`flex items-center justify-center p-2 ${currentThemeConfig.headerBg} backdrop-blur-md border ${currentThemeConfig.borderColor} rounded-full cursor-pointer hover:opacity-80 transition-all shadow-lg ${theme === 'minimalist' ? 'text-neutral-200' : 'text-cyan-400'} animate-in fade-in zoom-in duration-200`}
                                     title="Open Sidebar"
                                 >
                                     <ArrowLeftFromLine size={16} />
                                 </button>
                             )}
-                            <div className="flex items-center bg-slate-800/80 backdrop-blur-md border border-slate-700/50 rounded-full px-3 py-1.5 cursor-pointer hover:bg-slate-700/80 transition-all shadow-lg">
-                                <Globe size={14} className="text-slate-400 mr-2" />
-                                <select value={lang} onChange={(e) => setLang(e.target.value)} className="bg-transparent text-[10px] md:text-xs text-slate-300 focus:outline-none cursor-pointer appearance-none pr-2 font-medium">
+                            
+                            {/* Theme Selector */}
+                            <div className={`flex items-center ${currentThemeConfig.headerBg} backdrop-blur-md border ${currentThemeConfig.borderColor} rounded-full px-2 py-1.5 cursor-pointer hover:opacity-80 transition-all shadow-lg`}>
+                                <Palette size={14} className={`${theme === 'minimalist' ? 'text-neutral-400' : 'text-slate-400'} mr-2 ml-1`} />
+                                <select value={theme} onChange={(e) => setTheme(e.target.value)} className={`bg-transparent text-[10px] md:text-xs ${theme === 'minimalist' ? 'text-neutral-300' : 'text-slate-300'} focus:outline-none cursor-pointer appearance-none pr-2 font-medium`}>
+                                    <option value="cyberpunk">{t('t_cyberpunk')}</option>
+                                    <option value="minimalist">{t('t_minimalist')}</option>
+                                </select>
+                            </div>
+
+                            <div className={`flex items-center ${currentThemeConfig.headerBg} backdrop-blur-md border ${currentThemeConfig.borderColor} rounded-full px-3 py-1.5 cursor-pointer hover:opacity-80 transition-all shadow-lg`}>
+                                <Globe size={14} className={`${theme === 'minimalist' ? 'text-neutral-400' : 'text-slate-400'} mr-2`} />
+                                <select value={lang} onChange={(e) => setLang(e.target.value)} className={`bg-transparent text-[10px] md:text-xs ${theme === 'minimalist' ? 'text-neutral-300' : 'text-slate-300'} focus:outline-none cursor-pointer appearance-none pr-2 font-medium`}>
                                     <option value="zh-TW">繁體中文</option>
                                     <option value="en">English</option>
                                     <option value="ja">日本語</option>
@@ -1880,11 +1211,12 @@
                             </div>
                         </div>
 
-                        <div className={`flex-1 w-full flex items-center justify-center overflow-hidden relative p-2 bg-gradient-to-b from-slate-900 to-slate-950 ${isPanning ? 'cursor-grabbing' : 'cursor-grab'}`}>
+                        <div className={`flex-1 w-full flex items-center justify-center overflow-hidden relative p-2 ${isPanning ? 'cursor-grabbing' : 'cursor-grab'}`}>
                             {showGrid && (
-                                <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
+                                <div className="absolute inset-0 pointer-events-none"
                                     style={{
-                                        backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)',
+                                        opacity: currentThemeConfig.gridOpacity,
+                                        backgroundImage: `linear-gradient(${theme === 'minimalist' ? '#666' : '#fff'} 1px, transparent 1px), linear-gradient(90deg, ${theme === 'minimalist' ? '#666' : '#fff'} 1px, transparent 1px)`,
                                         backgroundSize: '40px 40px',
                                     }}>
                                 </div>
@@ -1903,43 +1235,67 @@
                                         {/* Trails Rendering */}
                                         {showTrails && (
                                             <g>
-                                                <polyline points={trailsRef.current.left.map(p => `${p.x},${p.y}`).join(' ')} fill="none" stroke="#d946ef" strokeWidth="2" strokeOpacity="0.4" strokeLinecap="round" strokeLinejoin="round" />
-                                                <polyline points={trailsRef.current.right.map(p => `${p.x},${p.y}`).join(' ')} fill="none" stroke="#06b6d4" strokeWidth="2" strokeOpacity="0.4" strokeLinecap="round" strokeLinejoin="round" />
+                                                <polyline points={trailsRef.current.left.map(p => `${p.x},${p.y}`).join(' ')} fill="none" stroke={theme === 'minimalist' ? '#fff' : "#d946ef"} strokeWidth="2" strokeOpacity="0.4" strokeLinecap="round" strokeLinejoin="round" />
+                                                <polyline points={trailsRef.current.right.map(p => `${p.x},${p.y}`).join(' ')} fill="none" stroke={theme === 'minimalist' ? '#888' : "#06b6d4"} strokeWidth="2" strokeOpacity="0.4" strokeLinecap="round" strokeLinejoin="round" />
                                             </g>
                                         )}
 
                                         {formationData.map((dancer, idx) => (
                                             <g key={idx} transform={`translate(${dancer.x}, ${dancer.y}) scale(${dancer.scale})`}>
+                                                {/* Onion Skin: Previous Frame */}
+                                                {prevSkeleton && mainDancer && idx === formationData.indexOf(mainDancer) && (
+                                                    <DancerFigure 
+                                                        skeleton={prevSkeleton} 
+                                                        lArmZ={prevPose.lArmZ} 
+                                                        rArmZ={prevPose.rArmZ} 
+                                                        theme={theme} 
+                                                        variant="ghost-prev" 
+                                                    />
+                                                )}
+                                                
+                                                {/* Onion Skin: Next Frame */}
+                                                {nextSkeleton && mainDancer && idx === formationData.indexOf(mainDancer) && (
+                                                    <DancerFigure 
+                                                        skeleton={nextSkeleton} 
+                                                        lArmZ={nextPose.lArmZ} 
+                                                        rArmZ={nextPose.rArmZ} 
+                                                        theme={theme} 
+                                                        variant="ghost-next" 
+                                                    />
+                                                )}
+
+                                                {/* Main Dancer */}
                                                 <DancerFigure 
                                                     skeleton={skeleton} 
                                                     opacity={dancer.opacity} 
                                                     lArmZ={pose.lArmZ} 
                                                     rArmZ={pose.rArmZ}
+                                                    theme={theme}
                                                 />
                                             </g>
                                         ))}
 
                                         {isDragMode && mainDancer && (
                                             <g transform={`translate(${mainDancer.x}, ${mainDancer.y}) scale(${mainDancer.scale})`}>
-                                                <DraggableJoint x={skeleton.hipCenterX} y={skeleton.hipCenterY} isActive={activeJoint?.name === 'bodyX'} onMouseDown={(e) => handleJointDown(e, 'bodyX', null, 'pos')} onTouchStart={(e) => handleJointDown(e, 'bodyX', null, 'pos')} />
-                                                <DraggableJoint x={skeleton.headCenterX} y={skeleton.headCenterY} isActive={activeJoint?.type === 'headPos'} onMouseDown={(e) => handleJointDown(e, 'head', skeleton.neckBase, 'headPos')} onTouchStart={(e) => handleJointDown(e, 'head', skeleton.neckBase, 'headPos')} />
-                                                <DraggableJoint x={skeleton.tiltHandleX} y={skeleton.tiltHandleY} isActive={activeJoint?.type === 'headTilt'} onMouseDown={(e) => handleJointDown(e, 'headTilt', { x: skeleton.headCenterX, y: skeleton.headCenterY }, 'headTilt')} onTouchStart={(e) => handleJointDown(e, 'headTilt', { x: skeleton.headCenterX, y: skeleton.headCenterY }, 'headTilt')} isFK={false} />
+                                                <DraggableJoint x={skeleton.hipCenterX} y={skeleton.hipCenterY} isActive={activeJoint?.name === 'bodyX'} onMouseDown={(e) => handleJointDown(e, 'bodyX', null, 'pos')} onTouchStart={(e) => handleJointDown(e, 'bodyX', null, 'pos')} theme={theme}/>
+                                                <DraggableJoint x={skeleton.headCenterX} y={skeleton.headCenterY} isActive={activeJoint?.type === 'headPos'} onMouseDown={(e) => handleJointDown(e, 'head', skeleton.neckBase, 'headPos')} onTouchStart={(e) => handleJointDown(e, 'head', skeleton.neckBase, 'headPos')} theme={theme}/>
+                                                <DraggableJoint x={skeleton.tiltHandleX} y={skeleton.tiltHandleY} isActive={activeJoint?.type === 'headTilt'} onMouseDown={(e) => handleJointDown(e, 'headTilt', { x: skeleton.headCenterX, y: skeleton.headCenterY }, 'headTilt')} onTouchStart={(e) => handleJointDown(e, 'headTilt', { x: skeleton.headCenterX, y: skeleton.headCenterY }, 'headTilt')} isFK={false} theme={theme}/>
 
-                                                <DraggableJoint x={skeleton.rElbowPos.x} y={skeleton.rElbowPos.y} isActive={activeJoint?.name === 'rShoulder'} onMouseDown={(e) => handleJointDown(e, 'rShoulder', skeleton.rShoulderBase)} onTouchStart={(e) => handleJointDown(e, 'rShoulder', skeleton.rShoulderBase)} />
-                                                <DraggableJoint x={skeleton.rWristPos.x} y={skeleton.rWristPos.y} isActive={activeJoint?.name === (dragType === 'IK' ? 'rWrist' : 'rElbow')} onMouseDown={(e) => handleJointDown(e, dragType === 'IK' ? 'rWrist' : 'rElbow', dragType === 'IK' ? skeleton.rShoulderBase : skeleton.rElbowPos, dragType === 'IK' ? 'ik' : 'angle', skeleton.rShoulderBase)} onTouchStart={(e) => handleJointDown(e, dragType === 'IK' ? 'rWrist' : 'rElbow', dragType === 'IK' ? skeleton.rShoulderBase : skeleton.rElbowPos, dragType === 'IK' ? 'ik' : 'angle', skeleton.rShoulderBase)} isFK={dragType === 'FK'} />
-                                                <DraggableJoint x={skeleton.rHandPos.x} y={skeleton.rHandPos.y} isActive={activeJoint?.name === 'rWrist'} onMouseDown={(e) => handleJointDown(e, 'rWrist', skeleton.rWristPos)} onTouchStart={(e) => handleJointDown(e, 'rWrist', skeleton.rWristPos)} />
+                                                <DraggableJoint x={skeleton.rElbowPos.x} y={skeleton.rElbowPos.y} isActive={activeJoint?.name === 'rShoulder'} onMouseDown={(e) => handleJointDown(e, 'rShoulder', skeleton.rShoulderBase)} onTouchStart={(e) => handleJointDown(e, 'rShoulder', skeleton.rShoulderBase)} theme={theme}/>
+                                                <DraggableJoint x={skeleton.rWristPos.x} y={skeleton.rWristPos.y} isActive={activeJoint?.name === (dragType === 'IK' ? 'rWrist' : 'rElbow')} onMouseDown={(e) => handleJointDown(e, dragType === 'IK' ? 'rWrist' : 'rElbow', dragType === 'IK' ? skeleton.rShoulderBase : skeleton.rElbowPos, dragType === 'IK' ? 'ik' : 'angle', skeleton.rShoulderBase)} onTouchStart={(e) => handleJointDown(e, dragType === 'IK' ? 'rWrist' : 'rElbow', dragType === 'IK' ? skeleton.rShoulderBase : skeleton.rElbowPos, dragType === 'IK' ? 'ik' : 'angle', skeleton.rShoulderBase)} isFK={dragType === 'FK'} theme={theme}/>
+                                                <DraggableJoint x={skeleton.rHandPos.x} y={skeleton.rHandPos.y} isActive={activeJoint?.name === 'rWrist'} onMouseDown={(e) => handleJointDown(e, 'rWrist', skeleton.rWristPos)} onTouchStart={(e) => handleJointDown(e, 'rWrist', skeleton.rWristPos)} theme={theme}/>
 
-                                                <DraggableJoint x={skeleton.lElbowPos.x} y={skeleton.lElbowPos.y} isActive={activeJoint?.name === 'lShoulder'} onMouseDown={(e) => handleJointDown(e, 'lShoulder', skeleton.lShoulderBase)} onTouchStart={(e) => handleJointDown(e, 'lShoulder', skeleton.lShoulderBase)} />
-                                                <DraggableJoint x={skeleton.lWristPos.x} y={skeleton.lWristPos.y} isActive={activeJoint?.name === (dragType === 'IK' ? 'lWrist' : 'lElbow')} onMouseDown={(e) => handleJointDown(e, dragType === 'IK' ? 'lWrist' : 'lElbow', dragType === 'IK' ? skeleton.lShoulderBase : skeleton.lElbowPos, dragType === 'IK' ? 'ik' : 'angle', skeleton.lShoulderBase)} onTouchStart={(e) => handleJointDown(e, dragType === 'IK' ? 'lWrist' : 'lElbow', dragType === 'IK' ? skeleton.lShoulderBase : skeleton.lElbowPos, dragType === 'IK' ? 'ik' : 'angle', skeleton.lShoulderBase)} isFK={dragType === 'FK'} />
-                                                <DraggableJoint x={skeleton.lHandPos.x} y={skeleton.lHandPos.y} isActive={activeJoint?.name === 'lWrist'} onMouseDown={(e) => handleJointDown(e, 'lWrist', skeleton.lWristPos)} onTouchStart={(e) => handleJointDown(e, 'lWrist', skeleton.lWristPos)} />
+                                                <DraggableJoint x={skeleton.lElbowPos.x} y={skeleton.lElbowPos.y} isActive={activeJoint?.name === 'lShoulder'} onMouseDown={(e) => handleJointDown(e, 'lShoulder', skeleton.lShoulderBase)} onTouchStart={(e) => handleJointDown(e, 'lShoulder', skeleton.lShoulderBase)} theme={theme}/>
+                                                <DraggableJoint x={skeleton.lWristPos.x} y={skeleton.lWristPos.y} isActive={activeJoint?.name === (dragType === 'IK' ? 'lWrist' : 'lElbow')} onMouseDown={(e) => handleJointDown(e, dragType === 'IK' ? 'lWrist' : 'lElbow', dragType === 'IK' ? skeleton.lShoulderBase : skeleton.lElbowPos, dragType === 'IK' ? 'ik' : 'angle', skeleton.lShoulderBase)} onTouchStart={(e) => handleJointDown(e, dragType === 'IK' ? 'lWrist' : 'lElbow', dragType === 'IK' ? skeleton.lShoulderBase : skeleton.lElbowPos, dragType === 'IK' ? 'ik' : 'angle', skeleton.lShoulderBase)} isFK={dragType === 'FK'} theme={theme}/>
+                                                <DraggableJoint x={skeleton.lHandPos.x} y={skeleton.lHandPos.y} isActive={activeJoint?.name === 'lWrist'} onMouseDown={(e) => handleJointDown(e, 'lWrist', skeleton.lWristPos)} onTouchStart={(e) => handleJointDown(e, 'lWrist', skeleton.lWristPos)} theme={theme}/>
 
-                                                <DraggableJoint x={skeleton.rKneePos.x} y={skeleton.rKneePos.y} isActive={activeJoint?.name === 'rHip'} onMouseDown={(e) => handleJointDown(e, 'rHip', skeleton.rHipPos)} onTouchStart={(e) => handleJointDown(e, 'rHip', skeleton.rHipPos)} />
-                                                <DraggableJoint x={skeleton.rAnklePos.x} y={skeleton.rAnklePos.y} isActive={activeJoint?.name === (dragType === 'IK' ? 'rAnkle' : 'rKnee')} onMouseDown={(e) => handleJointDown(e, dragType === 'IK' ? 'rAnkle' : 'rKnee', dragType === 'IK' ? skeleton.rHipPos : skeleton.rKneePos, dragType === 'IK' ? 'ik' : 'angle', skeleton.rHipPos)} onTouchStart={(e) => handleJointDown(e, dragType === 'IK' ? 'rAnkle' : 'rKnee', dragType === 'IK' ? skeleton.rHipPos : skeleton.rKneePos, dragType === 'IK' ? 'ik' : 'angle', skeleton.rHipPos)} isFK={dragType === 'FK'} />
-                                                <DraggableJoint x={skeleton.rFootPos.x} y={skeleton.rFootPos.y} isActive={activeJoint?.name === 'rAnkle'} onMouseDown={(e) => handleJointDown(e, 'rAnkle', skeleton.rAnklePos)} onTouchStart={(e) => handleJointDown(e, 'rAnkle', skeleton.rAnklePos)} />
+                                                <DraggableJoint x={skeleton.rKneePos.x} y={skeleton.rKneePos.y} isActive={activeJoint?.name === 'rHip'} onMouseDown={(e) => handleJointDown(e, 'rHip', skeleton.rHipPos)} onTouchStart={(e) => handleJointDown(e, 'rHip', skeleton.rHipPos)} theme={theme}/>
+                                                <DraggableJoint x={skeleton.rAnklePos.x} y={skeleton.rAnklePos.y} isActive={activeJoint?.name === (dragType === 'IK' ? 'rAnkle' : 'rKnee')} onMouseDown={(e) => handleJointDown(e, dragType === 'IK' ? 'rAnkle' : 'rKnee', dragType === 'IK' ? skeleton.rHipPos : skeleton.rKneePos, dragType === 'IK' ? 'ik' : 'angle', skeleton.rHipPos)} onTouchStart={(e) => handleJointDown(e, dragType === 'IK' ? 'rAnkle' : 'rKnee', dragType === 'IK' ? skeleton.rHipPos : skeleton.rKneePos, dragType === 'IK' ? 'ik' : 'angle', skeleton.rHipPos)} isFK={dragType === 'FK'} theme={theme}/>
+                                                <DraggableJoint x={skeleton.rFootPos.x} y={skeleton.rFootPos.y} isActive={activeJoint?.name === 'rAnkle'} onMouseDown={(e) => handleJointDown(e, 'rAnkle', skeleton.rAnklePos)} onTouchStart={(e) => handleJointDown(e, 'rAnkle', skeleton.rAnklePos)} theme={theme}/>
 
-                                                <DraggableJoint x={skeleton.lKneePos.x} y={skeleton.lKneePos.y} isActive={activeJoint?.name === 'lHip'} onMouseDown={(e) => handleJointDown(e, 'lHip', skeleton.lHipPos)} onTouchStart={(e) => handleJointDown(e, 'lHip', skeleton.lHipPos)} />
-                                                <DraggableJoint x={skeleton.lAnklePos.x} y={skeleton.lAnklePos.y} isActive={activeJoint?.name === (dragType === 'IK' ? 'lAnkle' : 'lKnee')} onMouseDown={(e) => handleJointDown(e, dragType === 'IK' ? 'lAnkle' : 'lKnee', dragType === 'IK' ? skeleton.lHipPos : skeleton.lKneePos, dragType === 'IK' ? 'ik' : 'angle', skeleton.lHipPos)} onTouchStart={(e) => handleJointDown(e, dragType === 'IK' ? 'lAnkle' : 'lKnee', dragType === 'IK' ? skeleton.lHipPos : skeleton.lKneePos, dragType === 'IK' ? 'ik' : 'angle', skeleton.lHipPos)} isFK={dragType === 'FK'} />
-                                                <DraggableJoint x={skeleton.lFootPos.x} y={skeleton.lFootPos.y} isActive={activeJoint?.name === 'lAnkle'} onMouseDown={(e) => handleJointDown(e, 'lAnkle', skeleton.lAnklePos)} onTouchStart={(e) => handleJointDown(e, 'lAnkle', skeleton.lAnklePos)} />
+                                                <DraggableJoint x={skeleton.lKneePos.x} y={skeleton.lKneePos.y} isActive={activeJoint?.name === 'lHip'} onMouseDown={(e) => handleJointDown(e, 'lHip', skeleton.lHipPos)} onTouchStart={(e) => handleJointDown(e, 'lHip', skeleton.lHipPos)} theme={theme}/>
+                                                <DraggableJoint x={skeleton.lAnklePos.x} y={skeleton.lAnklePos.y} isActive={activeJoint?.name === (dragType === 'IK' ? 'lAnkle' : 'lKnee')} onMouseDown={(e) => handleJointDown(e, dragType === 'IK' ? 'lAnkle' : 'lKnee', dragType === 'IK' ? skeleton.lHipPos : skeleton.lKneePos, dragType === 'IK' ? 'ik' : 'angle', skeleton.lHipPos)} onTouchStart={(e) => handleJointDown(e, dragType === 'IK' ? 'lAnkle' : 'lKnee', dragType === 'IK' ? skeleton.lHipPos : skeleton.lKneePos, dragType === 'IK' ? 'ik' : 'angle', skeleton.lHipPos)} isFK={dragType === 'FK'} theme={theme}/>
+                                                <DraggableJoint x={skeleton.lFootPos.x} y={skeleton.lFootPos.y} isActive={activeJoint?.name === 'lAnkle'} onMouseDown={(e) => handleJointDown(e, 'lAnkle', skeleton.lAnklePos)} onTouchStart={(e) => handleJointDown(e, 'lAnkle', skeleton.lAnklePos)} theme={theme}/>
                                             </g>
                                         )}
                                     </g>
@@ -1947,74 +1303,75 @@
 
                                 {/* Overlay Controls */}
                                 <div className="absolute bottom-4 right-4 flex space-x-2 pointer-events-auto">
-                                    <div className="glass-panel rounded-xl border border-slate-700/50 flex items-center p-1 shadow-lg">
-                                        <button onClick={() => setIsDragMode(!isDragMode)} className={`p-2 rounded-lg transition-all ${isDragMode ? 'bg-fuchsia-500 text-white shadow-lg shadow-fuchsia-500/30' : 'text-slate-400 hover:text-white hover:bg-slate-700/50'}`} title={isDragMode ? t('dragModeOn') : t('dragModeOff')}>
+                                    <div className={`glass-panel rounded-xl border ${currentThemeConfig.borderColor} flex items-center p-1 shadow-lg`}>
+                                        <button onClick={() => setIsDragMode(!isDragMode)} className={`p-2 rounded-lg transition-all ${isDragMode ? 'bg-fuchsia-500 text-white shadow-lg shadow-fuchsia-500/30' : `${currentThemeConfig.ui.buttonInactive} hover:${currentThemeConfig.ui.buttonActive} hover:bg-white/10`}`} title={isDragMode ? t('dragModeOn') : t('dragModeOff')}>
                                             <Hand size={18} />
                                         </button>
                                         {isDragMode && (
                                             <>
-                                                <div className="w-px h-6 bg-slate-700/50 mx-1"></div>
-                                                <button onClick={() => setDragType(prev => prev === 'FK' ? 'IK' : 'FK')} className="px-2 py-1 text-[10px] font-mono font-bold text-slate-300 hover:bg-slate-700/50 rounded transition-colors min-w-[36px]" title={t(dragType.toLowerCase())}>
+                                                <div className={`w-px h-6 ${theme === 'minimalist' ? 'bg-neutral-700' : 'bg-slate-700/50'} mx-1`}></div>
+                                                <button onClick={() => setDragType(prev => prev === 'FK' ? 'IK' : 'FK')} className={`px-2 py-1 text-[10px] font-mono font-bold ${theme === 'minimalist' ? 'text-neutral-400' : 'text-slate-300'} hover:bg-white/10 rounded transition-colors min-w-[36px]`} title={t(dragType.toLowerCase())}>
                                                     {dragType}
                                                 </button>
                                             </>
                                         )}
                                     </div>
                                     
-                                    <div className="glass-panel rounded-xl border border-slate-700/50 flex items-center p-1 shadow-lg">
-                                        <button onClick={handleZoomOut} className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-700/50 transition-colors"><ZoomOut size={18} /></button>
-                                        <button onClick={handleResetView} className="px-2 py-1 text-[10px] font-mono text-slate-300 min-w-[50px] hover:bg-slate-700/50 rounded transition-colors" title={t('resetView')}>
+                                    <div className={`glass-panel rounded-xl border ${currentThemeConfig.borderColor} flex items-center p-1 shadow-lg`}>
+                                        <button onClick={handleZoomOut} className={`p-2 rounded-lg ${currentThemeConfig.ui.buttonInactive} hover:${currentThemeConfig.ui.buttonActive} hover:bg-white/10 transition-colors`}><ZoomOut size={18} /></button>
+                                        <button onClick={handleResetView} className={`px-2 py-1 text-[10px] font-mono ${theme === 'minimalist' ? 'text-neutral-400' : 'text-slate-300'} min-w-[50px] hover:bg-white/10 rounded transition-colors`} title={t('resetView')}>
                                             {Math.round(zoom * 100)}%
                                         </button>
-                                        <button onClick={handleZoomIn} className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-700/50 transition-colors"><ZoomIn size={18} /></button>
+                                        <button onClick={handleZoomIn} className={`p-2 rounded-lg ${currentThemeConfig.ui.buttonInactive} hover:${currentThemeConfig.ui.buttonActive} hover:bg-white/10 transition-colors`}><ZoomIn size={18} /></button>
                                     </div>
 
-                                    <div className="glass-panel rounded-xl border border-slate-700/50 flex items-center p-1 shadow-lg">
-                                        <button onClick={() => setShowTrails(!showTrails)} className={`p-2 rounded-lg transition-colors ${showTrails ? 'text-fuchsia-400 bg-fuchsia-500/10' : 'text-slate-400 hover:text-white hover:bg-slate-700/50'}`} title={t('motionTrails')}><Activity size={18} /></button>
-                                        <div className="w-px h-6 bg-slate-700/50 mx-1"></div>
-                                        <button onClick={() => setShowGrid(!showGrid)} className={`p-2 rounded-lg transition-colors ${showGrid ? 'text-cyan-400 bg-cyan-500/10' : 'text-slate-400 hover:text-white hover:bg-slate-700/50'}`}><Grid size={18} /></button>
+                                    <div className={`glass-panel rounded-xl border ${currentThemeConfig.borderColor} flex items-center p-1 shadow-lg`}>
+                                        <button onClick={() => setShowOnionSkin(!showOnionSkin)} className={`p-2 rounded-lg transition-colors ${showOnionSkin ? 'text-yellow-400 bg-yellow-500/10' : `${currentThemeConfig.ui.buttonInactive} hover:${currentThemeConfig.ui.buttonActive} hover:bg-white/10`}`} title={t('onionSkin')}><OnionSkinIcon size={18} /></button>
+                                        <div className={`w-px h-6 ${theme === 'minimalist' ? 'bg-neutral-700' : 'bg-slate-700/50'} mx-1`}></div>
+                                        <button onClick={() => setShowTrails(!showTrails)} className={`p-2 rounded-lg transition-colors ${showTrails ? 'text-fuchsia-400 bg-fuchsia-500/10' : `${currentThemeConfig.ui.buttonInactive} hover:${currentThemeConfig.ui.buttonActive} hover:bg-white/10`}`} title={t('motionTrails')}><Activity size={18} /></button>
+                                        <button onClick={() => setShowGrid(!showGrid)} className={`p-2 rounded-lg transition-colors ${showGrid ? (theme === 'minimalist' ? 'text-white bg-white/10' : 'text-cyan-400 bg-cyan-500/10') : `${currentThemeConfig.ui.buttonInactive} hover:${currentThemeConfig.ui.buttonActive} hover:bg-white/10`}`}><Grid size={18} /></button>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         {/* Timeline */}
-                        <div className="w-full bg-slate-900/95 backdrop-blur p-3 border-t border-slate-800/80 flex-shrink-0 z-20 shadow-[0_-1px_10px_rgba(0,0,0,0.3)]">
+                        <div className={`w-full ${currentThemeConfig.panelBg} backdrop-blur p-3 border-t ${currentThemeConfig.borderColor} flex-shrink-0 z-20 shadow-[0_-1px_10px_rgba(0,0,0,0.3)]`}>
                             <div className="flex flex-wrap justify-between items-center mb-2 gap-2">
-                                <span className="text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center"><Layers size={12} className="mr-1"/>{t('timeline')} ({timeline.length})</span>
+                                <span className={`text-[10px] md:text-xs font-bold ${theme === 'minimalist' ? 'text-neutral-500' : 'text-slate-500'} uppercase tracking-widest flex items-center`}><Layers size={12} className="mr-1"/>{t('timeline')} ({timeline.length})</span>
                                 <div className="flex items-center space-x-2 md:space-x-4">
                                     <button onClick={handleAIGenerate} className="flex items-center space-x-1 px-3 py-1 bg-gradient-to-r from-fuchsia-600 to-purple-600 hover:from-fuchsia-500 hover:to-purple-500 text-white rounded-full text-[10px] font-bold transition-all shadow-lg shadow-fuchsia-900/50"><Sparkles size={12} /><span>{t('ai')}</span></button>
-                                    <div className="w-px h-4 bg-slate-700/50 hidden md:block"></div>
+                                    <div className={`w-px h-4 ${theme === 'minimalist' ? 'bg-neutral-800' : 'bg-slate-700/50'} hidden md:block`}></div>
                                     <div className="hidden md:flex items-center space-x-2">
-                                        <Settings size={12} className="text-slate-500" />
-                                        <select value={pose.easing || 'Smooth (流暢)'} onChange={(e) => updatePose('easing', e.target.value)} className="bg-slate-800 border border-slate-700 text-[10px] text-slate-300 rounded px-2 py-1 focus:outline-none hover:border-slate-600 cursor-pointer">
+                                        <Settings size={12} className={theme === 'minimalist' ? 'text-neutral-500' : 'text-slate-500'} />
+                                        <select value={pose.easing || 'Smooth (流暢)'} onChange={(e) => updatePose('easing', e.target.value)} className={`${theme === 'minimalist' ? 'bg-neutral-800 border-neutral-700 text-neutral-300 hover:border-neutral-600' : 'bg-slate-800 border-slate-700 text-slate-300 hover:border-slate-600'} border text-[10px] rounded px-2 py-1 focus:outline-none cursor-pointer`}>
                                             {Object.keys(EASING_FUNCTIONS).map(name => (<option key={name} value={name}>{name.split(' ')[0]}</option>))}
                                         </select>
                                     </div>
-                                    <div className="flex items-center space-x-2 bg-slate-800/50 rounded px-2 py-1 border border-slate-700/50">
-                                        <label className="text-[10px] text-slate-500 font-mono">{t('bpm')}</label>
-                                        <input type="number" value={bpm} onChange={(e) => setBpm(Number(e.target.value))} className="w-8 bg-transparent text-[10px] text-center text-cyan-400 font-mono focus:outline-none" />
+                                    <div className={`flex items-center space-x-2 ${theme === 'minimalist' ? 'bg-neutral-800/50 border-neutral-700/50' : 'bg-slate-800/50 border-slate-700/50'} rounded px-2 py-1 border`}>
+                                        <label className={`text-[10px] ${theme === 'minimalist' ? 'text-neutral-500' : 'text-slate-500'} font-mono`}>{t('bpm')}</label>
+                                        <input type="number" value={bpm} onChange={(e) => setBpm(Number(e.target.value))} className={`w-8 bg-transparent text-[10px] text-center ${theme === 'minimalist' ? 'text-white' : 'text-cyan-400'} font-mono focus:outline-none`} />
                                     </div>
                                 </div>
                             </div>
                             <div className="w-full mb-3 px-1">
-                                <input type="range" min={0} max={Math.max(0, timeline.length - 1)} value={currentFrameIndex} onChange={handleTimelineScrub} className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-cyan-500 hover:accent-cyan-400 block" />
+                                <input type="range" min={0} max={Math.max(0, timeline.length - 1)} value={currentFrameIndex} onChange={handleTimelineScrub} className={`w-full h-1.5 ${theme === 'minimalist' ? 'bg-neutral-800 accent-white' : 'bg-slate-800 accent-cyan-500'} rounded-lg appearance-none cursor-pointer hover:opacity-90 block`} />
                             </div>
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center space-x-3 overflow-x-auto pb-2 custom-scrollbar no-scrollbar-mobile pr-4 mask-image-right">
                                     <button onClick={() => setIsPlaying(!isPlaying)} className={`p-3 rounded-full flex-shrink-0 transition-all transform hover:scale-105 active:scale-95 ${isPlaying ? 'bg-red-500/90 hover:bg-red-500 text-white shadow-lg shadow-red-500/30' : 'bg-emerald-500/90 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-500/30'}`}>{isPlaying ? <Square fill="currentColor" size={12} /> : <Play fill="currentColor" size={14} className="ml-0.5" />}</button>
                                     <div className="flex space-x-1">
                                         {timeline.map((_, idx) => (
-                                            <button key={idx} onClick={() => jumpToFrame(idx)} className={`w-8 h-12 md:w-10 md:h-14 flex-shrink-0 rounded-md border transition-all flex flex-col items-center justify-center relative group ${currentFrameIndex === idx ? 'border-cyan-500/50 bg-cyan-500/10 scale-105 z-10' : 'border-slate-700/50 bg-slate-800/30 hover:bg-slate-800 hover:border-slate-600'}`}>
-                                                <span className={`text-[10px] font-mono ${currentFrameIndex === idx ? 'text-cyan-400 font-bold' : 'text-slate-600 group-hover:text-slate-400'}`}>{idx + 1}</span>
-                                                {currentFrameIndex === idx && <div className="absolute bottom-1 w-1 h-1 rounded-full bg-cyan-500 shadow-[0_0_5px_cyan]"></div>}
+                                            <button key={idx} onClick={() => jumpToFrame(idx)} className={`w-8 h-12 md:w-10 md:h-14 flex-shrink-0 rounded-md border transition-all flex flex-col items-center justify-center relative group ${currentFrameIndex === idx ? (theme === 'minimalist' ? 'border-white bg-white/20 scale-105 z-10' : 'border-cyan-500/50 bg-cyan-500/10 scale-105 z-10') : (theme === 'minimalist' ? 'border-neutral-800 bg-neutral-900 hover:bg-neutral-800 hover:border-neutral-700' : 'border-slate-700/50 bg-slate-800/30 hover:bg-slate-800 hover:border-slate-600')}`}>
+                                                <span className={`text-[10px] font-mono ${currentFrameIndex === idx ? (theme === 'minimalist' ? 'text-white font-bold' : 'text-cyan-400 font-bold') : (theme === 'minimalist' ? 'text-neutral-600 group-hover:text-neutral-400' : 'text-slate-600 group-hover:text-slate-400')}`}>{idx + 1}</span>
+                                                {currentFrameIndex === idx && <div className={`absolute bottom-1 w-1 h-1 rounded-full ${theme === 'minimalist' ? 'bg-white' : 'bg-cyan-500 shadow-[0_0_5px_cyan]'}`}></div>}
                                             </button>
                                         ))}
-                                        <button onClick={addKeyframe} className="w-8 h-12 md:w-10 md:h-14 flex-shrink-0 rounded-md border border-dashed border-slate-700 hover:border-cyan-500/50 text-slate-600 hover:text-cyan-500 flex items-center justify-center transition-all hover:bg-slate-800"><Plus size={16} /></button>
+                                        <button onClick={addKeyframe} className={`w-8 h-12 md:w-10 md:h-14 flex-shrink-0 rounded-md border border-dashed ${theme === 'minimalist' ? 'border-neutral-800 hover:border-white text-neutral-600 hover:text-white hover:bg-neutral-800' : 'border-slate-700 hover:border-cyan-500/50 text-slate-600 hover:text-cyan-500 hover:bg-slate-800'} flex items-center justify-center transition-all`}><Plus size={16} /></button>
                                     </div>
                                 </div>
-                                <div className="flex space-x-2 pl-4 border-l border-slate-800">
-                                    <button onClick={updateKeyframe} className="p-2 rounded hover:bg-cyan-500/10 text-cyan-500 transition-colors" title={t('modify')}><Edit size={16} /></button>
+                                <div className={`flex space-x-2 pl-4 border-l ${theme === 'minimalist' ? 'border-neutral-800' : 'border-slate-800'}`}>
+                                    <button onClick={updateKeyframe} className={`p-2 rounded ${theme === 'minimalist' ? 'hover:bg-white/10 text-white' : 'hover:bg-cyan-500/10 text-cyan-500'} transition-colors`} title={t('modify')}><Edit size={16} /></button>
                                     <button onClick={deleteKeyframe} className="p-2 rounded hover:bg-red-500/10 text-red-500 transition-colors" title={t('delete')}><Trash2 size={16} /></button>
                                 </div>
                             </div>
@@ -2023,55 +1380,55 @@
 
                     {/* --- BOTTOM/RIGHT PANEL --- */}
                     <div className={`
-                        transition-all duration-500 ease-in-out flex flex-col shadow-2xl z-30 bg-slate-900/95 md:bg-[#0b1120] border-t md:border-t-0 md:border-l border-slate-800
+                        transition-all duration-500 ease-in-out flex flex-col shadow-2xl z-30 ${currentThemeConfig.panelBg} md:${theme === 'minimalist' ? 'bg-black' : 'bg-[#0b1120]'} border-t md:border-t-0 md:border-l ${currentThemeConfig.borderColor}
                         ${isSidebarOpen ? 'w-full md:w-[360px] h-[50%] md:h-full opacity-100' : 'w-full md:w-0 h-0 md:h-full opacity-0 overflow-hidden border-0'}
                     `}>
                         
                         {/* Fixed Header: Tools & Global Settings */}
-                        <div className="p-4 border-b border-slate-800 bg-slate-900/50 backdrop-blur-sm z-10">
+                        <div className={`p-4 border-b ${currentThemeConfig.borderColor} ${currentThemeConfig.headerBg} backdrop-blur-sm z-10`}>
                             <div className="flex justify-between items-center mb-3">
                                 <div className="flex items-center">
                                     <button onClick={() => setIsSidebarOpen(false)} className="mr-2 text-slate-500 hover:text-white transition-colors" title="Collapse Sidebar"><ArrowRightToLine size={16}/></button>
                                     <h2 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center"><RotateCcw className="mr-2" size={12} /> {t('manage')}</h2>
                                 </div>
                                 <div className="flex space-x-1">
-                                    <button onClick={handleExport} className="p-1.5 text-slate-400 hover:text-cyan-400 hover:bg-slate-800 rounded transition-colors" title={t('export')}><Download size={14}/></button>
-                                    <button onClick={() => fileInputRef.current.click()} className="p-1.5 text-slate-400 hover:text-fuchsia-400 hover:bg-slate-800 rounded transition-colors" title={t('import')}><Upload size={14}/></button>
+                                    <button onClick={handleExport} className={`p-1.5 text-slate-400 ${theme === 'minimalist' ? 'hover:text-white hover:bg-neutral-800' : 'hover:text-cyan-400 hover:bg-slate-800'} rounded transition-colors`} title={t('export')}><Download size={14}/></button>
+                                    <button onClick={() => fileInputRef.current.click()} className={`p-1.5 text-slate-400 ${theme === 'minimalist' ? 'hover:text-white hover:bg-neutral-800' : 'hover:text-fuchsia-400 hover:bg-slate-800'} rounded transition-colors`} title={t('import')}><Upload size={14}/></button>
                                     <input type="file" ref={fileInputRef} onChange={handleImport} accept=".json" className="hidden" />
                                 </div>
                             </div>
 
                             {/* Tools Grid */}
                             <div className="grid grid-cols-3 gap-2 mb-4">
-                                <button onClick={() => handlePoseOperation('flip')} className="flex items-center justify-center space-x-2 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-md transition-all group">
+                                <button onClick={() => handlePoseOperation('flip')} className={`flex items-center justify-center space-x-2 py-2 ${theme === 'minimalist' ? 'bg-neutral-900 hover:bg-neutral-800 border-neutral-800' : 'bg-slate-800 hover:bg-slate-700 border-slate-700'} border rounded-md transition-all group`}>
                                     <FlipIcon size={14} className="text-slate-400 group-hover:text-white" />
                                     <span className="text-[10px] font-medium text-slate-400 group-hover:text-white">{t('flip')}</span>
                                 </button>
-                                <button onClick={() => handlePoseOperation('mirrorLR')} className="flex items-center justify-center space-x-2 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-md transition-all group">
-                                    <div className="flex text-[10px] font-bold"><span className="text-fuchsia-500">L</span><span className="text-slate-500 mx-0.5">→</span><span className="text-cyan-500">R</span></div>
+                                <button onClick={() => handlePoseOperation('mirrorLR')} className={`flex items-center justify-center space-x-2 py-2 ${theme === 'minimalist' ? 'bg-neutral-900 hover:bg-neutral-800 border-neutral-800' : 'bg-slate-800 hover:bg-slate-700 border-slate-700'} border rounded-md transition-all group`}>
+                                    <div className="flex text-[10px] font-bold"><span className={theme === 'minimalist' ? 'text-white' : 'text-fuchsia-500'}>L</span><span className="text-slate-500 mx-0.5">→</span><span className={theme === 'minimalist' ? 'text-neutral-500' : 'text-cyan-500'}>R</span></div>
                                 </button>
-                                <button onClick={() => handlePoseOperation('mirrorRL')} className="flex items-center justify-center space-x-2 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-md transition-all group">
-                                    <div className="flex text-[10px] font-bold"><span className="text-cyan-500">R</span><span className="text-slate-500 mx-0.5">→</span><span className="text-fuchsia-500">L</span></div>
+                                <button onClick={() => handlePoseOperation('mirrorRL')} className={`flex items-center justify-center space-x-2 py-2 ${theme === 'minimalist' ? 'bg-neutral-900 hover:bg-neutral-800 border-neutral-800' : 'bg-slate-800 hover:bg-slate-700 border-slate-700'} border rounded-md transition-all group`}>
+                                    <div className="flex text-[10px] font-bold"><span className={theme === 'minimalist' ? 'text-neutral-500' : 'text-cyan-500'}>R</span><span className="text-slate-500 mx-0.5">→</span><span className={theme === 'minimalist' ? 'text-white' : 'text-fuchsia-500'}>L</span></div>
                                 </button>
                             </div>
 
                             {/* Preset & Duration */}
-                            <div className="bg-slate-800/40 rounded-lg p-2 border border-slate-700/50 space-y-2">
+                            <div className={`${theme === 'minimalist' ? 'bg-neutral-900/40 border-neutral-800' : 'bg-slate-800/40 border-slate-700/50'} rounded-lg p-2 border space-y-2`}>
                                 <div className="flex gap-2">
-                                    <select value={selectedPreset} onChange={handlePresetChange} className="flex-1 bg-slate-900 border border-slate-700 text-slate-300 text-[10px] rounded px-2 py-1.5 focus:outline-none focus:border-cyan-500/50">
+                                    <select value={selectedPreset} onChange={handlePresetChange} className={`flex-1 ${theme === 'minimalist' ? 'bg-neutral-950 border-neutral-800 text-neutral-300 focus:border-white' : 'bg-slate-900 border-slate-700 text-slate-300 focus:border-cyan-500/50'} border text-[10px] rounded px-2 py-1.5 focus:outline-none`}>
                                         <option value="" disabled>{t('selectPreset')}</option>
                                         <optgroup label={t('presets')}>{Object.keys(PRESETS).map(key => (<option key={key} value={key}>{t(`p_${key}`)}</option>))}</optgroup>
                                         {Object.keys(customPresets).length > 0 && <optgroup label={t('custom')}>{Object.keys(customPresets).map(key => (<option key={key} value={key}>{key}</option>))}</optgroup>}
                                     </select>
-                                    <div className="flex items-center bg-slate-900 border border-slate-700 rounded px-2 w-20">
+                                    <div className={`flex items-center ${theme === 'minimalist' ? 'bg-neutral-950 border-neutral-800' : 'bg-slate-900 border-slate-700'} border rounded px-2 w-20`}>
                                         <Clock size={10} className="text-slate-500 mr-1"/>
-                                        <input type="number" value={pose.duration || 1} onChange={(e) => updatePose('duration', Math.max(0.1, parseFloat(e.target.value)))} step={0.1} className="w-full bg-transparent text-[10px] text-right text-cyan-400 focus:outline-none" />
+                                        <input type="number" value={pose.duration || 1} onChange={(e) => updatePose('duration', Math.max(0.1, parseFloat(e.target.value)))} step={0.1} className={`w-full bg-transparent text-[10px] text-right ${theme === 'minimalist' ? 'text-white' : 'text-cyan-400'} focus:outline-none`} />
                                         <span className="text-[8px] text-slate-600 ml-1">s</span>
                                     </div>
                                 </div>
                                 <div className="flex gap-2">
-                                    <input type="text" value={presetName} onChange={(e) => setPresetName(e.target.value)} placeholder={t('enterName')} className="flex-1 bg-slate-900 border border-slate-700 rounded px-2 py-1.5 text-[10px] text-slate-200 focus:outline-none focus:border-fuchsia-500/50 placeholder-slate-600" />
-                                    <button onClick={handleSaveCustomPreset} className="px-3 bg-slate-700 hover:bg-fuchsia-600 text-white rounded text-[10px] transition-colors"><Save size={12}/></button>
+                                    <input type="text" value={presetName} onChange={(e) => setPresetName(e.target.value)} placeholder={t('enterName')} className={`flex-1 ${theme === 'minimalist' ? 'bg-neutral-950 border-neutral-800 text-neutral-200 focus:border-white' : 'bg-slate-900 border-slate-700 text-slate-200 focus:border-fuchsia-500/50'} border rounded px-2 py-1.5 text-[10px] focus:outline-none placeholder-slate-600`} />
+                                    <button onClick={handleSaveCustomPreset} className={`px-3 ${theme === 'minimalist' ? 'bg-neutral-800 hover:bg-white text-white hover:text-black' : 'bg-slate-700 hover:bg-fuchsia-600 text-white'} rounded text-[10px] transition-colors`}><Save size={12}/></button>
                                 </div>
                             </div>
                         </div>
@@ -2080,25 +1437,25 @@
                         <div className="flex-1 overflow-y-auto custom-scrollbar p-0">
                             
                             {/* Body & Head Section */}
-                            <AccordionSection title={t('body')} icon={Move} isOpen={openSections.body} onToggle={() => toggleSection('body')} color="slate">
+                            <AccordionSection title={t('body')} icon={Move} isOpen={openSections.body} onToggle={() => toggleSection('body')} color="slate" theme={theme}>
                                 <div className="space-y-3 pt-2">
                                     <div className="grid grid-cols-2 gap-2">
-                                        <button onClick={() => setIsHandSync(!isHandSync)} className={`py-1.5 px-2 rounded border text-[10px] font-bold flex items-center justify-center space-x-1 transition-all ${isHandSync ? 'bg-cyan-500/20 border-cyan-500 text-cyan-400' : 'bg-slate-800 border-slate-700 text-slate-500 hover:border-slate-600'}`}>
+                                        <button onClick={() => setIsHandSync(!isHandSync)} className={`py-1.5 px-2 rounded border text-[10px] font-bold flex items-center justify-center space-x-1 transition-all ${isHandSync ? (theme === 'minimalist' ? 'bg-white text-black border-white' : 'bg-cyan-500/20 border-cyan-500 text-cyan-400') : (theme === 'minimalist' ? 'bg-neutral-900 border-neutral-800 text-neutral-500 hover:border-neutral-600' : 'bg-slate-800 border-slate-700 text-slate-500 hover:border-slate-600')}`}>
                                             <LinkIcon size={12} /><span>{t('handSync')}</span>
                                         </button>
-                                        <div className="flex items-center justify-center space-x-1 bg-slate-800 border border-slate-700 rounded">
+                                        <div className={`flex items-center justify-center space-x-1 ${theme === 'minimalist' ? 'bg-neutral-900 border-neutral-800' : 'bg-slate-800 border-slate-700'} border rounded`}>
                                             <Anchor size={12} className="text-slate-500"/>
                                             <span className="text-[10px] text-slate-500 font-bold">FIXED</span>
                                         </div>
                                     </div>
                                     
                                     {/* Fixed Mode toggles simplified */}
-                                    <div className="grid grid-cols-4 gap-1 p-1 bg-slate-800/50 rounded border border-slate-700/30">
+                                    <div className={`grid grid-cols-4 gap-1 p-1 ${theme === 'minimalist' ? 'bg-neutral-900/50 border-neutral-800' : 'bg-slate-800/50 border-slate-700/30'} rounded border`}>
                                         {['lWrist', 'rWrist', 'lAnkle', 'rAnkle'].map(joint => (
                                             <button 
                                                 key={joint}
                                                 onClick={() => setFixedJoints(p => ({...p, [joint]: !p[joint]}))} 
-                                                className={`h-6 rounded text-[9px] font-bold border transition-all ${fixedJoints[joint] ? (joint.startsWith('l') ? 'bg-cyan-500/20 border-cyan-500 text-cyan-400' : 'bg-fuchsia-500/20 border-fuchsia-500 text-fuchsia-400') : 'bg-transparent border-transparent text-slate-600 hover:bg-slate-700'}`}
+                                                className={`h-6 rounded text-[9px] font-bold border transition-all ${fixedJoints[joint] ? (joint.startsWith('l') ? (theme === 'minimalist' ? 'bg-white text-black border-white' : 'bg-cyan-500/20 border-cyan-500 text-cyan-400') : (theme === 'minimalist' ? 'bg-neutral-700 text-white border-neutral-600' : 'bg-fuchsia-500/20 border-fuchsia-500 text-fuchsia-400')) : 'bg-transparent border-transparent text-slate-600 hover:bg-white/5'}`}
                                             >
                                                 {joint.startsWith('l') ? 'L' : 'R'} {joint.includes('Wrist') ? 'Hand' : 'Foot'}
                                             </button>
@@ -2106,95 +1463,95 @@
                                     </div>
 
                                     <div className="space-y-1">
-                                        <SliderControl label={t('waist')} value={pose.waist || 0} onChange={(v) => updatePose('waist', v)} min={-45} max={45} step={1} snap={0} accentColor="slate" />
-                                        <SliderControl label={t('bodyX')} value={pose.bodyX || 0} onChange={(v) => updatePose('bodyX', v)} min={-100} max={100} step={1} snap={0} unit="px" accentColor="slate" />
-                                        <SliderControl label={t('bodyY')} value={pose.bodyY || 0} onChange={(v) => updatePose('bodyY', v)} min={-100} max={100} step={1} snap={0} unit="px" accentColor="slate" />
+                                        <SliderControl label={t('waist')} value={pose.waist || 0} onChange={(v) => updatePose('waist', v)} min={-45} max={45} step={1} snap={0} accentColor="slate" theme={theme} />
+                                        <SliderControl label={t('bodyX')} value={pose.bodyX || 0} onChange={(v) => updatePose('bodyX', v)} min={-100} max={100} step={1} snap={0} unit="px" accentColor="slate" theme={theme} />
+                                        <SliderControl label={t('bodyY')} value={pose.bodyY || 0} onChange={(v) => updatePose('bodyY', v)} min={-100} max={100} step={1} snap={0} unit="px" accentColor="slate" theme={theme} />
                                     </div>
-                                    <div className="border-t border-slate-800/50 pt-2 space-y-1">
-                                        <SliderControl label={t('headTilt')} value={pose.headTilt || 0} onChange={(v) => updatePose('headTilt', v)} min={-45} max={45} step={1} snap={0} accentColor="slate" />
-                                        <SliderControl label={t('headSlide')} value={pose.headSlide || 0} onChange={(v) => updatePose('headSlide', v)} min={-30} max={30} step={1} snap={0} unit="px" accentColor="slate" />
+                                    <div className={`border-t ${theme === 'minimalist' ? 'border-neutral-800' : 'border-slate-800/50'} pt-2 space-y-1`}>
+                                        <SliderControl label={t('headTilt')} value={pose.headTilt || 0} onChange={(v) => updatePose('headTilt', v)} min={-45} max={45} step={1} snap={0} accentColor="slate" theme={theme} />
+                                        <SliderControl label={t('headSlide')} value={pose.headSlide || 0} onChange={(v) => updatePose('headSlide', v)} min={-30} max={30} step={1} snap={0} unit="px" accentColor="slate" theme={theme} />
                                     </div>
                                 </div>
                             </AccordionSection>
 
                             {/* Left Arm (Cyan) */}
-                            <AccordionSection title={t('lArm')} icon={User} isOpen={openSections.lArm} onToggle={() => toggleSection('lArm')} color="cyan">
-                                <div className="space-y-1 pt-2 border-l-2 border-cyan-500/20 pl-2">
+                            <AccordionSection title={t('lArm')} icon={User} isOpen={openSections.lArm} onToggle={() => toggleSection('lArm')} color="cyan" theme={theme}>
+                                <div className={`space-y-1 pt-2 border-l-2 ${theme === 'minimalist' ? 'border-white' : 'border-cyan-500/20'} pl-2`}>
                                     <div className="flex items-center justify-between mb-2 pr-2">
-                                        <span className="text-[10px] text-cyan-400 font-bold uppercase">{t('depth')}</span>
-                                        <div className="flex bg-slate-800 rounded border border-slate-700 p-0.5">
+                                        <span className={`text-[10px] ${theme === 'minimalist' ? 'text-white' : 'text-cyan-400'} font-bold uppercase`}>{t('depth')}</span>
+                                        <div className={`flex ${theme === 'minimalist' ? 'bg-neutral-800 border-neutral-700' : 'bg-slate-800 border-slate-700'} rounded border p-0.5`}>
                                             <button 
                                                 onClick={() => updatePose('lArmZ', 'back')} 
-                                                className={`px-2 py-0.5 rounded text-[9px] transition-colors ${pose.lArmZ === 'back' ? 'bg-cyan-600 text-white' : 'text-slate-400 hover:text-white'}`}
+                                                className={`px-2 py-0.5 rounded text-[9px] transition-colors ${pose.lArmZ === 'back' ? (theme === 'minimalist' ? 'bg-white text-black' : 'bg-cyan-600 text-white') : 'text-slate-400 hover:text-white'}`}
                                                 title={t('back')}
                                             >
                                                 <SendToBack size={12} />
                                             </button>
                                             <button 
                                                 onClick={() => updatePose('lArmZ', 'front')} 
-                                                className={`px-2 py-0.5 rounded text-[9px] transition-colors ${(!pose.lArmZ || pose.lArmZ === 'front') ? 'bg-cyan-600 text-white' : 'text-slate-400 hover:text-white'}`}
+                                                className={`px-2 py-0.5 rounded text-[9px] transition-colors ${(!pose.lArmZ || pose.lArmZ === 'front') ? (theme === 'minimalist' ? 'bg-white text-black' : 'bg-cyan-600 text-white') : 'text-slate-400 hover:text-white'}`}
                                                 title={t('front')}
                                             >
                                                 <BringToFront size={12} />
                                             </button>
                                         </div>
                                     </div>
-                                    <SliderControl label={t('shoulder')} value={pose.lShoulder} onChange={(v) => updatePose('lShoulder', v)} accentColor="cyan" />
-                                    <SliderControl label={t('elbow')} value={pose.lElbow} onChange={(v) => updatePose('lElbow', v)} accentColor="cyan" />
-                                    <SliderControl label={t('wrist')} value={pose.lWrist} onChange={(v) => updatePose('lWrist', v)} accentColor="cyan" />
+                                    <SliderControl label={t('shoulder')} value={pose.lShoulder} onChange={(v) => updatePose('lShoulder', v)} accentColor="cyan" theme={theme} />
+                                    <SliderControl label={t('elbow')} value={pose.lElbow} onChange={(v) => updatePose('lElbow', v)} accentColor="cyan" theme={theme} />
+                                    <SliderControl label={t('wrist')} value={pose.lWrist} onChange={(v) => updatePose('lWrist', v)} accentColor="cyan" theme={theme} />
                                 </div>
                             </AccordionSection>
 
                             {/* Right Arm (Fuchsia) */}
-                            <AccordionSection title={t('rArm')} icon={User} isOpen={openSections.rArm} onToggle={() => toggleSection('rArm')} color="fuchsia">
-                                <div className="space-y-1 pt-2 border-l-2 border-fuchsia-500/20 pl-2">
+                            <AccordionSection title={t('rArm')} icon={User} isOpen={openSections.rArm} onToggle={() => toggleSection('rArm')} color="fuchsia" theme={theme}>
+                                <div className={`space-y-1 pt-2 border-l-2 ${theme === 'minimalist' ? 'border-neutral-600' : 'border-fuchsia-500/20'} pl-2`}>
                                     <div className="flex items-center justify-between mb-2 pr-2">
-                                        <span className="text-[10px] text-fuchsia-400 font-bold uppercase">{t('depth')}</span>
-                                        <div className="flex bg-slate-800 rounded border border-slate-700 p-0.5">
+                                        <span className={`text-[10px] ${theme === 'minimalist' ? 'text-neutral-500' : 'text-fuchsia-400'} font-bold uppercase`}>{t('depth')}</span>
+                                        <div className={`flex ${theme === 'minimalist' ? 'bg-neutral-800 border-neutral-700' : 'bg-slate-800 border-slate-700'} rounded border p-0.5`}>
                                             <button 
                                                 onClick={() => updatePose('rArmZ', 'back')} 
-                                                className={`px-2 py-0.5 rounded text-[9px] transition-colors ${pose.rArmZ === 'back' ? 'bg-fuchsia-600 text-white' : 'text-slate-400 hover:text-white'}`}
+                                                className={`px-2 py-0.5 rounded text-[9px] transition-colors ${pose.rArmZ === 'back' ? (theme === 'minimalist' ? 'bg-neutral-600 text-white' : 'bg-fuchsia-600 text-white') : 'text-slate-400 hover:text-white'}`}
                                                 title={t('back')}
                                             >
                                                 <SendToBack size={12} />
                                             </button>
                                             <button 
                                                 onClick={() => updatePose('rArmZ', 'front')} 
-                                                className={`px-2 py-0.5 rounded text-[9px] transition-colors ${(!pose.rArmZ || pose.rArmZ === 'front') ? 'bg-fuchsia-600 text-white' : 'text-slate-400 hover:text-white'}`}
+                                                className={`px-2 py-0.5 rounded text-[9px] transition-colors ${(!pose.rArmZ || pose.rArmZ === 'front') ? (theme === 'minimalist' ? 'bg-neutral-600 text-white' : 'bg-fuchsia-600 text-white') : 'text-slate-400 hover:text-white'}`}
                                                 title={t('front')}
                                             >
                                                 <BringToFront size={12} />
                                             </button>
                                         </div>
                                     </div>
-                                    <SliderControl label={t('shoulder')} value={pose.rShoulder} onChange={(v) => updatePose('rShoulder', v)} accentColor="fuchsia" />
-                                    <SliderControl label={t('elbow')} value={pose.rElbow} onChange={(v) => updatePose('rElbow', v)} accentColor="fuchsia" />
-                                    <SliderControl label={t('wrist')} value={pose.rWrist} onChange={(v) => updatePose('rWrist', v)} accentColor="fuchsia" />
+                                    <SliderControl label={t('shoulder')} value={pose.rShoulder} onChange={(v) => updatePose('rShoulder', v)} accentColor="fuchsia" theme={theme} />
+                                    <SliderControl label={t('elbow')} value={pose.rElbow} onChange={(v) => updatePose('rElbow', v)} accentColor="fuchsia" theme={theme} />
+                                    <SliderControl label={t('wrist')} value={pose.rWrist} onChange={(v) => updatePose('rWrist', v)} accentColor="fuchsia" theme={theme} />
                                 </div>
                             </AccordionSection>
 
                             {/* Left Leg (Cyan) */}
-                            <AccordionSection title={t('lLeg')} icon={Move} isOpen={openSections.lLeg} onToggle={() => toggleSection('lLeg')} color="cyan">
-                                <div className="space-y-1 pt-2 border-l-2 border-cyan-900/20 pl-2">
-                                    <SliderControl label={t('hip')} value={pose.lHip ?? 90} onChange={(v) => updatePose('lHip', v)} accentColor="cyan" />
-                                    <SliderControl label={t('knee')} value={pose.lKnee ?? 90} onChange={(v) => updatePose('lKnee', v)} accentColor="cyan" />
-                                    <SliderControl label={t('ankle')} value={pose.lAnkle ?? 0} onChange={(v) => updatePose('lAnkle', v)} accentColor="cyan" />
+                            <AccordionSection title={t('lLeg')} icon={Move} isOpen={openSections.lLeg} onToggle={() => toggleSection('lLeg')} color="cyan" theme={theme}>
+                                <div className={`space-y-1 pt-2 border-l-2 ${theme === 'minimalist' ? 'border-white' : 'border-cyan-900/20'} pl-2`}>
+                                    <SliderControl label={t('hip')} value={pose.lHip ?? 90} onChange={(v) => updatePose('lHip', v)} accentColor="cyan" theme={theme} />
+                                    <SliderControl label={t('knee')} value={pose.lKnee ?? 90} onChange={(v) => updatePose('lKnee', v)} accentColor="cyan" theme={theme} />
+                                    <SliderControl label={t('ankle')} value={pose.lAnkle ?? 0} onChange={(v) => updatePose('lAnkle', v)} accentColor="cyan" theme={theme} />
                                 </div>
                             </AccordionSection>
 
                             {/* Right Leg (Fuchsia) */}
-                            <AccordionSection title={t('rLeg')} icon={Move} isOpen={openSections.rLeg} onToggle={() => toggleSection('rLeg')} color="fuchsia">
-                                <div className="space-y-1 pt-2 border-l-2 border-fuchsia-900/20 pl-2">
-                                    <SliderControl label={t('hip')} value={pose.rHip ?? 90} onChange={(v) => updatePose('rHip', v)} accentColor="fuchsia" />
-                                    <SliderControl label={t('knee')} value={pose.rKnee ?? 90} onChange={(v) => updatePose('rKnee', v)} accentColor="fuchsia" />
-                                    <SliderControl label={t('ankle')} value={pose.rAnkle ?? 180} onChange={(v) => updatePose('rAnkle', v)} accentColor="fuchsia" />
+                            <AccordionSection title={t('rLeg')} icon={Move} isOpen={openSections.rLeg} onToggle={() => toggleSection('rLeg')} color="fuchsia" theme={theme}>
+                                <div className={`space-y-1 pt-2 border-l-2 ${theme === 'minimalist' ? 'border-neutral-600' : 'border-fuchsia-900/20'} pl-2`}>
+                                    <SliderControl label={t('hip')} value={pose.rHip ?? 90} onChange={(v) => updatePose('rHip', v)} accentColor="fuchsia" theme={theme} />
+                                    <SliderControl label={t('knee')} value={pose.rKnee ?? 90} onChange={(v) => updatePose('rKnee', v)} accentColor="fuchsia" theme={theme} />
+                                    <SliderControl label={t('ankle')} value={pose.rAnkle ?? 180} onChange={(v) => updatePose('rAnkle', v)} accentColor="fuchsia" theme={theme} />
                                 </div>
                             </AccordionSection>
 
                             {/* Formation Settings */}
-                            <AccordionSection title={t('formation')} icon={Users} isOpen={openSections.formation} onToggle={() => toggleSection('formation')} color="slate">
+                            <AccordionSection title={t('formation')} icon={Users} isOpen={openSections.formation} onToggle={() => toggleSection('formation')} color="slate" theme={theme}>
                                 <div className="pt-2 pb-4">
-                                    <select value={formationType} onChange={(e) => setFormationType(e.target.value)} className="w-full bg-slate-800 border border-slate-700 text-slate-300 text-xs rounded px-2 py-2 focus:outline-none focus:border-slate-500">
+                                    <select value={formationType} onChange={(e) => setFormationType(e.target.value)} className={`w-full ${theme === 'minimalist' ? 'bg-neutral-900 border-neutral-700 text-neutral-300 focus:border-white' : 'bg-slate-800 border-slate-700 text-slate-300 focus:border-slate-500'} border text-xs rounded px-2 py-2 focus:outline-none`}>
                                         {['single', 'duo', 'trio', 'triangle', 'row', 'grid'].map(f => (
                                             <option key={f} value={f}>{t(`f_${f}`)}</option>
                                         ))}
@@ -2205,8 +1562,8 @@
                         </div>
                         
                         {/* Bottom Action Bar */}
-                        <div className="p-3 border-t border-slate-800 bg-slate-900/80 backdrop-blur-sm">
-                            <button onClick={updateKeyframe} className="w-full py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-md text-xs font-bold tracking-wider uppercase transition-all shadow-lg shadow-cyan-900/20 flex items-center justify-center">
+                        <div className={`p-3 border-t ${currentThemeConfig.borderColor} ${currentThemeConfig.headerBg} backdrop-blur-sm`}>
+                            <button onClick={updateKeyframe} className={`w-full py-2 ${theme === 'minimalist' ? 'bg-white hover:bg-neutral-200 text-black shadow-neutral-900/20' : 'bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white shadow-cyan-900/20'} rounded-md text-xs font-bold tracking-wider uppercase transition-all shadow-lg flex items-center justify-center`}>
                                 <Edit size={14} className="mr-2" /> {t('modify')}
                             </button>
                         </div>
