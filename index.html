@@ -76,6 +76,15 @@
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
         }
+        
+        /* Modal Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .modal-anim {
+            animation: fadeIn 0.2s ease-out forwards;
+        }
     </style>
 </head>
 
@@ -143,8 +152,13 @@
         const SendToBack = (props) => <Icon {...props}><rect x="4" y="4" width="8" height="8" rx="2" /><path d="M12 8c1.1 0 2 .9 2 2v10c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2" /></Icon>;
         const Palette = (props) => <Icon {...props}><circle cx="13.5" cy="6.5" r=".5" /><circle cx="17.5" cy="10.5" r=".5" /><circle cx="8.5" cy="7.5" r=".5" /><circle cx="6.5" cy="12.5" r=".5" /><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" /></Icon>;
         const OnionSkinIcon = (props) => <Icon {...props}><path d="M21 14.8v3.7a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-3.7" /><path d="m12 2 8.5 5-8.5 5-8.5-5Z" /><path d="m3 9.7 9 5.3 9-5.3" /></Icon>;
+        // NEW: Undo/Redo Icons
         const Undo2 = (props) => <Icon {...props}><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"/></Icon>;
         const Redo2 = (props) => <Icon {...props}><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5A5.5 5.5 0 0 0 4 14.5v0A5.5 5.5 0 0 0 9.5 20H13"/></Icon>;
+        const Info = (props) => <Icon {...props}><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></Icon>;
+        const X = (props) => <Icon {...props}><path d="M18 6 6 18" /><path d="m6 6 12 12" /></Icon>;
+        const CopyIcon = (props) => <Icon {...props}><rect width="14" height="14" x="8" y="8" rx="2" ry="2" /><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" /></Icon>;
+        const ClipboardIcon = (props) => <Icon {...props}><rect width="8" height="4" x="8" y="2" rx="1" ry="1" /><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /></Icon>;
 
         // --- THEMES CONFIGURATION ---
         const THEMES = {
@@ -200,10 +214,24 @@
 
         // --- Constants & Helper Functions ---
 
+        const EASING_DESCRIPTIONS = {
+            'Linear (線性)': '勻速運動，保持恆定的速度，適合表現純粹的機械感。',
+            'Smooth (流暢)': '起步與停止皆有緩衝（Ease-In-Out），最自然且通用的動作質感。',
+            'Ease In (漸快)': '由慢轉快，適合表現突然發力或被吸入的感覺。',
+            'Ease Out (漸慢)': '由快轉慢，適合表現拋擲物體或慣性滑行的感覺。',
+            'Flash (閃現)': '無視過程，直接在下一格瞬間切換到位，適合極速卡拍。',
+            'Snap (頓點)': '到達目標點時會有輕微的過衝（Overshoot）再拉回，增加定點的力度。',
+            'Anticipate (預備)': '動作開始前會先向反方向稍微蓄力，增加動作的重量感。',
+            'Robotic (彈性)': '到達定點時會像彈簧一樣高頻震動後停止，模擬機器人急停。',
+            'Bounce (彈跳)': '到達目標點時會像球落地般反彈幾次，適合俏皮或有彈性的動作。',
+            'Steps (階梯)': '將動作過程切分為數個停頓點，產生逐格動畫或機械卡頓的視覺效果。',
+            'Delay (延遲)': '動作前半段保持靜止，在最後一刻才快速到位，用於錯開時間差。'
+        };
+
         const TRANSLATIONS = {
             'zh-TW': {
                 title: 'GRID FLOW',
-                subtitle: 'TUTTING SIMULATOR V2.6',
+                subtitle: 'TUTTING SIMULATOR V3.0',
                 timeline: '時間軸',
                 bpm: 'BPM',
                 ai: 'AI 編舞',
@@ -282,10 +310,16 @@
                 onionSkin: '洋蔥皮模式',
                 undo: '復原',
                 redo: '重做',
+                easingInfo: '動態曲線說明',
+                copy: '複製動作',
+                paste: '貼上動作',
+                clipboard: '剪貼簿',
+                copySuccess: '動作已複製！',
+                pasteSuccess: '動作已貼上！',
             },
             'en': {
                 title: 'GRID FLOW',
-                subtitle: 'TUTTING SIMULATOR V2.6',
+                subtitle: 'TUTTING SIMULATOR V3.0',
                 timeline: 'TIMELINE',
                 bpm: 'BPM',
                 ai: 'AI GEN',
@@ -364,6 +398,12 @@
                 onionSkin: 'Onion Skin',
                 undo: 'Undo',
                 redo: 'Redo',
+                easingInfo: 'Easing Info',
+                copy: 'Copy Pose',
+                paste: 'Paste Pose',
+                clipboard: 'Clipboard',
+                copySuccess: 'Copied!',
+                pasteSuccess: 'Pasted!',
             },
             // ... (Other languages defaulting to EN)
         };
@@ -382,7 +422,11 @@
         const EASING_FUNCTIONS = {
             'Linear (線性)': t => t,
             'Smooth (流暢)': t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2,
+            'Ease In (漸快)': t => t * t * t,
+            'Ease Out (漸慢)': t => 1 - Math.pow(1 - t, 3),
+            'Flash (閃現)': t => t === 0 ? 0 : t === 1 ? 1 : t < 0.5 ? Math.pow(2, 20 * t - 10) / 2 : (2 - Math.pow(2, -20 * t + 10)) / 2,
             'Snap (頓點)': t => { const c1 = 1.70158; const c3 = c1 + 1; return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2); },
+            'Anticipate (預備)': t => { const c1 = 1.70158; const c3 = c1 + 1; return c3 * t * t * t - c1 * t * t; },
             'Robotic (彈性)': t => { const c4 = (2 * Math.PI) / 3; return t === 0 ? 0 : t === 1 ? 1 : Math.pow(2, -10 * t) * Math.sin((t * 10 - 0.75) * c4) + 1; },
             'Bounce (彈跳)': t => {
                 const n1 = 7.5625;
@@ -391,7 +435,9 @@
                 else if (t < 2 / d1) { return n1 * (t -= 1.5 / d1) * t + 0.75; }
                 else if (t < 2.5 / d1) { return n1 * (t -= 2.25 / d1) * t + 0.9375; }
                 else { return n1 * (t -= 2.625 / d1) * t + 0.984375; }
-            }
+            },
+            'Steps (階梯)': t => Math.floor(t * 4) / 4,
+            'Delay (延遲)': t => t < 0.4 ? 0 : 1 - Math.pow(1 - (t - 0.4) / 0.6, 3)
         };
 
         const PRESETS = {
@@ -578,12 +624,17 @@
                 const v = e.target.value;
                 setLocalVal(v);
                 const num = parseFloat(v);
-                if (!isNaN(num)) onChange(num);
+                if (!isNaN(num)) onChange(num, true); 
+            };
+            const handleSliderChange = (e) => {
+                onChange(Number(e.target.value), false);
+            };
+            const handleSliderCommit = (e) => {
+                onChange(Number(e.target.value), true);
             };
             
             let accentClass = "";
             let textClass = "";
-            
             if (theme === 'minimalist') {
                 accentClass = accentColor === 'cyan' ? "accent-white hover:accent-neutral-300" : (accentColor === 'fuchsia' ? "accent-neutral-500 hover:accent-neutral-400" : "accent-neutral-600");
                 textClass = accentColor === 'cyan' ? "text-white" : (accentColor === 'fuchsia' ? "text-neutral-400" : "text-neutral-500");
@@ -591,10 +642,8 @@
                 accentClass = accentColor === "fuchsia" ? "accent-fuchsia-500 hover:accent-fuchsia-400" : (accentColor === 'slate' ? "accent-slate-500" : "accent-cyan-500 hover:accent-cyan-400");
                 textClass = accentColor === "fuchsia" ? "text-fuchsia-400" : (accentColor === 'slate' ? "text-slate-400" : "text-cyan-400");
             }
-
             const focusClass = theme === 'minimalist' ? "focus-within:border-white" : (accentColor === "fuchsia" ? "focus-within:border-fuchsia-500" : "focus-within:border-cyan-500");
             const bgClass = theme === 'minimalist' ? "bg-neutral-900 border-neutral-700 focus-within:bg-neutral-800" : "bg-slate-800/50 border-slate-700 focus-within:bg-slate-800";
-
             return (
                 <div className="flex flex-col space-y-1 mb-3 px-1">
                     <div className={`flex justify-between items-center text-xs font-mono ${textClass}`}>
@@ -605,8 +654,8 @@
                         </div>
                     </div>
                     <div className="flex items-center space-x-2">
-                        <input type="range" min={min} max={max} step={step} value={value} onChange={(e) => onChange(Number(e.target.value))} className={`w-full h-1.5 ${theme === 'minimalist' ? 'bg-neutral-800' : 'bg-slate-700'} rounded-lg appearance-none cursor-pointer ${accentClass}`} />
-                        {snap !== null && <button onClick={() => onChange(snap === 0 ? 0 : Math.round(value / snap) * snap)} className={`p-1 text-[9px] ${theme === 'minimalist' ? 'bg-neutral-900 text-neutral-400 border-neutral-700 hover:bg-neutral-800' : 'bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700'} border rounded min-w-[28px] flex-shrink-0 transition-colors`} title={`Snap to ${snap}${unit}`}>{snap}</button>}
+                        <input type="range" min={min} max={max} step={step} value={value} onChange={handleSliderChange} onPointerUp={handleSliderCommit} onKeyUp={handleSliderCommit} className={`w-full h-1.5 ${theme === 'minimalist' ? 'bg-neutral-800' : 'bg-slate-700'} rounded-lg appearance-none cursor-pointer ${accentClass}`} />
+                        {snap !== null && <button onClick={() => onChange(snap === 0 ? 0 : Math.round(value / snap) * snap, true)} className={`p-1 text-[9px] ${theme === 'minimalist' ? 'bg-neutral-900 text-neutral-400 border-neutral-700 hover:bg-neutral-800' : 'bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700'} border rounded min-w-[28px] flex-shrink-0 transition-colors`} title={`Snap to ${snap}${unit}`}>{snap}</button>}
                     </div>
                 </div>
             );
@@ -615,32 +664,22 @@
         const AccordionSection = ({ title, icon: SectionIcon, children, isOpen, onToggle, color = "slate", theme = "cyberpunk" }) => {
             let headerColor = "";
             let bgHover = "";
-
             if (theme === 'minimalist') {
                 headerColor = "text-neutral-300 border-neutral-800";
                 bgHover = "hover:bg-neutral-900";
-                if (color === 'cyan') headerColor = "text-white border-neutral-800"; // Left
-                if (color === 'fuchsia') headerColor = "text-neutral-500 border-neutral-800"; // Right
+                if (color === 'cyan') headerColor = "text-white border-neutral-800";
+                if (color === 'fuchsia') headerColor = "text-neutral-500 border-neutral-800";
             } else {
                 headerColor = color === "fuchsia" ? "text-fuchsia-400 border-fuchsia-900/30" : (color === "cyan" ? "text-cyan-400 border-cyan-900/30" : "text-slate-300 border-slate-700/50");
                 bgHover = color === "fuchsia" ? "hover:bg-fuchsia-900/10" : (color === "cyan" ? "hover:bg-cyan-900/10" : "hover:bg-slate-800/50");
             }
-
             return (
                 <div className={`border-b ${theme === 'minimalist' ? 'border-neutral-800' : 'border-slate-800'} last:border-0`}>
-                    <button 
-                        onClick={onToggle} 
-                        className={`w-full flex items-center justify-between p-3 text-xs font-bold uppercase tracking-wider transition-colors ${headerColor} ${bgHover}`}
-                    >
-                        <div className="flex items-center space-x-2">
-                            {SectionIcon && <SectionIcon size={14} />}
-                            <span>{title}</span>
-                        </div>
+                    <button onClick={onToggle} className={`w-full flex items-center justify-between p-3 text-xs font-bold uppercase tracking-wider transition-colors ${headerColor} ${bgHover}`}>
+                        <div className="flex items-center space-x-2">{SectionIcon && <SectionIcon size={14} />}<span>{title}</span></div>
                         {isOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                     </button>
-                    {isOpen && <div className="p-3 pt-0 animate-in slide-in-from-top-2 duration-200">
-                        {children}
-                    </div>}
+                    {isOpen && <div className="p-3 pt-0 animate-in slide-in-from-top-2 duration-200">{children}</div>}
                 </div>
             );
         };
@@ -666,22 +705,14 @@
         const DancerFigure = ({ skeleton, lArmZ = 'front', rArmZ = 'front', opacity = 1, theme = 'cyberpunk', variant = 'main' }) => {
             const s = skeleton;
             const themeColors = THEMES[theme].colors;
-            
             let colors = { ...themeColors };
             let isGhost = variant !== 'main';
             let currentOpacity = opacity;
-
             if (isGhost) {
                 const ghostColor = variant === 'ghost-prev' ? themeColors.ghostPrev : themeColors.ghostNext;
-                colors = {
-                    left: ghostColor,
-                    right: ghostColor,
-                    core: ghostColor,
-                    glow: false
-                };
+                colors = { left: ghostColor, right: ghostColor, core: ghostColor, glow: false };
                 currentOpacity = 0.3; 
             }
-
             const renderLeftArm = () => (
                 <>
                     <LimbRenderer start={s.lShoulderBase} end={s.lElbowPos} color={colors.left} thickness={8} glow={colors.glow} theme={theme} />
@@ -689,7 +720,6 @@
                     <LimbRenderer start={s.lWristPos} end={s.lHandPos} color={colors.left} thickness={4} glow={false} theme={theme} />
                 </>
             );
-
             const renderRightArm = () => (
                 <>
                     <LimbRenderer start={s.rShoulderBase} end={s.rElbowPos} color={colors.right} thickness={8} glow={colors.glow} theme={theme} />
@@ -697,32 +727,25 @@
                     <LimbRenderer start={s.rWristPos} end={s.rHandPos} color={colors.right} thickness={4} glow={false} theme={theme} />
                 </>
             );
-
             return (
                 <g opacity={currentOpacity} style={{ pointerEvents: isGhost ? 'none' : 'auto' }}>
                     {!isGhost && <line x1="-150" y1="190" x2="150" y2="190" stroke={theme === 'minimalist' ? '#333' : "#334155"} strokeWidth="2" strokeDasharray="5,5" opacity="0.5" />}
-
                     {lArmZ === 'back' && renderLeftArm()}
                     {rArmZ === 'back' && renderRightArm()}
-
                     <LimbRenderer start={s.rHipPos} end={s.rKneePos} color={colors.right} thickness={9} glow={colors.glow} theme={theme} />
                     <LimbRenderer start={s.rKneePos} end={s.rAnklePos} color={colors.right} thickness={7} glow={colors.glow} theme={theme} />
                     <LimbRenderer start={s.rAnklePos} end={s.rFootPos} color={colors.core} thickness={5} glow={false} theme={theme} />
-
                     <LimbRenderer start={s.lHipPos} end={s.lKneePos} color={colors.left} thickness={9} glow={colors.glow} theme={theme} />
                     <LimbRenderer start={s.lKneePos} end={s.lAnklePos} color={colors.left} thickness={7} glow={colors.glow} theme={theme} />
                     <LimbRenderer start={s.lAnklePos} end={s.lFootPos} color={colors.left} thickness={5} glow={false} theme={theme} />
-
                     <path d={`M${s.rHipPos.x} ${s.rHipPos.y} L${s.rShoulderBase.x} ${s.rShoulderBase.y} L${s.lShoulderBase.x} ${s.lShoulderBase.y} L${s.lHipPos.x} ${s.lHipPos.y} Z`} fill={isGhost ? 'none' : (theme === 'minimalist' ? '#222' : "#334155")} stroke={colors.core} strokeWidth="2" />
                     <line x1={s.rHipPos.x} y1={s.rHipPos.y} x2={s.lHipPos.x} y2={s.lHipPos.y} stroke={colors.core} strokeWidth="3" />
                     <line x1={s.shoulderCenter.x} y1={s.shoulderCenter.y} x2={s.headCenterX} y2={s.headCenterY + s.headRadius / 2} stroke={colors.core} strokeWidth="10" strokeLinecap="round" />
-
                     <g transform={`rotate(${s.displayTilt}, ${s.headCenterX}, ${s.headCenterY})`}>
                         <circle cx={s.headCenterX} cy={s.headCenterY} r={s.headRadius} fill={isGhost ? 'none' : (theme === 'minimalist' ? '#111' : "#1e293b")} stroke={colors.core} strokeWidth="2" />
                         {!isGhost && <path d={`M${s.headCenterX - 10} ${s.headCenterY - 5} L${s.headCenterX - 5} ${s.headCenterY - 5}`} stroke={theme === 'minimalist' ? '#555' : "#475569"} strokeWidth="2" />}
                         {!isGhost && <path d={`M${s.headCenterX + 5} ${s.headCenterY - 5} L${s.headCenterX + 10} ${s.headCenterY - 5}`} stroke={theme === 'minimalist' ? '#555' : "#475569"} strokeWidth="2" />}
                     </g>
-
                     {lArmZ !== 'back' && renderLeftArm()}
                     {rArmZ !== 'back' && renderRightArm()}
                 </g>
@@ -730,7 +753,6 @@
         }
 
         function TuttingSimulator() {
-            // State
             const [pose, setPose] = useState(PRESETS.idle);
             const [timeline, setTimeline] = useState([PRESETS.idle]);
             const [currentFrameIndex, setCurrentFrameIndex] = useState(0);
@@ -754,22 +776,17 @@
             const [showOnionSkin, setShowOnionSkin] = useState(false); 
             const [isSidebarOpen, setIsSidebarOpen] = useState(true);
             const [theme, setTheme] = useState('cyberpunk');
+            const [showEasingInfo, setShowEasingInfo] = useState(false);
             
             // HISTORY STATE
             const [history, setHistory] = useState([{ timeline: [PRESETS.idle], currentFrameIndex: 0 }]);
             const [historyStep, setHistoryStep] = useState(0);
-            
-            const [openSections, setOpenSections] = useState({
-                body: true,
-                rArm: true,
-                lArm: true,
-                rLeg: false,
-                lLeg: false
-            });
 
-            const toggleSection = (section) => {
-                setOpenSections(prev => ({ ...prev, [section]: !prev[section] }));
-            };
+            // CLIPBOARD STATE
+            const [clipboardPose, setClipboardPose] = useState(null);
+            
+            const [openSections, setOpenSections] = useState({ body: true, rArm: true, lArm: true, rLeg: false, lLeg: false });
+            const toggleSection = (section) => setOpenSections(prev => ({ ...prev, [section]: !prev[section] }));
 
             const fileInputRef = useRef(null);
             const svgRef = useRef(null);
@@ -777,12 +794,10 @@
             const lastMousePos = useRef({ x: 0, y: 0 });
             const trailsRef = useRef({ left: [], right: [] });
             const showTrailsRef = useRef(showTrails);
-
             const timelineRef = useRef(timeline);
             const frameIndexRef = useRef(currentFrameIndex);
             const requestRef = useRef();
             const startTimeRef = useRef(0);
-
             const zoomRef = useRef(zoom);
             const activeJointRef = useRef(activeJoint);
             const isDragModeRef = useRef(isDragMode);
@@ -801,21 +816,15 @@
             const t = (key) => TRANSLATIONS[lang] ? (TRANSLATIONS[lang][key] || key) : key;
             const currentThemeConfig = THEMES[theme];
 
-            // --- Undo/Redo Logic ---
             const recordHistory = useCallback((newTimeline, newIndex) => {
-                const newState = { 
-                    timeline: JSON.parse(JSON.stringify(newTimeline)), 
-                    currentFrameIndex: newIndex 
-                };
-                
+                const newState = { timeline: JSON.parse(JSON.stringify(newTimeline)), currentFrameIndex: newIndex };
                 setHistory(prev => {
                     const newHistory = prev.slice(0, historyStep + 1);
                     newHistory.push(newState);
-                    // Limit history size to prevent memory issues
                     if (newHistory.length > 50) newHistory.shift();
                     return newHistory;
                 });
-                setHistoryStep(prev => Math.min(prev + 1, 49)); // Adjust if shift happened
+                setHistoryStep(prev => Math.min(prev + 1, 49)); 
             }, [historyStep]);
 
             const undo = () => {
@@ -828,7 +837,6 @@
                     setHistoryStep(prevStep);
                 }
             };
-
             const redo = () => {
                 if (historyStep < history.length - 1) {
                     const nextStep = historyStep + 1;
@@ -839,585 +847,217 @@
                     setHistoryStep(nextStep);
                 }
             };
+            
+            // Clipboard Handlers
+            const handleCopy = () => {
+                setClipboardPose({ ...pose });
+                // Simple visual feedback could be added here, e.g. toast
+            };
 
-            // Keyboard Shortcuts
+            const handlePaste = () => {
+                if (clipboardPose) {
+                    setPose({ ...clipboardPose });
+                }
+            };
+
             useEffect(() => {
                 const handleKeyDown = (e) => {
-                    if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
-                        e.preventDefault();
-                        if (e.shiftKey) redo();
-                        else undo();
-                    } else if ((e.ctrlKey || e.metaKey) && e.key === 'y') {
-                        e.preventDefault();
-                        redo();
-                    }
+                    // Ignore shortcuts if user is typing in an input
+                    if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+
+                    if ((e.ctrlKey || e.metaKey) && e.key === 'z') { e.preventDefault(); if (e.shiftKey) redo(); else undo(); } 
+                    else if ((e.ctrlKey || e.metaKey) && e.key === 'y') { e.preventDefault(); redo(); }
+                    else if ((e.ctrlKey || e.metaKey) && e.key === 'c') { e.preventDefault(); handleCopy(); }
+                    else if ((e.ctrlKey || e.metaKey) && e.key === 'v') { e.preventDefault(); handlePaste(); }
                 };
                 window.addEventListener('keydown', handleKeyDown);
                 return () => window.removeEventListener('keydown', handleKeyDown);
-            }, [historyStep, history]);
+            }, [historyStep, history, clipboardPose, pose]); // Added clipboard dependencies
 
             const mirrorAngle = (deg) => (540 - deg) % 360;
-
             const handlePoseOperation = (type) => {
                 if (isPlaying) return;
                 setPose(prev => {
                     const newPose = { ...prev };
                     if (type === 'flip') {
-                        newPose.lShoulder = mirrorAngle(prev.rShoulder);
-                        newPose.rShoulder = mirrorAngle(prev.lShoulder);
-                        newPose.lElbow = mirrorAngle(prev.rElbow);
-                        newPose.rElbow = mirrorAngle(prev.lElbow);
-                        newPose.lWrist = mirrorAngle(prev.rWrist);
-                        newPose.rWrist = mirrorAngle(prev.lWrist);
-                        newPose.lHip = mirrorAngle(prev.rHip);
-                        newPose.rHip = mirrorAngle(prev.lHip);
-                        newPose.lKnee = mirrorAngle(prev.rKnee);
-                        newPose.rKnee = mirrorAngle(prev.lKnee);
-                        newPose.lAnkle = mirrorAngle(prev.rAnkle);
-                        newPose.rAnkle = mirrorAngle(prev.lAnkle);
-                        newPose.bodyX = -prev.bodyX;
-                        newPose.waist = -prev.waist;
-                        newPose.headTilt = -prev.headTilt;
-                        newPose.headSlide = -prev.headSlide;
+                        newPose.lShoulder = mirrorAngle(prev.rShoulder); newPose.rShoulder = mirrorAngle(prev.lShoulder);
+                        newPose.lElbow = mirrorAngle(prev.rElbow); newPose.rElbow = mirrorAngle(prev.lElbow);
+                        newPose.lWrist = mirrorAngle(prev.rWrist); newPose.rWrist = mirrorAngle(prev.lWrist);
+                        newPose.lHip = mirrorAngle(prev.rHip); newPose.rHip = mirrorAngle(prev.lHip);
+                        newPose.lKnee = mirrorAngle(prev.rKnee); newPose.rKnee = mirrorAngle(prev.lKnee);
+                        newPose.lAnkle = mirrorAngle(prev.rAnkle); newPose.rAnkle = mirrorAngle(prev.lAnkle);
+                        newPose.bodyX = -prev.bodyX; newPose.waist = -prev.waist;
+                        newPose.headTilt = -prev.headTilt; newPose.headSlide = -prev.headSlide;
                     } else if (type === 'mirrorLR') {
-                        newPose.rShoulder = mirrorAngle(prev.lShoulder);
-                        newPose.rElbow = mirrorAngle(prev.lElbow);
-                        newPose.rWrist = mirrorAngle(prev.lWrist);
-                        newPose.rHip = mirrorAngle(prev.lHip);
-                        newPose.rKnee = mirrorAngle(prev.lKnee);
-                        newPose.rAnkle = mirrorAngle(prev.lAnkle);
+                        newPose.rShoulder = mirrorAngle(prev.lShoulder); newPose.rElbow = mirrorAngle(prev.lElbow);
+                        newPose.rWrist = mirrorAngle(prev.lWrist); newPose.rHip = mirrorAngle(prev.lHip);
+                        newPose.rKnee = mirrorAngle(prev.lKnee); newPose.rAnkle = mirrorAngle(prev.lAnkle);
                     } else if (type === 'mirrorRL') {
-                        newPose.lShoulder = mirrorAngle(prev.rShoulder);
-                        newPose.lElbow = mirrorAngle(prev.rElbow);
-                        newPose.lWrist = mirrorAngle(prev.rWrist);
-                        newPose.lHip = mirrorAngle(prev.rHip);
-                        newPose.lKnee = mirrorAngle(prev.rKnee);
-                        newPose.lAnkle = mirrorAngle(prev.rAnkle);
+                        newPose.lShoulder = mirrorAngle(prev.rShoulder); newPose.lElbow = mirrorAngle(prev.rElbow);
+                        newPose.lWrist = mirrorAngle(prev.rWrist); newPose.lHip = mirrorAngle(prev.rHip);
+                        newPose.lKnee = mirrorAngle(prev.rKnee); newPose.lAnkle = mirrorAngle(prev.rAnkle);
                     }
                     return newPose;
                 });
             };
-
-            const updatePose = (key, value) => {
+            const updatePose = (key, value, commit = false) => {
                 if (!isPlaying) {
                     setPose(prev => {
                         const newPose = { ...prev, [key]: value };
                         if (key === 'waist' && isHandSync) {
-                            const prevWaist = prev.waist || 0;
-                            const delta = value - prevWaist;
-                            const armKeys = ['lShoulder', 'lElbow', 'lWrist', 'rShoulder', 'rElbow', 'rWrist'];
-                            armKeys.forEach(armKey => { newPose[armKey] = (prev[armKey] || 0) + delta; });
+                            const prevWaist = prev.waist || 0; const delta = value - prevWaist;
+                            ['lShoulder', 'lElbow', 'lWrist', 'rShoulder', 'rElbow', 'rWrist'].forEach(armKey => { newPose[armKey] = (prev[armKey] || 0) + delta; });
                         }
                         if ((key === 'bodyX' || key === 'bodyY') && Object.values(fixedJoints).some(v => v)) {
-                            const prevSkeleton = calculateSkeleton(prev);
-                            const newBaseSkeleton = calculateSkeleton(newPose); 
-                            if (fixedJoints.rWrist) {
-                                const [s, e] = solveTwoJointIK(prevSkeleton.rWristPos, newBaseSkeleton.rShoulderBase, SEGMENT_LENGTHS.upperArm, SEGMENT_LENGTHS.forearm, prev.rShoulder, prev.rElbow);
-                                newPose.rShoulder = s; newPose.rElbow = e;
-                            }
-                            if (fixedJoints.lWrist) {
-                                const [s, e] = solveTwoJointIK(prevSkeleton.lWristPos, newBaseSkeleton.lShoulderBase, SEGMENT_LENGTHS.upperArm, SEGMENT_LENGTHS.forearm, prev.lShoulder, prev.lElbow);
-                                newPose.lShoulder = s; newPose.lElbow = e;
-                            }
-                            if (fixedJoints.rAnkle) {
-                                const [h, k] = solveTwoJointIK(prevSkeleton.rAnklePos, newBaseSkeleton.rHipPos, SEGMENT_LENGTHS.thigh, SEGMENT_LENGTHS.shin, prev.rHip ?? 90, prev.rKnee ?? 90);
-                                newPose.rHip = h; newPose.rKnee = k;
-                            }
-                            if (fixedJoints.lAnkle) {
-                                const [h, k] = solveTwoJointIK(prevSkeleton.lAnklePos, newBaseSkeleton.lHipPos, SEGMENT_LENGTHS.thigh, SEGMENT_LENGTHS.shin, prev.lHip ?? 90, prev.lKnee ?? 90);
-                                newPose.lHip = h; newPose.lKnee = k;
-                            }
+                            const prevSkeleton = calculateSkeleton(prev); const newBaseSkeleton = calculateSkeleton(newPose); 
+                            if (fixedJoints.rWrist) { const [s, e] = solveTwoJointIK(prevSkeleton.rWristPos, newBaseSkeleton.rShoulderBase, SEGMENT_LENGTHS.upperArm, SEGMENT_LENGTHS.forearm, prev.rShoulder, prev.rElbow); newPose.rShoulder = s; newPose.rElbow = e; }
+                            if (fixedJoints.lWrist) { const [s, e] = solveTwoJointIK(prevSkeleton.lWristPos, newBaseSkeleton.lShoulderBase, SEGMENT_LENGTHS.upperArm, SEGMENT_LENGTHS.forearm, prev.lShoulder, prev.lElbow); newPose.lShoulder = s; newPose.lElbow = e; }
+                            if (fixedJoints.rAnkle) { const [h, k] = solveTwoJointIK(prevSkeleton.rAnklePos, newBaseSkeleton.rHipPos, SEGMENT_LENGTHS.thigh, SEGMENT_LENGTHS.shin, prev.rHip ?? 90, prev.rKnee ?? 90); newPose.rHip = h; newPose.rKnee = k; }
+                            if (fixedJoints.lAnkle) { const [h, k] = solveTwoJointIK(prevSkeleton.lAnklePos, newBaseSkeleton.lHipPos, SEGMENT_LENGTHS.thigh, SEGMENT_LENGTHS.shin, prev.lHip ?? 90, prev.lKnee ?? 90); newPose.lHip = h; newPose.lKnee = k; }
                         }
                         return newPose;
                     });
                 }
             };
-
             const getSvgPoint = (clientX, clientY) => {
                 if (!mainGroupRef.current) return { x: 0, y: 0 };
                 const pt = svgRef.current.createSVGPoint();
-                pt.x = clientX;
-                pt.y = clientY;
+                pt.x = clientX; pt.y = clientY;
                 const svgP = pt.matrixTransform(mainGroupRef.current.getScreenCTM().inverse());
                 return { x: svgP.x, y: svgP.y };
             };
-
             const handleJointDown = (e, jointName, pivot, type = 'angle', originPos = null) => {
                 if (!isDragMode) return;
-                e.preventDefault();
-                e.stopPropagation();
-                setIsPlaying(false);
-                setActiveJoint({ name: jointName, pivot, type, origin: originPos });
+                e.preventDefault(); e.stopPropagation(); setIsPlaying(false); setActiveJoint({ name: jointName, pivot, type, origin: originPos });
             };
-
-            const handleSvgMouseDown = (e) => {
-                if (!activeJoint) {
-                    setIsPanning(true);
-                    lastMousePos.current = { x: e.clientX, y: e.clientY };
-                }
-            };
-
-            const handleWheel = (e) => {
-                e.preventDefault();
-                const newZoom = Math.min(5, Math.max(0.1, zoom - e.deltaY * 0.001));
-                setZoom(newZoom);
-            };
-
+            const handleSvgMouseDown = (e) => { if (!activeJoint) { setIsPanning(true); lastMousePos.current = { x: e.clientX, y: e.clientY }; } };
+            const handleWheel = (e) => { e.preventDefault(); const newZoom = Math.min(5, Math.max(0.1, zoom - e.deltaY * 0.001)); setZoom(newZoom); };
             const handleSvgMove = (clientX, clientY) => {
                 if (isPanning) {
-                    const dx = clientX - lastMousePos.current.x;
-                    const dy = clientY - lastMousePos.current.y;
-                    setPan(prev => ({ x: prev.x + dx, y: prev.y + dy }));
-                    lastMousePos.current = { x: clientX, y: clientY };
-                    return;
+                    const dx = clientX - lastMousePos.current.x; const dy = clientY - lastMousePos.current.y;
+                    setPan(prev => ({ x: prev.x + dx, y: prev.y + dy })); lastMousePos.current = { x: clientX, y: clientY }; return;
                 }
-                const currentActiveJoint = activeJointRef.current;
-                const currentIsDragMode = isDragModeRef.current;
-                const currentDragType = dragTypeRef.current;
-                const currentPose = poseRef.current;
+                const currentActiveJoint = activeJointRef.current; const currentIsDragMode = isDragModeRef.current;
+                const currentDragType = dragTypeRef.current; const currentPose = poseRef.current;
                 if (!currentActiveJoint || !currentIsDragMode) return;
                 const mousePos = getSvgPoint(clientX, clientY);
                 if (currentActiveJoint.type === 'headPos') {
                     const waistRad = toRad((currentPose.waist || 0) - 90);
-                    const neckBaseX = currentActiveJoint.pivot.x;
-                    const neckBaseY = currentActiveJoint.pivot.y;
-                    const dx = mousePos.x - neckBaseX;
-                    const dy = mousePos.y - neckBaseY;
-                    const axisX = Math.cos(waistRad + Math.PI / 2);
-                    const axisY = Math.sin(waistRad + Math.PI / 2);
-                    const projection = dx * axisX + dy * axisY;
-                    const newVal = Math.max(-50, Math.min(50, projection));
+                    const neckBaseX = currentActiveJoint.pivot.x; const neckBaseY = currentActiveJoint.pivot.y;
+                    const dx = mousePos.x - neckBaseX; const dy = mousePos.y - neckBaseY;
+                    const axisX = Math.cos(waistRad + Math.PI / 2); const axisY = Math.sin(waistRad + Math.PI / 2);
+                    const projection = dx * axisX + dy * axisY; const newVal = Math.max(-50, Math.min(50, projection));
                     updatePose('headSlide', newVal);
                 } else if (currentActiveJoint.type === 'headTilt') {
-                    const dx = mousePos.x - currentActiveJoint.pivot.x;
-                    const dy = mousePos.y - currentActiveJoint.pivot.y;
-                    let angle = toDeg(Math.atan2(dy, dx));
-                    const waistAngle = (currentPose.waist || 0) - 90;
-                    let relativeTilt = shortAngleDist(waistAngle, angle);
-                    updatePose('headTilt', Math.max(-60, Math.min(60, relativeTilt)));
+                    const dx = mousePos.x - currentActiveJoint.pivot.x; const dy = mousePos.y - currentActiveJoint.pivot.y;
+                    let angle = toDeg(Math.atan2(dy, dx)); const waistAngle = (currentPose.waist || 0) - 90;
+                    let relativeTilt = shortAngleDist(waistAngle, angle); updatePose('headTilt', Math.max(-60, Math.min(60, relativeTilt)));
                 } else if (currentActiveJoint.type === 'pos') {
-                    updatePose('bodyX', Math.max(-100, Math.min(100, mousePos.x)));
-                    updatePose('bodyY', Math.max(-100, Math.min(100, mousePos.y)));
+                    updatePose('bodyX', Math.max(-100, Math.min(100, mousePos.x))); updatePose('bodyY', Math.max(-100, Math.min(100, mousePos.y)));
                 } else if (currentDragType === 'IK' && currentActiveJoint.type === 'ik') {
                     const { name, origin } = currentActiveJoint;
-                    if (name === 'rWrist') {
-                        const [a1, a2] = solveTwoJointIK(mousePos, origin, SEGMENT_LENGTHS.upperArm, SEGMENT_LENGTHS.forearm, currentPose.rShoulder, currentPose.rElbow);
-                        updatePose('rShoulder', a1); updatePose('rElbow', a2);
-                    } else if (name === 'lWrist') {
-                        const [a1, a2] = solveTwoJointIK(mousePos, origin, SEGMENT_LENGTHS.upperArm, SEGMENT_LENGTHS.forearm, currentPose.lShoulder, currentPose.lElbow);
-                        updatePose('lShoulder', a1); updatePose('lElbow', a2);
-                    } else if (name === 'rAnkle') {
-                        const [a1, a2] = solveTwoJointIK(mousePos, origin, SEGMENT_LENGTHS.thigh, SEGMENT_LENGTHS.shin, currentPose.rHip ?? 90, currentPose.rKnee ?? 90);
-                        updatePose('rHip', a1); updatePose('rKnee', a2);
-                    } else if (name === 'lAnkle') {
-                        const [a1, a2] = solveTwoJointIK(mousePos, origin, SEGMENT_LENGTHS.thigh, SEGMENT_LENGTHS.shin, currentPose.lHip ?? 90, currentPose.lKnee ?? 90);
-                        updatePose('lHip', a1); updatePose('lKnee', a2);
-                    }
+                    if (name === 'rWrist') { const [a1, a2] = solveTwoJointIK(mousePos, origin, SEGMENT_LENGTHS.upperArm, SEGMENT_LENGTHS.forearm, currentPose.rShoulder, currentPose.rElbow); updatePose('rShoulder', a1); updatePose('rElbow', a2); } 
+                    else if (name === 'lWrist') { const [a1, a2] = solveTwoJointIK(mousePos, origin, SEGMENT_LENGTHS.upperArm, SEGMENT_LENGTHS.forearm, currentPose.lShoulder, currentPose.lElbow); updatePose('lShoulder', a1); updatePose('lElbow', a2); } 
+                    else if (name === 'rAnkle') { const [a1, a2] = solveTwoJointIK(mousePos, origin, SEGMENT_LENGTHS.thigh, SEGMENT_LENGTHS.shin, currentPose.rHip ?? 90, currentPose.rKnee ?? 90); updatePose('rHip', a1); updatePose('rKnee', a2); } 
+                    else if (name === 'lAnkle') { const [a1, a2] = solveTwoJointIK(mousePos, origin, SEGMENT_LENGTHS.thigh, SEGMENT_LENGTHS.shin, currentPose.lHip ?? 90, currentPose.lKnee ?? 90); updatePose('lHip', a1); updatePose('lKnee', a2); }
                 } else {
-                    const dx = mousePos.x - currentActiveJoint.pivot.x;
-                    const dy = mousePos.y - currentActiveJoint.pivot.y;
-                    let angle = toDeg(Math.atan2(dy, dx));
-                    if (angle < 0) angle += 360;
-                    updatePose(currentActiveJoint.name, angle);
+                    const dx = mousePos.x - currentActiveJoint.pivot.x; const dy = mousePos.y - currentActiveJoint.pivot.y;
+                    let angle = toDeg(Math.atan2(dy, dx)); if (angle < 0) angle += 360; updatePose(currentActiveJoint.name, angle);
                 }
             };
-
-            const handleGlobalMouseUp = () => {
-                setActiveJoint(null);
-                setIsPanning(false);
-            };
-
+            const handleGlobalMouseUp = () => { setActiveJoint(null); setIsPanning(false); };
             useEffect(() => {
-                const onMove = (e) => handleSvgMove(e.clientX, e.clientY);
-                const onUp = () => handleGlobalMouseUp();
+                const onMove = (e) => handleSvgMove(e.clientX, e.clientY); const onUp = () => handleGlobalMouseUp();
                 const onTouchMove = (e) => handleSvgMove(e.touches[0].clientX, e.touches[0].clientY);
-                if (activeJoint || isPanning) {
-                    window.addEventListener('mousemove', onMove);
-                    window.addEventListener('mouseup', onUp);
-                    window.addEventListener('touchmove', onTouchMove, { passive: false });
-                    window.addEventListener('touchend', onUp);
-                }
-                return () => {
-                    window.removeEventListener('mousemove', onMove);
-                    window.removeEventListener('mouseup', onUp);
-                    window.removeEventListener('touchmove', onTouchMove);
-                    window.removeEventListener('touchend', onUp);
-                };
+                if (activeJoint || isPanning) { window.addEventListener('mousemove', onMove); window.addEventListener('mouseup', onUp); window.addEventListener('touchmove', onTouchMove, { passive: false }); window.addEventListener('touchend', onUp); }
+                return () => { window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp); window.removeEventListener('touchmove', onTouchMove); window.removeEventListener('touchend', onUp); };
             }, [activeJoint, isPanning]);
-
-            const jumpToFrame = (index) => {
-                if (isPlaying) setIsPlaying(false);
-                setCurrentFrameIndex(index);
-                setPose(timeline[index]);
-            };
-
-            const handleTimelineScrub = (e) => {
-                const index = Number(e.target.value);
-                if (isPlaying) setIsPlaying(false);
-                setCurrentFrameIndex(index);
-                setPose(timeline[index]);
-            };
-
-            const addKeyframe = () => {
-                const newTimeline = [...timeline, { ...pose }];
-                setTimeline(newTimeline);
-                const newIndex = newTimeline.length - 1;
-                setCurrentFrameIndex(newIndex);
-                recordHistory(newTimeline, newIndex);
-            };
-
-            const updateKeyframe = () => {
-                const newTimeline = [...timeline];
-                newTimeline[currentFrameIndex] = { ...pose };
-                setTimeline(newTimeline);
-                recordHistory(newTimeline, currentFrameIndex);
-            };
-
-            const deleteKeyframe = () => {
-                if (timeline.length <= 1) return;
-                const newTimeline = timeline.filter((_, i) => i !== currentFrameIndex);
-                setTimeline(newTimeline);
-                const newIndex = Math.min(currentFrameIndex, newTimeline.length - 1);
-                setCurrentFrameIndex(newIndex);
-                setPose(newTimeline[newIndex]);
-                recordHistory(newTimeline, newIndex);
-            };
-
-            const handleAIGenerate = () => {
-                setIsPlaying(false);
-                const presetKeys = Object.keys(PRESETS);
-                const easingKeys = Object.keys(EASING_FUNCTIONS);
-                const newLength = 16;
-                const newTimeline = Array(newLength).fill(null).map((_, i) => {
-                    const randomKey = presetKeys[Math.floor(Math.random() * presetKeys.length)];
-                    const basePose = { ...PRESETS[randomKey] };
-                    const randomTilt = Math.floor(Math.random() * 30) - 15;
-                    basePose.headTilt = (basePose.headTilt || 0) + randomTilt;
-                    const randomEasing = easingKeys[Math.floor(Math.random() * easingKeys.length)];
-                    basePose.easing = randomEasing;
-                    if (Math.random() > 0.6) basePose.headSlide = Math.floor(Math.random() * 40) - 20; else basePose.headSlide = 0;
-                    if (Math.random() > 0.6) basePose.waist = Math.floor(Math.random() * 40) - 20;
-                    if (Math.random() > 0.7) { if (Math.random() > 0.5) basePose.bodyX = Math.floor(Math.random() * 60) - 30; else basePose.bodyY = Math.floor(Math.random() * 40) - 20; } else { basePose.bodyX = 0; basePose.bodyY = 0; }
-                    basePose.duration = 1;
-                    basePose.lArmZ = 'front';
-                    basePose.rArmZ = 'front';
-                    return basePose;
-                });
-                setTimeline(newTimeline);
-                setCurrentFrameIndex(0);
-                setPose(newTimeline[0]);
-                recordHistory(newTimeline, 0);
-                setTimeout(() => setIsPlaying(true), 500);
-            };
-
-            const handleExport = () => {
-                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(timeline));
-                const downloadAnchorNode = document.createElement('a');
-                downloadAnchorNode.setAttribute("href", dataStr);
-                downloadAnchorNode.setAttribute("download", "tutting_dance.json");
-                document.body.appendChild(downloadAnchorNode);
-                downloadAnchorNode.click();
-                downloadAnchorNode.remove();
-            };
-
-            const handleImport = (event) => {
-                const fileReader = new FileReader();
-                const file = event.target.files[0];
-                if (!file) return;
-                fileReader.readAsText(file, "UTF-8");
-                fileReader.onload = (e) => {
-                    try {
-                        const importedTimeline = JSON.parse(e.target.result);
-                        if (Array.isArray(importedTimeline) && importedTimeline.length > 0) {
-                            setIsPlaying(false);
-                            setTimeline(importedTimeline);
-                            setPose(importedTimeline[0]);
-                            setCurrentFrameIndex(0);
-                            recordHistory(importedTimeline, 0);
-                            alert(t('importSuccess'));
-                        } else {
-                            alert(t('importError'));
-                        }
-                    } catch (error) { alert(t('importFail')); }
-                };
-                event.target.value = null;
-            };
-
-            const handleSaveCustomPreset = () => {
-                if (!presetName.trim()) { alert(t('nameEmpty')); return; }
-                setCustomPresets(prev => ({ ...prev, [presetName]: { ...pose } }));
-                setPresetName("");
-                alert(t('saveSuccess'));
-            };
-
-            const handlePresetChange = (e) => {
-                const key = e.target.value;
-                setSelectedPreset(key);
-                if (isPlaying) return;
-                if (PRESETS[key]) setPose({ ...PRESETS[key] });
-                else if (customPresets[key]) setPose(customPresets[key]);
-            };
-
-            useEffect(() => {
-                if (!isPlaying) { 
-                    if (requestRef.current) cancelAnimationFrame(requestRef.current); 
-                    return; 
-                }
-                
-                trailsRef.current = { left: [], right: [] };
-                startTimeRef.current = performance.now();
-                
-                const animate = (time) => {
-                    const currentIndex = frameIndexRef.current;
-                    const startPose = timelineRef.current[currentIndex];
-                    const stepDuration = (startPose.duration && startPose.duration > 0) 
-                        ? startPose.duration * 1000 
-                        : (60000 / bpm);
-
-                    const elapsed = time - startTimeRef.current;
-                    let progress = elapsed / stepDuration;
-                    
-                    if (progress >= 1) {
-                        const nextIndex = (frameIndexRef.current + 1) % timelineRef.current.length;
-                        setCurrentFrameIndex(nextIndex);
-                        frameIndexRef.current = nextIndex;
-                        startTimeRef.current = time;
-                        progress = 0;
-                    }
-                    
-                    const activeIndex = frameIndexRef.current;
-                    const nextIndex = (activeIndex + 1) % timelineRef.current.length;
-                    const currentStartPose = timelineRef.current[activeIndex];
-                    const currentEndPose = timelineRef.current[nextIndex];
-                    
-                    const easingName = currentStartPose?.easing || 'Smooth (流暢)';
-                    const easeFn = EASING_FUNCTIONS[easingName] || EASING_FUNCTIONS['Smooth (流暢)'];
-                    
-                    const easedProgress = easeFn(progress);
-                    if (currentStartPose && currentEndPose) {
-                        const newPose = interpolatePose(currentStartPose, currentEndPose, easedProgress);
-                        if (showTrailsRef.current) {
-                            const skel = calculateSkeleton(newPose);
-                            trailsRef.current.left.push(skel.lWristPos);
-                            trailsRef.current.right.push(skel.rWristPos);
-                            if (trailsRef.current.left.length > 40) trailsRef.current.left.shift();
-                            if (trailsRef.current.right.length > 40) trailsRef.current.right.shift();
-                        }
-                        setPose(newPose);
-                    }
-                    requestRef.current = requestAnimationFrame(animate);
-                };
-                requestRef.current = requestAnimationFrame(animate);
-                return () => { if (requestRef.current) cancelAnimationFrame(requestRef.current); };
-            }, [isPlaying, bpm]); 
-
-            const handleZoomIn = () => setZoom(z => Math.min(5, z + 0.2));
-            const handleZoomOut = () => setZoom(z => Math.max(0.1, z - 0.2));
-            const handleResetView = () => {
-                setZoom(1);
-                setPan({ x: 0, y: 0 });
-            };
-
-            // --- Render Logic for Onion Skin ---
-            const skeleton = useMemo(() => calculateSkeleton(pose), [pose]);
+            const jumpToFrame = (index) => { if (isPlaying) setIsPlaying(false); setCurrentFrameIndex(index); setPose(timeline[index]); };
+            const handleTimelineScrub = (e) => { const index = Number(e.target.value); if (isPlaying) setIsPlaying(false); setCurrentFrameIndex(index); setPose(timeline[index]); };
+            const addKeyframe = () => { const newTimeline = [...timeline, { ...pose }]; setTimeline(newTimeline); const newIndex = newTimeline.length - 1; setCurrentFrameIndex(newIndex); recordHistory(newTimeline, newIndex); };
+            const updateKeyframe = () => { const newTimeline = [...timeline]; newTimeline[currentFrameIndex] = { ...pose }; setTimeline(newTimeline); recordHistory(newTimeline, currentFrameIndex); };
+            const deleteKeyframe = () => { if (timeline.length <= 1) return; const newTimeline = timeline.filter((_, i) => i !== currentFrameIndex); setTimeline(newTimeline); const newIndex = Math.min(currentFrameIndex, newTimeline.length - 1); setCurrentFrameIndex(newIndex); setPose(newTimeline[newIndex]); recordHistory(newTimeline, newIndex); };
+            const handleAIGenerate = () => { setIsPlaying(false); const presetKeys = Object.keys(PRESETS); const easingKeys = Object.keys(EASING_FUNCTIONS); const newLength = 16; const newTimeline = Array(newLength).fill(null).map((_, i) => { const randomKey = presetKeys[Math.floor(Math.random() * presetKeys.length)]; const basePose = { ...PRESETS[randomKey] }; const randomTilt = Math.floor(Math.random() * 30) - 15; basePose.headTilt = (basePose.headTilt || 0) + randomTilt; const randomEasing = easingKeys[Math.floor(Math.random() * easingKeys.length)]; basePose.easing = randomEasing; if (Math.random() > 0.6) basePose.headSlide = Math.floor(Math.random() * 40) - 20; else basePose.headSlide = 0; if (Math.random() > 0.6) basePose.waist = Math.floor(Math.random() * 40) - 20; if (Math.random() > 0.7) { if (Math.random() > 0.5) basePose.bodyX = Math.floor(Math.random() * 60) - 30; else basePose.bodyY = Math.floor(Math.random() * 40) - 20; } else { basePose.bodyX = 0; basePose.bodyY = 0; } basePose.duration = 1; basePose.lArmZ = 'front'; basePose.rArmZ = 'front'; return basePose; }); setTimeline(newTimeline); setCurrentFrameIndex(0); setPose(newTimeline[0]); recordHistory(newTimeline, 0); setTimeout(() => setIsPlaying(true), 500); };
+            const handleExport = () => { const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(timeline)); const downloadAnchorNode = document.createElement('a'); downloadAnchorNode.setAttribute("href", dataStr); downloadAnchorNode.setAttribute("download", "tutting_dance.json"); document.body.appendChild(downloadAnchorNode); downloadAnchorNode.click(); downloadAnchorNode.remove(); };
+            const handleImport = (event) => { const fileReader = new FileReader(); const file = event.target.files[0]; if (!file) return; fileReader.readAsText(file, "UTF-8"); fileReader.onload = (e) => { try { const importedTimeline = JSON.parse(e.target.result); if (Array.isArray(importedTimeline) && importedTimeline.length > 0) { setIsPlaying(false); setTimeline(importedTimeline); setPose(importedTimeline[0]); setCurrentFrameIndex(0); recordHistory(importedTimeline, 0); alert(t('importSuccess')); } else { alert(t('importError')); } } catch (error) { alert(t('importFail')); } }; event.target.value = null; };
+            const handleSaveCustomPreset = () => { if (!presetName.trim()) { alert(t('nameEmpty')); return; } setCustomPresets(prev => ({ ...prev, [presetName]: { ...pose } })); setPresetName(""); alert(t('saveSuccess')); };
+            const handlePresetChange = (e) => { const key = e.target.value; setSelectedPreset(key); if (isPlaying) return; if (PRESETS[key]) setPose({ ...PRESETS[key] }); else if (customPresets[key]) setPose(customPresets[key]); };
+            useEffect(() => { if (!isPlaying) { if (requestRef.current) cancelAnimationFrame(requestRef.current); return; } trailsRef.current = { left: [], right: [] }; startTimeRef.current = performance.now(); const animate = (time) => { const currentIndex = frameIndexRef.current; const startPose = timelineRef.current[currentIndex]; const stepDuration = (startPose.duration && startPose.duration > 0) ? startPose.duration * 1000 : (60000 / bpm); const elapsed = time - startTimeRef.current; let progress = elapsed / stepDuration; if (progress >= 1) { const nextIndex = (frameIndexRef.current + 1) % timelineRef.current.length; setCurrentFrameIndex(nextIndex); frameIndexRef.current = nextIndex; startTimeRef.current = time; progress = 0; } const activeIndex = frameIndexRef.current; const nextIndex = (activeIndex + 1) % timelineRef.current.length; const currentStartPose = timelineRef.current[activeIndex]; const currentEndPose = timelineRef.current[nextIndex]; const easingName = currentStartPose?.easing || 'Smooth (流暢)'; const easeFn = EASING_FUNCTIONS[easingName] || EASING_FUNCTIONS['Smooth (流暢)']; const easedProgress = easeFn(progress); if (currentStartPose && currentEndPose) { const newPose = interpolatePose(currentStartPose, currentEndPose, easedProgress); if (showTrailsRef.current) { const skel = calculateSkeleton(newPose); trailsRef.current.left.push(skel.lWristPos); trailsRef.current.right.push(skel.rWristPos); if (trailsRef.current.left.length > 40) trailsRef.current.left.shift(); if (trailsRef.current.right.length > 40) trailsRef.current.right.shift(); } setPose(newPose); } requestRef.current = requestAnimationFrame(animate); }; requestRef.current = requestAnimationFrame(animate); return () => { if (requestRef.current) cancelAnimationFrame(requestRef.current); }; }, [isPlaying, bpm]);
+            const handleZoomIn = () => setZoom(z => Math.min(5, z + 0.2)); const handleZoomOut = () => setZoom(z => Math.max(0.1, z - 0.2)); const handleResetView = () => { setZoom(1); setPan({ x: 0, y: 0 }); };
             
-            // Calculate Ghosts if needed
+            const skeleton = useMemo(() => calculateSkeleton(pose), [pose]);
             const prevPose = (!isPlaying && showOnionSkin && currentFrameIndex > 0) ? timeline[currentFrameIndex - 1] : null;
             const nextPose = (!isPlaying && showOnionSkin && currentFrameIndex < timeline.length - 1) ? timeline[currentFrameIndex + 1] : null;
-            
             const prevSkeleton = useMemo(() => prevPose ? calculateSkeleton(prevPose) : null, [prevPose]);
             const nextSkeleton = useMemo(() => nextPose ? calculateSkeleton(nextPose) : null, [nextPose]);
-
             const formationData = FORMATIONS[formationType] || FORMATIONS['single'];
             const mainDancer = formationData.find(d => d.main) || formationData[0];
 
             return (
                 <div className={`h-[100dvh] ${currentThemeConfig.bg} ${currentThemeConfig.text} font-sans selection:bg-cyan-500/30 flex flex-col md:flex-row overflow-hidden transition-colors duration-500`}>
+                    {/* Modal Overlay for Easing Info */}
+                    {showEasingInfo && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+                            <div className={`modal-anim ${theme === 'minimalist' ? 'bg-neutral-900 border-neutral-700' : 'bg-slate-900 border-slate-700'} border rounded-xl shadow-2xl max-w-lg w-full max-h-[90vh] flex flex-col`}>
+                                <div className="p-4 border-b border-gray-700/50 flex justify-between items-center">
+                                    <h3 className="text-lg font-bold flex items-center gap-2">
+                                        <Settings size={18} /> {t('easingInfo')}
+                                    </h3>
+                                    <button onClick={() => setShowEasingInfo(false)} className="hover:text-white text-gray-400"><X size={20} /></button>
+                                </div>
+                                <div className="p-4 overflow-y-auto custom-scrollbar space-y-3">
+                                    {Object.entries(EASING_DESCRIPTIONS).map(([name, desc]) => (
+                                        <div key={name} className={`p-3 rounded-lg ${theme === 'minimalist' ? 'bg-neutral-800' : 'bg-slate-800/50'} border border-gray-700/30`}>
+                                            <h4 className={`text-sm font-bold mb-1 ${theme === 'minimalist' ? 'text-white' : 'text-cyan-400'}`}>{name}</h4>
+                                            <p className="text-xs text-gray-400 leading-relaxed">{desc}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    )}
 
-                    {/* --- TOP/LEFT PANEL --- */}
                     <div className={`flex-1 h-[50%] md:h-full flex flex-col relative border-b md:border-b-0 md:border-r ${currentThemeConfig.borderColor} z-10 transition-colors duration-300 min-w-0`}>
-
                         <div className="absolute top-4 left-4 z-10 flex items-start gap-4 pointer-events-none">
                             <div>
                                 <h1 className="text-xl md:text-3xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-fuchsia-500 filter drop-shadow-lg">{t('title')}</h1>
                                 <p className={`text-[10px] md:text-xs font-mono mt-0.5 tracking-widest opacity-80 ${theme === 'minimalist' ? 'text-neutral-500' : 'text-slate-400'}`}>{t('subtitle')}</p>
                             </div>
                         </div>
-
                         <div className="absolute top-4 right-4 z-10 flex gap-2">
-                            {/* UNDO / REDO BUTTONS */}
                             <div className={`flex items-center ${currentThemeConfig.headerBg} backdrop-blur-md border ${currentThemeConfig.borderColor} rounded-full px-1 py-1 cursor-pointer hover:opacity-80 transition-all shadow-lg`}>
-                                <button onClick={undo} disabled={historyStep <= 0} className={`p-1.5 rounded-full ${historyStep > 0 ? (theme === 'minimalist' ? 'text-white hover:bg-white/10' : 'text-cyan-400 hover:bg-cyan-500/20') : 'text-slate-600 cursor-not-allowed'} transition-colors`} title={`${t('undo')} (Ctrl+Z)`}>
-                                    <Undo2 size={14} />
-                                </button>
+                                <button onClick={undo} disabled={historyStep <= 0} className={`p-1.5 rounded-full ${historyStep > 0 ? (theme === 'minimalist' ? 'text-white hover:bg-white/10' : 'text-cyan-400 hover:bg-cyan-500/20') : 'text-slate-600 cursor-not-allowed'} transition-colors`} title={`${t('undo')} (Ctrl+Z)`}><Undo2 size={14} /></button>
                                 <div className={`w-px h-4 ${theme === 'minimalist' ? 'bg-neutral-700' : 'bg-slate-700'} mx-1`}></div>
-                                <button onClick={redo} disabled={historyStep >= history.length - 1} className={`p-1.5 rounded-full ${historyStep < history.length - 1 ? (theme === 'minimalist' ? 'text-white hover:bg-white/10' : 'text-fuchsia-400 hover:bg-fuchsia-500/20') : 'text-slate-600 cursor-not-allowed'} transition-colors`} title={`${t('redo')} (Ctrl+Y)`}>
-                                    <Redo2 size={14} />
-                                </button>
+                                <button onClick={redo} disabled={historyStep >= history.length - 1} className={`p-1.5 rounded-full ${historyStep < history.length - 1 ? (theme === 'minimalist' ? 'text-white hover:bg-white/10' : 'text-fuchsia-400 hover:bg-fuchsia-500/20') : 'text-slate-600 cursor-not-allowed'} transition-colors`} title={`${t('redo')} (Ctrl+Y)`}><Redo2 size={14} /></button>
                             </div>
-
-                            {!isSidebarOpen && (
-                                <button 
-                                    onClick={() => setIsSidebarOpen(true)} 
-                                    className={`flex items-center justify-center p-2 ${currentThemeConfig.headerBg} backdrop-blur-md border ${currentThemeConfig.borderColor} rounded-full cursor-pointer hover:opacity-80 transition-all shadow-lg ${theme === 'minimalist' ? 'text-neutral-200' : 'text-cyan-400'} animate-in fade-in zoom-in duration-200`}
-                                    title="Open Sidebar"
-                                >
-                                    <ArrowLeftFromLine size={16} />
-                                </button>
-                            )}
-                            
-                            {/* Theme Selector */}
+                            {!isSidebarOpen && <button onClick={() => setIsSidebarOpen(true)} className={`flex items-center justify-center p-2 ${currentThemeConfig.headerBg} backdrop-blur-md border ${currentThemeConfig.borderColor} rounded-full cursor-pointer hover:opacity-80 transition-all shadow-lg ${theme === 'minimalist' ? 'text-neutral-200' : 'text-cyan-400'} animate-in fade-in zoom-in duration-200`} title="Open Sidebar"><ArrowLeftFromLine size={16} /></button>}
                             <div className={`flex items-center ${currentThemeConfig.headerBg} backdrop-blur-md border ${currentThemeConfig.borderColor} rounded-full px-2 py-1.5 cursor-pointer hover:opacity-80 transition-all shadow-lg`}>
                                 <Palette size={14} className={`${theme === 'minimalist' ? 'text-neutral-400' : 'text-slate-400'} mr-2 ml-1`} />
-                                <select value={theme} onChange={(e) => setTheme(e.target.value)} className={`bg-transparent text-[10px] md:text-xs ${theme === 'minimalist' ? 'text-neutral-300' : 'text-slate-300'} focus:outline-none cursor-pointer appearance-none pr-2 font-medium`}>
-                                    <option value="cyberpunk">{t('t_cyberpunk')}</option>
-                                    <option value="minimalist">{t('t_minimalist')}</option>
-                                </select>
+                                <select value={theme} onChange={(e) => setTheme(e.target.value)} className={`bg-transparent text-[10px] md:text-xs ${theme === 'minimalist' ? 'text-neutral-300' : 'text-slate-300'} focus:outline-none cursor-pointer appearance-none pr-2 font-medium`}><option value="cyberpunk">{t('t_cyberpunk')}</option><option value="minimalist">{t('t_minimalist')}</option></select>
                             </div>
-
                             <div className={`flex items-center ${currentThemeConfig.headerBg} backdrop-blur-md border ${currentThemeConfig.borderColor} rounded-full px-3 py-1.5 cursor-pointer hover:opacity-80 transition-all shadow-lg`}>
                                 <Globe size={14} className={`${theme === 'minimalist' ? 'text-neutral-400' : 'text-slate-400'} mr-2`} />
-                                <select value={lang} onChange={(e) => setLang(e.target.value)} className={`bg-transparent text-[10px] md:text-xs ${theme === 'minimalist' ? 'text-neutral-300' : 'text-slate-300'} focus:outline-none cursor-pointer appearance-none pr-2 font-medium`}>
-                                    <option value="zh-TW">繁體中文</option>
-                                    <option value="en">English</option>
-                                    <option value="ja">日本語</option>
-                                    <option value="ko">한국어</option>
-                                    <option value="es">Español</option>
-                                    <option value="pt">Português</option>
-                                    <option value="fr">Français</option>
-                                    <option value="de">Deutsch</option>
-                                    <option value="vi">Tiếng Việt</option>
-                                    <option value="hi">हिन्दी</option>
-                                    <option value="ru">Русский</option>
-                                </select>
+                                <select value={lang} onChange={(e) => setLang(e.target.value)} className={`bg-transparent text-[10px] md:text-xs ${theme === 'minimalist' ? 'text-neutral-300' : 'text-slate-300'} focus:outline-none cursor-pointer appearance-none pr-2 font-medium`}><option value="zh-TW">繁體中文</option><option value="en">English</option><option value="ja">日本語</option><option value="ko">한국어</option><option value="es">Español</option><option value="pt">Português</option><option value="fr">Français</option><option value="de">Deutsch</option><option value="vi">Tiếng Việt</option><option value="hi">हिन्दी</option><option value="ru">Русский</option></select>
                             </div>
                         </div>
-
                         <div className={`flex-1 w-full flex items-center justify-center overflow-hidden relative p-2 ${isPanning ? 'cursor-grabbing' : 'cursor-grab'}`}>
-                            {showGrid && (
-                                <div className="absolute inset-0 pointer-events-none"
-                                    style={{
-                                        opacity: currentThemeConfig.gridOpacity,
-                                        backgroundImage: `linear-gradient(${theme === 'minimalist' ? '#666' : '#fff'} 1px, transparent 1px), linear-gradient(90deg, ${theme === 'minimalist' ? '#666' : '#fff'} 1px, transparent 1px)`,
-                                        backgroundSize: '40px 40px',
-                                    }}>
-                                </div>
-                            )}
-
+                            {showGrid && <div className="absolute inset-0 pointer-events-none" style={{ opacity: currentThemeConfig.gridOpacity, backgroundImage: `linear-gradient(${theme === 'minimalist' ? '#666' : '#fff'} 1px, transparent 1px), linear-gradient(90deg, ${theme === 'minimalist' ? '#666' : '#fff'} 1px, transparent 1px)`, backgroundSize: '40px 40px' }}></div>}
                             <div className="relative h-full w-full flex items-center justify-center" onWheel={handleWheel} onMouseDown={handleSvgMouseDown}>
                                 <svg ref={svgRef} className="w-full h-full select-none filter drop-shadow-[0_0_15px_rgba(0,0,0,0.5)]" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid meet">
-                                    <defs>
-                                        <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-                                            <feGaussianBlur stdDeviation="4" result="coloredBlur" />
-                                            <feMerge><feMergeNode in="coloredBlur" /><feMergeNode in="SourceGraphic" /></feMerge>
-                                        </filter>
-                                    </defs>
-
+                                    <defs><filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4" result="coloredBlur" /><feMerge><feMergeNode in="coloredBlur" /><feMergeNode in="SourceGraphic" /></feMerge></filter></defs>
                                     <g ref={mainGroupRef} transform={`translate(${200 + pan.x}, ${200 + pan.y}) scale(${zoom})`}>
-                                        {/* Trails Rendering */}
-                                        {showTrails && (
-                                            <g>
-                                                <polyline points={trailsRef.current.left.map(p => `${p.x},${p.y}`).join(' ')} fill="none" stroke={theme === 'minimalist' ? '#fff' : "#d946ef"} strokeWidth="2" strokeOpacity="0.4" strokeLinecap="round" strokeLinejoin="round" />
-                                                <polyline points={trailsRef.current.right.map(p => `${p.x},${p.y}`).join(' ')} fill="none" stroke={theme === 'minimalist' ? '#888' : "#06b6d4"} strokeWidth="2" strokeOpacity="0.4" strokeLinecap="round" strokeLinejoin="round" />
-                                            </g>
-                                        )}
-
-                                        {formationData.map((dancer, idx) => (
-                                            <g key={idx} transform={`translate(${dancer.x}, ${dancer.y}) scale(${dancer.scale})`}>
-                                                {/* Onion Skin: Previous Frame */}
-                                                {prevSkeleton && mainDancer && idx === formationData.indexOf(mainDancer) && (
-                                                    <DancerFigure 
-                                                        skeleton={prevSkeleton} 
-                                                        lArmZ={prevPose.lArmZ} 
-                                                        rArmZ={prevPose.rArmZ} 
-                                                        theme={theme} 
-                                                        variant="ghost-prev" 
-                                                    />
-                                                )}
-                                                
-                                                {/* Onion Skin: Next Frame */}
-                                                {nextSkeleton && mainDancer && idx === formationData.indexOf(mainDancer) && (
-                                                    <DancerFigure 
-                                                        skeleton={nextSkeleton} 
-                                                        lArmZ={nextPose.lArmZ} 
-                                                        rArmZ={nextPose.rArmZ} 
-                                                        theme={theme} 
-                                                        variant="ghost-next" 
-                                                    />
-                                                )}
-
-                                                {/* Main Dancer */}
-                                                <DancerFigure 
-                                                    skeleton={skeleton} 
-                                                    opacity={dancer.opacity} 
-                                                    lArmZ={pose.lArmZ} 
-                                                    rArmZ={pose.rArmZ}
-                                                    theme={theme}
-                                                />
-                                            </g>
-                                        ))}
-
-                                        {isDragMode && mainDancer && (
-                                            <g transform={`translate(${mainDancer.x}, ${mainDancer.y}) scale(${mainDancer.scale})`}>
-                                                <DraggableJoint x={skeleton.hipCenterX} y={skeleton.hipCenterY} isActive={activeJoint?.name === 'bodyX'} onMouseDown={(e) => handleJointDown(e, 'bodyX', null, 'pos')} onTouchStart={(e) => handleJointDown(e, 'bodyX', null, 'pos')} theme={theme}/>
-                                                <DraggableJoint x={skeleton.headCenterX} y={skeleton.headCenterY} isActive={activeJoint?.type === 'headPos'} onMouseDown={(e) => handleJointDown(e, 'head', skeleton.neckBase, 'headPos')} onTouchStart={(e) => handleJointDown(e, 'head', skeleton.neckBase, 'headPos')} theme={theme}/>
-                                                <DraggableJoint x={skeleton.tiltHandleX} y={skeleton.tiltHandleY} isActive={activeJoint?.type === 'headTilt'} onMouseDown={(e) => handleJointDown(e, 'headTilt', { x: skeleton.headCenterX, y: skeleton.headCenterY }, 'headTilt')} onTouchStart={(e) => handleJointDown(e, 'headTilt', { x: skeleton.headCenterX, y: skeleton.headCenterY }, 'headTilt')} isFK={false} theme={theme}/>
-
-                                                <DraggableJoint x={skeleton.rElbowPos.x} y={skeleton.rElbowPos.y} isActive={activeJoint?.name === 'rShoulder'} onMouseDown={(e) => handleJointDown(e, 'rShoulder', skeleton.rShoulderBase)} onTouchStart={(e) => handleJointDown(e, 'rShoulder', skeleton.rShoulderBase)} theme={theme}/>
-                                                <DraggableJoint x={skeleton.rWristPos.x} y={skeleton.rWristPos.y} isActive={activeJoint?.name === (dragType === 'IK' ? 'rWrist' : 'rElbow')} onMouseDown={(e) => handleJointDown(e, dragType === 'IK' ? 'rWrist' : 'rElbow', dragType === 'IK' ? skeleton.rShoulderBase : skeleton.rElbowPos, dragType === 'IK' ? 'ik' : 'angle', skeleton.rShoulderBase)} onTouchStart={(e) => handleJointDown(e, dragType === 'IK' ? 'rWrist' : 'rElbow', dragType === 'IK' ? skeleton.rShoulderBase : skeleton.rElbowPos, dragType === 'IK' ? 'ik' : 'angle', skeleton.rShoulderBase)} isFK={dragType === 'FK'} theme={theme}/>
-                                                <DraggableJoint x={skeleton.rHandPos.x} y={skeleton.rHandPos.y} isActive={activeJoint?.name === 'rWrist'} onMouseDown={(e) => handleJointDown(e, 'rWrist', skeleton.rWristPos)} onTouchStart={(e) => handleJointDown(e, 'rWrist', skeleton.rWristPos)} theme={theme}/>
-
-                                                <DraggableJoint x={skeleton.lElbowPos.x} y={skeleton.lElbowPos.y} isActive={activeJoint?.name === 'lShoulder'} onMouseDown={(e) => handleJointDown(e, 'lShoulder', skeleton.lShoulderBase)} onTouchStart={(e) => handleJointDown(e, 'lShoulder', skeleton.lShoulderBase)} theme={theme}/>
-                                                <DraggableJoint x={skeleton.lWristPos.x} y={skeleton.lWristPos.y} isActive={activeJoint?.name === (dragType === 'IK' ? 'lWrist' : 'lElbow')} onMouseDown={(e) => handleJointDown(e, dragType === 'IK' ? 'lWrist' : 'lElbow', dragType === 'IK' ? skeleton.lShoulderBase : skeleton.lElbowPos, dragType === 'IK' ? 'ik' : 'angle', skeleton.lShoulderBase)} onTouchStart={(e) => handleJointDown(e, dragType === 'IK' ? 'lWrist' : 'lElbow', dragType === 'IK' ? skeleton.lShoulderBase : skeleton.lElbowPos, dragType === 'IK' ? 'ik' : 'angle', skeleton.lShoulderBase)} isFK={dragType === 'FK'} theme={theme}/>
-                                                <DraggableJoint x={skeleton.lHandPos.x} y={skeleton.lHandPos.y} isActive={activeJoint?.name === 'lWrist'} onMouseDown={(e) => handleJointDown(e, 'lWrist', skeleton.lWristPos)} onTouchStart={(e) => handleJointDown(e, 'lWrist', skeleton.lWristPos)} theme={theme}/>
-
-                                                <DraggableJoint x={skeleton.rKneePos.x} y={skeleton.rKneePos.y} isActive={activeJoint?.name === 'rHip'} onMouseDown={(e) => handleJointDown(e, 'rHip', skeleton.rHipPos)} onTouchStart={(e) => handleJointDown(e, 'rHip', skeleton.rHipPos)} theme={theme}/>
-                                                <DraggableJoint x={skeleton.rAnklePos.x} y={skeleton.rAnklePos.y} isActive={activeJoint?.name === (dragType === 'IK' ? 'rAnkle' : 'rKnee')} onMouseDown={(e) => handleJointDown(e, dragType === 'IK' ? 'rAnkle' : 'rKnee', dragType === 'IK' ? skeleton.rHipPos : skeleton.rKneePos, dragType === 'IK' ? 'ik' : 'angle', skeleton.rHipPos)} onTouchStart={(e) => handleJointDown(e, dragType === 'IK' ? 'rAnkle' : 'rKnee', dragType === 'IK' ? skeleton.rHipPos : skeleton.rKneePos, dragType === 'IK' ? 'ik' : 'angle', skeleton.rHipPos)} isFK={dragType === 'FK'} theme={theme}/>
-                                                <DraggableJoint x={skeleton.rFootPos.x} y={skeleton.rFootPos.y} isActive={activeJoint?.name === 'rAnkle'} onMouseDown={(e) => handleJointDown(e, 'rAnkle', skeleton.rAnklePos)} onTouchStart={(e) => handleJointDown(e, 'rAnkle', skeleton.rAnklePos)} theme={theme}/>
-
-                                                <DraggableJoint x={skeleton.lKneePos.x} y={skeleton.lKneePos.y} isActive={activeJoint?.name === 'lHip'} onMouseDown={(e) => handleJointDown(e, 'lHip', skeleton.lHipPos)} onTouchStart={(e) => handleJointDown(e, 'lHip', skeleton.lHipPos)} theme={theme}/>
-                                                <DraggableJoint x={skeleton.lAnklePos.x} y={skeleton.lAnklePos.y} isActive={activeJoint?.name === (dragType === 'IK' ? 'lAnkle' : 'lKnee')} onMouseDown={(e) => handleJointDown(e, dragType === 'IK' ? 'lAnkle' : 'lKnee', dragType === 'IK' ? skeleton.lHipPos : skeleton.lKneePos, dragType === 'IK' ? 'ik' : 'angle', skeleton.lHipPos)} onTouchStart={(e) => handleJointDown(e, dragType === 'IK' ? 'lAnkle' : 'lKnee', dragType === 'IK' ? skeleton.lHipPos : skeleton.lKneePos, dragType === 'IK' ? 'ik' : 'angle', skeleton.lHipPos)} isFK={dragType === 'FK'} theme={theme}/>
-                                                <DraggableJoint x={skeleton.lFootPos.x} y={skeleton.lFootPos.y} isActive={activeJoint?.name === 'lAnkle'} onMouseDown={(e) => handleJointDown(e, 'lAnkle', skeleton.lAnklePos)} onTouchStart={(e) => handleJointDown(e, 'lAnkle', skeleton.lAnklePos)} theme={theme}/>
-                                            </g>
-                                        )}
+                                        {showTrails && <g><polyline points={trailsRef.current.left.map(p => `${p.x},${p.y}`).join(' ')} fill="none" stroke={theme === 'minimalist' ? '#fff' : "#d946ef"} strokeWidth="2" strokeOpacity="0.4" strokeLinecap="round" strokeLinejoin="round" /><polyline points={trailsRef.current.right.map(p => `${p.x},${p.y}`).join(' ')} fill="none" stroke={theme === 'minimalist' ? '#888' : "#06b6d4"} strokeWidth="2" strokeOpacity="0.4" strokeLinecap="round" strokeLinejoin="round" /></g>}
+                                        {formationData.map((dancer, idx) => (<g key={idx} transform={`translate(${dancer.x}, ${dancer.y}) scale(${dancer.scale})`}>{prevSkeleton && mainDancer && idx === formationData.indexOf(mainDancer) && <DancerFigure skeleton={prevSkeleton} lArmZ={prevPose.lArmZ} rArmZ={prevPose.rArmZ} theme={theme} variant="ghost-prev" />}{nextSkeleton && mainDancer && idx === formationData.indexOf(mainDancer) && <DancerFigure skeleton={nextSkeleton} lArmZ={nextPose.lArmZ} rArmZ={nextPose.rArmZ} theme={theme} variant="ghost-next" />}<DancerFigure skeleton={skeleton} opacity={dancer.opacity} lArmZ={pose.lArmZ} rArmZ={pose.rArmZ} theme={theme} /></g>))}
+                                        {isDragMode && mainDancer && <g transform={`translate(${mainDancer.x}, ${mainDancer.y}) scale(${mainDancer.scale})`}><DraggableJoint x={skeleton.hipCenterX} y={skeleton.hipCenterY} isActive={activeJoint?.name === 'bodyX'} onMouseDown={(e) => handleJointDown(e, 'bodyX', null, 'pos')} onTouchStart={(e) => handleJointDown(e, 'bodyX', null, 'pos')} theme={theme}/><DraggableJoint x={skeleton.headCenterX} y={skeleton.headCenterY} isActive={activeJoint?.type === 'headPos'} onMouseDown={(e) => handleJointDown(e, 'head', skeleton.neckBase, 'headPos')} onTouchStart={(e) => handleJointDown(e, 'head', skeleton.neckBase, 'headPos')} theme={theme}/><DraggableJoint x={skeleton.tiltHandleX} y={skeleton.tiltHandleY} isActive={activeJoint?.type === 'headTilt'} onMouseDown={(e) => handleJointDown(e, 'headTilt', { x: skeleton.headCenterX, y: skeleton.headCenterY }, 'headTilt')} onTouchStart={(e) => handleJointDown(e, 'headTilt', { x: skeleton.headCenterX, y: skeleton.headCenterY }, 'headTilt')} isFK={false} theme={theme}/><DraggableJoint x={skeleton.rElbowPos.x} y={skeleton.rElbowPos.y} isActive={activeJoint?.name === 'rShoulder'} onMouseDown={(e) => handleJointDown(e, 'rShoulder', skeleton.rShoulderBase)} onTouchStart={(e) => handleJointDown(e, 'rShoulder', skeleton.rShoulderBase)} theme={theme}/><DraggableJoint x={skeleton.rWristPos.x} y={skeleton.rWristPos.y} isActive={activeJoint?.name === (dragType === 'IK' ? 'rWrist' : 'rElbow')} onMouseDown={(e) => handleJointDown(e, dragType === 'IK' ? 'rWrist' : 'rElbow', dragType === 'IK' ? skeleton.rShoulderBase : skeleton.rElbowPos, dragType === 'IK' ? 'ik' : 'angle', skeleton.rShoulderBase)} onTouchStart={(e) => handleJointDown(e, dragType === 'IK' ? 'rWrist' : 'rElbow', dragType === 'IK' ? skeleton.rShoulderBase : skeleton.rElbowPos, dragType === 'IK' ? 'ik' : 'angle', skeleton.rShoulderBase)} isFK={dragType === 'FK'} theme={theme}/><DraggableJoint x={skeleton.rHandPos.x} y={skeleton.rHandPos.y} isActive={activeJoint?.name === 'rWrist'} onMouseDown={(e) => handleJointDown(e, 'rWrist', skeleton.rWristPos)} onTouchStart={(e) => handleJointDown(e, 'rWrist', skeleton.rWristPos)} theme={theme}/><DraggableJoint x={skeleton.lElbowPos.x} y={skeleton.lElbowPos.y} isActive={activeJoint?.name === 'lShoulder'} onMouseDown={(e) => handleJointDown(e, 'lShoulder', skeleton.lShoulderBase)} onTouchStart={(e) => handleJointDown(e, 'lShoulder', skeleton.lShoulderBase)} theme={theme}/><DraggableJoint x={skeleton.lWristPos.x} y={skeleton.lWristPos.y} isActive={activeJoint?.name === (dragType === 'IK' ? 'lWrist' : 'lElbow')} onMouseDown={(e) => handleJointDown(e, dragType === 'IK' ? 'lWrist' : 'lElbow', dragType === 'IK' ? skeleton.lShoulderBase : skeleton.lElbowPos, dragType === 'IK' ? 'ik' : 'angle', skeleton.lShoulderBase)} onTouchStart={(e) => handleJointDown(e, dragType === 'IK' ? 'lWrist' : 'lElbow', dragType === 'IK' ? skeleton.lShoulderBase : skeleton.lElbowPos, dragType === 'IK' ? 'ik' : 'angle', skeleton.lShoulderBase)} isFK={dragType === 'FK'} theme={theme}/><DraggableJoint x={skeleton.lHandPos.x} y={skeleton.lHandPos.y} isActive={activeJoint?.name === 'lWrist'} onMouseDown={(e) => handleJointDown(e, 'lWrist', skeleton.lWristPos)} onTouchStart={(e) => handleJointDown(e, 'lWrist', skeleton.lWristPos)} theme={theme}/><DraggableJoint x={skeleton.rKneePos.x} y={skeleton.rKneePos.y} isActive={activeJoint?.name === 'rHip'} onMouseDown={(e) => handleJointDown(e, 'rHip', skeleton.rHipPos)} onTouchStart={(e) => handleJointDown(e, 'rHip', skeleton.rHipPos)} theme={theme}/><DraggableJoint x={skeleton.rAnklePos.x} y={skeleton.rAnklePos.y} isActive={activeJoint?.name === (dragType === 'IK' ? 'rAnkle' : 'rKnee')} onMouseDown={(e) => handleJointDown(e, dragType === 'IK' ? 'rAnkle' : 'rKnee', dragType === 'IK' ? skeleton.rHipPos : skeleton.rKneePos, dragType === 'IK' ? 'ik' : 'angle', skeleton.rHipPos)} onTouchStart={(e) => handleJointDown(e, dragType === 'IK' ? 'rAnkle' : 'rKnee', dragType === 'IK' ? skeleton.rHipPos : skeleton.rKneePos, dragType === 'IK' ? 'ik' : 'angle', skeleton.rHipPos)} isFK={dragType === 'FK'} theme={theme}/><DraggableJoint x={skeleton.rFootPos.x} y={skeleton.rFootPos.y} isActive={activeJoint?.name === 'rAnkle'} onMouseDown={(e) => handleJointDown(e, 'rAnkle', skeleton.rAnklePos)} onTouchStart={(e) => handleJointDown(e, 'rAnkle', skeleton.rAnklePos)} theme={theme}/><DraggableJoint x={skeleton.lKneePos.x} y={skeleton.lKneePos.y} isActive={activeJoint?.name === 'lHip'} onMouseDown={(e) => handleJointDown(e, 'lHip', skeleton.lHipPos)} onTouchStart={(e) => handleJointDown(e, 'lHip', skeleton.lHipPos)} theme={theme}/><DraggableJoint x={skeleton.lAnklePos.x} y={skeleton.lAnklePos.y} isActive={activeJoint?.name === (dragType === 'IK' ? 'lAnkle' : 'lKnee')} onMouseDown={(e) => handleJointDown(e, dragType === 'IK' ? 'lAnkle' : 'lKnee', dragType === 'IK' ? skeleton.lHipPos : skeleton.lKneePos, dragType === 'IK' ? 'ik' : 'angle', skeleton.lHipPos)} onTouchStart={(e) => handleJointDown(e, dragType === 'IK' ? 'lAnkle' : 'lKnee', dragType === 'IK' ? skeleton.lHipPos : skeleton.lKneePos, dragType === 'IK' ? 'ik' : 'angle', skeleton.lHipPos)} isFK={dragType === 'FK'} theme={theme}/><DraggableJoint x={skeleton.lFootPos.x} y={skeleton.lFootPos.y} isActive={activeJoint?.name === 'lAnkle'} onMouseDown={(e) => handleJointDown(e, 'lAnkle', skeleton.lAnklePos)} onTouchStart={(e) => handleJointDown(e, 'lAnkle', skeleton.lAnklePos)} theme={theme}/></g>}
                                     </g>
                                 </svg>
-
-                                {/* Overlay Controls */}
                                 <div className="absolute bottom-4 right-4 flex space-x-2 pointer-events-auto">
-                                    <div className={`glass-panel rounded-xl border ${currentThemeConfig.borderColor} flex items-center p-1 shadow-lg`}>
-                                        <button onClick={() => setIsDragMode(!isDragMode)} className={`p-2 rounded-lg transition-all ${isDragMode ? 'bg-fuchsia-500 text-white shadow-lg shadow-fuchsia-500/30' : `${currentThemeConfig.ui.buttonInactive} hover:${currentThemeConfig.ui.buttonActive} hover:bg-white/10`}`} title={isDragMode ? t('dragModeOn') : t('dragModeOff')}>
-                                            <Hand size={18} />
-                                        </button>
-                                        {isDragMode && (
-                                            <>
-                                                <div className={`w-px h-6 ${theme === 'minimalist' ? 'bg-neutral-700' : 'bg-slate-700/50'} mx-1`}></div>
-                                                <button onClick={() => setDragType(prev => prev === 'FK' ? 'IK' : 'FK')} className={`px-2 py-1 text-[10px] font-mono font-bold ${theme === 'minimalist' ? 'text-neutral-400' : 'text-slate-300'} hover:bg-white/10 rounded transition-colors min-w-[36px]`} title={t(dragType.toLowerCase())}>
-                                                    {dragType}
-                                                </button>
-                                            </>
-                                        )}
-                                    </div>
-                                    
-                                    <div className={`glass-panel rounded-xl border ${currentThemeConfig.borderColor} flex items-center p-1 shadow-lg`}>
-                                        <button onClick={handleZoomOut} className={`p-2 rounded-lg ${currentThemeConfig.ui.buttonInactive} hover:${currentThemeConfig.ui.buttonActive} hover:bg-white/10 transition-colors`}><ZoomOut size={18} /></button>
-                                        <button onClick={handleResetView} className={`px-2 py-1 text-[10px] font-mono ${theme === 'minimalist' ? 'text-neutral-400' : 'text-slate-300'} min-w-[50px] hover:bg-white/10 rounded transition-colors`} title={t('resetView')}>
-                                            {Math.round(zoom * 100)}%
-                                        </button>
-                                        <button onClick={handleZoomIn} className={`p-2 rounded-lg ${currentThemeConfig.ui.buttonInactive} hover:${currentThemeConfig.ui.buttonActive} hover:bg-white/10 transition-colors`}><ZoomIn size={18} /></button>
-                                    </div>
-
-                                    <div className={`glass-panel rounded-xl border ${currentThemeConfig.borderColor} flex items-center p-1 shadow-lg`}>
-                                        <button onClick={() => setShowOnionSkin(!showOnionSkin)} className={`p-2 rounded-lg transition-colors ${showOnionSkin ? 'text-yellow-400 bg-yellow-500/10' : `${currentThemeConfig.ui.buttonInactive} hover:${currentThemeConfig.ui.buttonActive} hover:bg-white/10`}`} title={t('onionSkin')}><OnionSkinIcon size={18} /></button>
-                                        <div className={`w-px h-6 ${theme === 'minimalist' ? 'bg-neutral-700' : 'bg-slate-700/50'} mx-1`}></div>
-                                        <button onClick={() => setShowTrails(!showTrails)} className={`p-2 rounded-lg transition-colors ${showTrails ? 'text-fuchsia-400 bg-fuchsia-500/10' : `${currentThemeConfig.ui.buttonInactive} hover:${currentThemeConfig.ui.buttonActive} hover:bg-white/10`}`} title={t('motionTrails')}><Activity size={18} /></button>
-                                        <button onClick={() => setShowGrid(!showGrid)} className={`p-2 rounded-lg transition-colors ${showGrid ? (theme === 'minimalist' ? 'text-white bg-white/10' : 'text-cyan-400 bg-cyan-500/10') : `${currentThemeConfig.ui.buttonInactive} hover:${currentThemeConfig.ui.buttonActive} hover:bg-white/10`}`}><Grid size={18} /></button>
-                                    </div>
+                                    <div className={`glass-panel rounded-xl border ${currentThemeConfig.borderColor} flex items-center p-1 shadow-lg`}><button onClick={() => setIsDragMode(!isDragMode)} className={`p-2 rounded-lg transition-all ${isDragMode ? 'bg-fuchsia-500 text-white shadow-lg shadow-fuchsia-500/30' : `${currentThemeConfig.ui.buttonInactive} hover:${currentThemeConfig.ui.buttonActive} hover:bg-white/10`}`} title={isDragMode ? t('dragModeOn') : t('dragModeOff')}><Hand size={18} /></button>{isDragMode && <><div className={`w-px h-6 ${theme === 'minimalist' ? 'bg-neutral-700' : 'bg-slate-700/50'} mx-1`}></div><button onClick={() => setDragType(prev => prev === 'FK' ? 'IK' : 'FK')} className={`px-2 py-1 text-[10px] font-mono font-bold ${theme === 'minimalist' ? 'text-neutral-400' : 'text-slate-300'} hover:bg-white/10 rounded transition-colors min-w-[36px]`} title={t(dragType.toLowerCase())}>{dragType}</button></>}</div>
+                                    <div className={`glass-panel rounded-xl border ${currentThemeConfig.borderColor} flex items-center p-1 shadow-lg`}><button onClick={handleZoomOut} className={`p-2 rounded-lg ${currentThemeConfig.ui.buttonInactive} hover:${currentThemeConfig.ui.buttonActive} hover:bg-white/10 transition-colors`}><ZoomOut size={18} /></button><button onClick={handleResetView} className={`px-2 py-1 text-[10px] font-mono ${theme === 'minimalist' ? 'text-neutral-400' : 'text-slate-300'} min-w-[50px] hover:bg-white/10 rounded transition-colors`} title={t('resetView')}>{Math.round(zoom * 100)}%</button><button onClick={handleZoomIn} className={`p-2 rounded-lg ${currentThemeConfig.ui.buttonInactive} hover:${currentThemeConfig.ui.buttonActive} hover:bg-white/10 transition-colors`}><ZoomIn size={18} /></button></div>
+                                    <div className={`glass-panel rounded-xl border ${currentThemeConfig.borderColor} flex items-center p-1 shadow-lg`}><button onClick={() => setShowOnionSkin(!showOnionSkin)} className={`p-2 rounded-lg transition-colors ${showOnionSkin ? 'text-yellow-400 bg-yellow-500/10' : `${currentThemeConfig.ui.buttonInactive} hover:${currentThemeConfig.ui.buttonActive} hover:bg-white/10`}`} title={t('onionSkin')}><OnionSkinIcon size={18} /></button><div className={`w-px h-6 ${theme === 'minimalist' ? 'bg-neutral-700' : 'bg-slate-700/50'} mx-1`}></div><button onClick={() => setShowTrails(!showTrails)} className={`p-2 rounded-lg transition-colors ${showTrails ? 'text-fuchsia-400 bg-fuchsia-500/10' : `${currentThemeConfig.ui.buttonInactive} hover:${currentThemeConfig.ui.buttonActive} hover:bg-white/10`}`} title={t('motionTrails')}><Activity size={18} /></button><button onClick={() => setShowGrid(!showGrid)} className={`p-2 rounded-lg transition-colors ${showGrid ? (theme === 'minimalist' ? 'text-white bg-white/10' : 'text-cyan-400 bg-cyan-500/10') : `${currentThemeConfig.ui.buttonInactive} hover:${currentThemeConfig.ui.buttonActive} hover:bg-white/10`}`}><Grid size={18} /></button></div>
                                 </div>
                             </div>
                         </div>
-
-                        {/* Timeline */}
                         <div className={`w-full ${currentThemeConfig.panelBg} backdrop-blur p-3 border-t ${currentThemeConfig.borderColor} flex-shrink-0 z-20 shadow-[0_-1px_10px_rgba(0,0,0,0.3)]`}>
                             <div className="flex flex-wrap justify-between items-center mb-2 gap-2">
                                 <span className={`text-[10px] md:text-xs font-bold ${theme === 'minimalist' ? 'text-neutral-500' : 'text-slate-500'} uppercase tracking-widest flex items-center`}><Layers size={12} className="mr-1"/>{t('timeline')} ({timeline.length})</span>
@@ -1427,8 +1067,9 @@
                                     <div className="hidden md:flex items-center space-x-2">
                                         <Settings size={12} className={theme === 'minimalist' ? 'text-neutral-500' : 'text-slate-500'} />
                                         <select value={pose.easing || 'Smooth (流暢)'} onChange={(e) => updatePose('easing', e.target.value)} className={`${theme === 'minimalist' ? 'bg-neutral-800 border-neutral-700 text-neutral-300 hover:border-neutral-600' : 'bg-slate-800 border-slate-700 text-slate-300 hover:border-slate-600'} border text-[10px] rounded px-2 py-1 focus:outline-none cursor-pointer`}>
-                                            {Object.keys(EASING_FUNCTIONS).map(name => (<option key={name} value={name}>{name.split(' ')[0]}</option>))}
+                                            {Object.keys(EASING_FUNCTIONS).map(name => (<option key={name} value={name}>{name}</option>))}
                                         </select>
+                                        <button onClick={() => setShowEasingInfo(true)} className="text-gray-400 hover:text-white"><Info size={14} /></button>
                                     </div>
                                     <div className={`flex items-center space-x-2 ${theme === 'minimalist' ? 'bg-neutral-800/50 border-neutral-700/50' : 'bg-slate-800/50 border-slate-700/50'} rounded px-2 py-1 border`}>
                                         <label className={`text-[10px] ${theme === 'minimalist' ? 'text-neutral-500' : 'text-slate-500'} font-mono`}>{t('bpm')}</label>
@@ -1436,9 +1077,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div className="w-full mb-3 px-1">
-                                <input type="range" min={0} max={Math.max(0, timeline.length - 1)} value={currentFrameIndex} onChange={handleTimelineScrub} className={`w-full h-1.5 ${theme === 'minimalist' ? 'bg-neutral-800 accent-white' : 'bg-slate-800 accent-cyan-500'} rounded-lg appearance-none cursor-pointer hover:opacity-90 block`} />
-                            </div>
+                            <div className="w-full mb-3 px-1"><input type="range" min={0} max={Math.max(0, timeline.length - 1)} value={currentFrameIndex} onChange={handleTimelineScrub} className={`w-full h-1.5 ${theme === 'minimalist' ? 'bg-neutral-800 accent-white' : 'bg-slate-800 accent-cyan-500'} rounded-lg appearance-none cursor-pointer hover:opacity-90 block`} /></div>
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center space-x-3 overflow-x-auto pb-2 custom-scrollbar no-scrollbar-mobile pr-4 mask-image-right">
                                     <button onClick={() => setIsPlaying(!isPlaying)} className={`p-3 rounded-full flex-shrink-0 transition-all transform hover:scale-105 active:scale-95 ${isPlaying ? 'bg-red-500/90 hover:bg-red-500 text-white shadow-lg shadow-red-500/30' : 'bg-emerald-500/90 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-500/30'}`}>{isPlaying ? <Square fill="currentColor" size={12} /> : <Play fill="currentColor" size={14} className="ml-0.5" />}</button>
@@ -1459,54 +1098,39 @@
                             </div>
                         </div>
                     </div>
-
+                    
                     {/* --- BOTTOM/RIGHT PANEL --- */}
                     <div className={`
                         transition-all duration-500 ease-in-out flex flex-col shadow-2xl z-30 ${currentThemeConfig.panelBg} md:${theme === 'minimalist' ? 'bg-black' : 'bg-[#0b1120]'} border-t md:border-t-0 md:border-l ${currentThemeConfig.borderColor}
                         ${isSidebarOpen ? 'w-full md:w-[360px] h-[50%] md:h-full opacity-100' : 'w-full md:w-0 h-0 md:h-full opacity-0 overflow-hidden border-0'}
                     `}>
-                        
-                        {/* Fixed Header: Tools & Global Settings */}
                         <div className={`p-4 border-b ${currentThemeConfig.borderColor} ${currentThemeConfig.headerBg} backdrop-blur-sm z-10`}>
                             <div className="flex justify-between items-center mb-3">
-                                <div className="flex items-center">
-                                    <button onClick={() => setIsSidebarOpen(false)} className="mr-2 text-slate-500 hover:text-white transition-colors" title="Collapse Sidebar"><ArrowRightToLine size={16}/></button>
-                                    <h2 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center"><RotateCcw className="mr-2" size={12} /> {t('manage')}</h2>
-                                </div>
-                                <div className="flex space-x-1">
-                                    <button onClick={handleExport} className={`p-1.5 text-slate-400 ${theme === 'minimalist' ? 'hover:text-white hover:bg-neutral-800' : 'hover:text-cyan-400 hover:bg-slate-800'} rounded transition-colors`} title={t('export')}><Download size={14}/></button>
-                                    <button onClick={() => fileInputRef.current.click()} className={`p-1.5 text-slate-400 ${theme === 'minimalist' ? 'hover:text-white hover:bg-neutral-800' : 'hover:text-fuchsia-400 hover:bg-slate-800'} rounded transition-colors`} title={t('import')}><Upload size={14}/></button>
-                                    <input type="file" ref={fileInputRef} onChange={handleImport} accept=".json" className="hidden" />
-                                </div>
+                                <div className="flex items-center"><button onClick={() => setIsSidebarOpen(false)} className="mr-2 text-slate-500 hover:text-white transition-colors" title="Collapse Sidebar"><ArrowRightToLine size={16}/></button><h2 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center"><RotateCcw className="mr-2" size={12} /> {t('manage')}</h2></div>
+                                <div className="flex space-x-1"><button onClick={handleExport} className={`p-1.5 text-slate-400 ${theme === 'minimalist' ? 'hover:text-white hover:bg-neutral-800' : 'hover:text-cyan-400 hover:bg-slate-800'} rounded transition-colors`} title={t('export')}><Download size={14}/></button><button onClick={() => fileInputRef.current.click()} className={`p-1.5 text-slate-400 ${theme === 'minimalist' ? 'hover:text-white hover:bg-neutral-800' : 'hover:text-fuchsia-400 hover:bg-slate-800'} rounded transition-colors`} title={t('import')}><Upload size={14}/></button><input type="file" ref={fileInputRef} onChange={handleImport} accept=".json" className="hidden" /></div>
                             </div>
-
-                            {/* Tools Grid */}
                             <div className="grid grid-cols-3 gap-2 mb-4">
-                                <button onClick={() => handlePoseOperation('flip')} className={`flex items-center justify-center space-x-2 py-2 ${theme === 'minimalist' ? 'bg-neutral-900 hover:bg-neutral-800 border-neutral-800' : 'bg-slate-800 hover:bg-slate-700 border-slate-700'} border rounded-md transition-all group`}>
-                                    <FlipIcon size={14} className="text-slate-400 group-hover:text-white" />
-                                    <span className="text-[10px] font-medium text-slate-400 group-hover:text-white">{t('flip')}</span>
+                                <button onClick={() => handlePoseOperation('flip')} className={`flex items-center justify-center space-x-2 py-2 ${theme === 'minimalist' ? 'bg-neutral-900 hover:bg-neutral-800 border-neutral-800' : 'bg-slate-800 hover:bg-slate-700 border-slate-700'} border rounded-md transition-all group`}><FlipIcon size={14} className="text-slate-400 group-hover:text-white" /><span className="text-[10px] font-medium text-slate-400 group-hover:text-white">{t('flip')}</span></button>
+                                <button onClick={() => handlePoseOperation('mirrorLR')} className={`flex items-center justify-center space-x-2 py-2 ${theme === 'minimalist' ? 'bg-neutral-900 hover:bg-neutral-800 border-neutral-800' : 'bg-slate-800 hover:bg-slate-700 border-slate-700'} border rounded-md transition-all group`}><div className="flex text-[10px] font-bold"><span className={theme === 'minimalist' ? 'text-white' : 'text-fuchsia-500'}>L</span><span className="text-slate-500 mx-0.5">→</span><span className={theme === 'minimalist' ? 'text-neutral-500' : 'text-cyan-500'}>R</span></div></button>
+                                <button onClick={() => handlePoseOperation('mirrorRL')} className={`flex items-center justify-center space-x-2 py-2 ${theme === 'minimalist' ? 'bg-neutral-900 hover:bg-neutral-800 border-neutral-800' : 'bg-slate-800 hover:bg-slate-700 border-slate-700'} border rounded-md transition-all group`}><div className="flex text-[10px] font-bold"><span className={theme === 'minimalist' ? 'text-neutral-500' : 'text-cyan-500'}>R</span><span className="text-slate-500 mx-0.5">→</span><span className={theme === 'minimalist' ? 'text-white' : 'text-fuchsia-500'}>L</span></div></button>
+                            </div>
+                            
+                            {/* Clipboard Controls */}
+                            <div className="grid grid-cols-2 gap-2 mb-4">
+                                <button onClick={handleCopy} className={`flex items-center justify-center space-x-2 py-2 ${theme === 'minimalist' ? 'bg-neutral-900 hover:bg-neutral-800 border-neutral-800' : 'bg-slate-800 hover:bg-slate-700 border-slate-700'} border rounded-md transition-all group`} title={`${t('copy')} (Ctrl+C)`}>
+                                    <CopyIcon size={14} className="text-slate-400 group-hover:text-white" />
+                                    <span className="text-[10px] font-medium text-slate-400 group-hover:text-white">{t('copy')}</span>
                                 </button>
-                                <button onClick={() => handlePoseOperation('mirrorLR')} className={`flex items-center justify-center space-x-2 py-2 ${theme === 'minimalist' ? 'bg-neutral-900 hover:bg-neutral-800 border-neutral-800' : 'bg-slate-800 hover:bg-slate-700 border-slate-700'} border rounded-md transition-all group`}>
-                                    <div className="flex text-[10px] font-bold"><span className={theme === 'minimalist' ? 'text-white' : 'text-fuchsia-500'}>L</span><span className="text-slate-500 mx-0.5">→</span><span className={theme === 'minimalist' ? 'text-neutral-500' : 'text-cyan-500'}>R</span></div>
-                                </button>
-                                <button onClick={() => handlePoseOperation('mirrorRL')} className={`flex items-center justify-center space-x-2 py-2 ${theme === 'minimalist' ? 'bg-neutral-900 hover:bg-neutral-800 border-neutral-800' : 'bg-slate-800 hover:bg-slate-700 border-slate-700'} border rounded-md transition-all group`}>
-                                    <div className="flex text-[10px] font-bold"><span className={theme === 'minimalist' ? 'text-neutral-500' : 'text-cyan-500'}>R</span><span className="text-slate-500 mx-0.5">→</span><span className={theme === 'minimalist' ? 'text-white' : 'text-fuchsia-500'}>L</span></div>
+                                <button onClick={handlePaste} className={`flex items-center justify-center space-x-2 py-2 ${theme === 'minimalist' ? 'bg-neutral-900 hover:bg-neutral-800 border-neutral-800' : 'bg-slate-800 hover:bg-slate-700 border-slate-700'} border rounded-md transition-all group`} title={`${t('paste')} (Ctrl+V)`} disabled={!clipboardPose}>
+                                    <ClipboardIcon size={14} className={`${!clipboardPose ? 'text-slate-600' : 'text-slate-400 group-hover:text-white'}`} />
+                                    <span className={`text-[10px] font-medium ${!clipboardPose ? 'text-slate-600' : 'text-slate-400 group-hover:text-white'}`}>{t('paste')}</span>
                                 </button>
                             </div>
 
-                            {/* Preset & Duration */}
                             <div className={`${theme === 'minimalist' ? 'bg-neutral-900/40 border-neutral-800' : 'bg-slate-800/40 border-slate-700/50'} rounded-lg p-2 border space-y-2`}>
                                 <div className="flex gap-2">
-                                    <select value={selectedPreset} onChange={handlePresetChange} className={`flex-1 ${theme === 'minimalist' ? 'bg-neutral-950 border-neutral-800 text-neutral-300 focus:border-white' : 'bg-slate-900 border-slate-700 text-slate-300 focus:border-cyan-500/50'} border text-[10px] rounded px-2 py-1.5 focus:outline-none`}>
-                                        <option value="" disabled>{t('selectPreset')}</option>
-                                        <optgroup label={t('presets')}>{Object.keys(PRESETS).map(key => (<option key={key} value={key}>{t(`p_${key}`)}</option>))}</optgroup>
-                                        {Object.keys(customPresets).length > 0 && <optgroup label={t('custom')}>{Object.keys(customPresets).map(key => (<option key={key} value={key}>{key}</option>))}</optgroup>}
-                                    </select>
-                                    <div className={`flex items-center ${theme === 'minimalist' ? 'bg-neutral-950 border-neutral-800' : 'bg-slate-900 border-slate-700'} border rounded px-2 w-20`}>
-                                        <Clock size={10} className="text-slate-500 mr-1"/>
-                                        <input type="number" value={pose.duration || 1} onChange={(e) => updatePose('duration', Math.max(0.1, parseFloat(e.target.value)))} step={0.1} className={`w-full bg-transparent text-[10px] text-right ${theme === 'minimalist' ? 'text-white' : 'text-cyan-400'} focus:outline-none`} />
-                                        <span className="text-[8px] text-slate-600 ml-1">s</span>
-                                    </div>
+                                    <select value={selectedPreset} onChange={handlePresetChange} className={`flex-1 ${theme === 'minimalist' ? 'bg-neutral-950 border-neutral-800 text-neutral-300 focus:border-white' : 'bg-slate-900 border-slate-700 text-slate-300 focus:border-cyan-500/50'} border text-[10px] rounded px-2 py-1.5 focus:outline-none`}><option value="" disabled>{t('selectPreset')}</option><optgroup label={t('presets')}>{Object.keys(PRESETS).map(key => (<option key={key} value={key}>{t(`p_${key}`)}</option>))}</optgroup>{Object.keys(customPresets).length > 0 && <optgroup label={t('custom')}>{Object.keys(customPresets).map(key => (<option key={key} value={key}>{key}</option>))}</optgroup>}</select>
+                                    <div className={`flex items-center ${theme === 'minimalist' ? 'bg-neutral-950 border-neutral-800' : 'bg-slate-900 border-slate-700'} border rounded px-2 w-20`}><Clock size={10} className="text-slate-500 mr-1"/><input type="number" value={pose.duration || 1} onChange={(e) => updatePose('duration', Math.max(0.1, parseFloat(e.target.value)))} step={0.1} className={`w-full bg-transparent text-[10px] text-right ${theme === 'minimalist' ? 'text-white' : 'text-cyan-400'} focus:outline-none`} /><span className="text-[8px] text-slate-600 ml-1">s</span></div>
                                 </div>
                                 <div className="flex gap-2">
                                     <input type="text" value={presetName} onChange={(e) => setPresetName(e.target.value)} placeholder={t('enterName')} className={`flex-1 ${theme === 'minimalist' ? 'bg-neutral-950 border-neutral-800 text-neutral-200 focus:border-white' : 'bg-slate-900 border-slate-700 text-slate-200 focus:border-fuchsia-500/50'} border rounded px-2 py-1.5 text-[10px] focus:outline-none placeholder-slate-600`} />
@@ -1514,141 +1138,22 @@
                                 </div>
                             </div>
                         </div>
-
-                        {/* Scrollable Controls Area (Accordion) */}
                         <div className="flex-1 overflow-y-auto custom-scrollbar p-0">
-                            
-                            {/* Body & Head Section */}
                             <AccordionSection title={t('body')} icon={Move} isOpen={openSections.body} onToggle={() => toggleSection('body')} color="slate" theme={theme}>
                                 <div className="space-y-3 pt-2">
-                                    <div className="grid grid-cols-2 gap-2">
-                                        <button onClick={() => setIsHandSync(!isHandSync)} className={`py-1.5 px-2 rounded border text-[10px] font-bold flex items-center justify-center space-x-1 transition-all ${isHandSync ? (theme === 'minimalist' ? 'bg-white text-black border-white' : 'bg-cyan-500/20 border-cyan-500 text-cyan-400') : (theme === 'minimalist' ? 'bg-neutral-900 border-neutral-800 text-neutral-500 hover:border-neutral-600' : 'bg-slate-800 border-slate-700 text-slate-500 hover:border-slate-600')}`}>
-                                            <LinkIcon size={12} /><span>{t('handSync')}</span>
-                                        </button>
-                                        <div className={`flex items-center justify-center space-x-1 ${theme === 'minimalist' ? 'bg-neutral-900 border-neutral-800' : 'bg-slate-800 border-slate-700'} border rounded`}>
-                                            <Anchor size={12} className="text-slate-500"/>
-                                            <span className="text-[10px] text-slate-500 font-bold">FIXED</span>
-                                        </div>
-                                    </div>
-                                    
-                                    {/* Fixed Mode toggles simplified */}
-                                    <div className={`grid grid-cols-4 gap-1 p-1 ${theme === 'minimalist' ? 'bg-neutral-900/50 border-neutral-800' : 'bg-slate-800/50 border-slate-700/30'} rounded border`}>
-                                        {['lWrist', 'rWrist', 'lAnkle', 'rAnkle'].map(joint => (
-                                            <button 
-                                                key={joint}
-                                                onClick={() => setFixedJoints(p => ({...p, [joint]: !p[joint]}))} 
-                                                className={`h-6 rounded text-[9px] font-bold border transition-all ${fixedJoints[joint] ? (joint.startsWith('l') ? (theme === 'minimalist' ? 'bg-white text-black border-white' : 'bg-cyan-500/20 border-cyan-500 text-cyan-400') : (theme === 'minimalist' ? 'bg-neutral-700 text-white border-neutral-600' : 'bg-fuchsia-500/20 border-fuchsia-500 text-fuchsia-400')) : 'bg-transparent border-transparent text-slate-600 hover:bg-white/5'}`}
-                                            >
-                                                {joint.startsWith('l') ? 'L' : 'R'} {joint.includes('Wrist') ? 'Hand' : 'Foot'}
-                                            </button>
-                                        ))}
-                                    </div>
-
-                                    <div className="space-y-1">
-                                        <SliderControl label={t('waist')} value={pose.waist || 0} onChange={(v) => updatePose('waist', v)} min={-45} max={45} step={1} snap={0} accentColor="slate" theme={theme} />
-                                        <SliderControl label={t('bodyX')} value={pose.bodyX || 0} onChange={(v) => updatePose('bodyX', v)} min={-100} max={100} step={1} snap={0} unit="px" accentColor="slate" theme={theme} />
-                                        <SliderControl label={t('bodyY')} value={pose.bodyY || 0} onChange={(v) => updatePose('bodyY', v)} min={-100} max={100} step={1} snap={0} unit="px" accentColor="slate" theme={theme} />
-                                    </div>
-                                    <div className={`border-t ${theme === 'minimalist' ? 'border-neutral-800' : 'border-slate-800/50'} pt-2 space-y-1`}>
-                                        <SliderControl label={t('headTilt')} value={pose.headTilt || 0} onChange={(v) => updatePose('headTilt', v)} min={-45} max={45} step={1} snap={0} accentColor="slate" theme={theme} />
-                                        <SliderControl label={t('headSlide')} value={pose.headSlide || 0} onChange={(v) => updatePose('headSlide', v)} min={-30} max={30} step={1} snap={0} unit="px" accentColor="slate" theme={theme} />
-                                    </div>
+                                    <div className="grid grid-cols-2 gap-2"><button onClick={() => setIsHandSync(!isHandSync)} className={`py-1.5 px-2 rounded border text-[10px] font-bold flex items-center justify-center space-x-1 transition-all ${isHandSync ? (theme === 'minimalist' ? 'bg-white text-black border-white' : 'bg-cyan-500/20 border-cyan-500 text-cyan-400') : (theme === 'minimalist' ? 'bg-neutral-900 border-neutral-800 text-neutral-500 hover:border-neutral-600' : 'bg-slate-800 border-slate-700 text-slate-500 hover:border-slate-600')}`}><LinkIcon size={12} /><span>{t('handSync')}</span></button><div className={`flex items-center justify-center space-x-1 ${theme === 'minimalist' ? 'bg-neutral-900 border-neutral-800' : 'bg-slate-800 border-slate-700'} border rounded`}><Anchor size={12} className="text-slate-500"/><span className="text-[10px] text-slate-500 font-bold">FIXED</span></div></div>
+                                    <div className={`grid grid-cols-4 gap-1 p-1 ${theme === 'minimalist' ? 'bg-neutral-900/50 border-neutral-800' : 'bg-slate-800/50 border-slate-700/30'} rounded border`}>{['lWrist', 'rWrist', 'lAnkle', 'rAnkle'].map(joint => (<button key={joint} onClick={() => setFixedJoints(p => ({...p, [joint]: !p[joint]}))} className={`h-6 rounded text-[9px] font-bold border transition-all ${fixedJoints[joint] ? (joint.startsWith('l') ? (theme === 'minimalist' ? 'bg-white text-black border-white' : 'bg-cyan-500/20 border-cyan-500 text-cyan-400') : (theme === 'minimalist' ? 'bg-neutral-700 text-white border-neutral-600' : 'bg-fuchsia-500/20 border-fuchsia-500 text-fuchsia-400')) : 'bg-transparent border-transparent text-slate-600 hover:bg-white/5'}`}>{joint.startsWith('l') ? 'L' : 'R'} {joint.includes('Wrist') ? 'Hand' : 'Foot'}</button>))}</div>
+                                    <div className="space-y-1"><SliderControl label={t('waist')} value={pose.waist || 0} onChange={(v) => updatePose('waist', v)} min={-45} max={45} step={1} snap={0} accentColor="slate" theme={theme} /><SliderControl label={t('bodyX')} value={pose.bodyX || 0} onChange={(v) => updatePose('bodyX', v)} min={-100} max={100} step={1} snap={0} unit="px" accentColor="slate" theme={theme} /><SliderControl label={t('bodyY')} value={pose.bodyY || 0} onChange={(v) => updatePose('bodyY', v)} min={-100} max={100} step={1} snap={0} unit="px" accentColor="slate" theme={theme} /></div>
+                                    <div className={`border-t ${theme === 'minimalist' ? 'border-neutral-800' : 'border-slate-800/50'} pt-2 space-y-1`}><SliderControl label={t('headTilt')} value={pose.headTilt || 0} onChange={(v) => updatePose('headTilt', v)} min={-45} max={45} step={1} snap={0} accentColor="slate" theme={theme} /><SliderControl label={t('headSlide')} value={pose.headSlide || 0} onChange={(v) => updatePose('headSlide', v)} min={-30} max={30} step={1} snap={0} unit="px" accentColor="slate" theme={theme} /></div>
                                 </div>
                             </AccordionSection>
-
-                            {/* Left Arm (Cyan) */}
-                            <AccordionSection title={t('lArm')} icon={User} isOpen={openSections.lArm} onToggle={() => toggleSection('lArm')} color="cyan" theme={theme}>
-                                <div className={`space-y-1 pt-2 border-l-2 ${theme === 'minimalist' ? 'border-white' : 'border-cyan-500/20'} pl-2`}>
-                                    <div className="flex items-center justify-between mb-2 pr-2">
-                                        <span className={`text-[10px] ${theme === 'minimalist' ? 'text-white' : 'text-cyan-400'} font-bold uppercase`}>{t('depth')}</span>
-                                        <div className={`flex ${theme === 'minimalist' ? 'bg-neutral-800 border-neutral-700' : 'bg-slate-800 border-slate-700'} rounded border p-0.5`}>
-                                            <button 
-                                                onClick={() => updatePose('lArmZ', 'back')} 
-                                                className={`px-2 py-0.5 rounded text-[9px] transition-colors ${pose.lArmZ === 'back' ? (theme === 'minimalist' ? 'bg-white text-black' : 'bg-cyan-600 text-white') : 'text-slate-400 hover:text-white'}`}
-                                                title={t('back')}
-                                            >
-                                                <SendToBack size={12} />
-                                            </button>
-                                            <button 
-                                                onClick={() => updatePose('lArmZ', 'front')} 
-                                                className={`px-2 py-0.5 rounded text-[9px] transition-colors ${(!pose.lArmZ || pose.lArmZ === 'front') ? (theme === 'minimalist' ? 'bg-white text-black' : 'bg-cyan-600 text-white') : 'text-slate-400 hover:text-white'}`}
-                                                title={t('front')}
-                                            >
-                                                <BringToFront size={12} />
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <SliderControl label={t('shoulder')} value={pose.lShoulder} onChange={(v) => updatePose('lShoulder', v)} accentColor="cyan" theme={theme} />
-                                    <SliderControl label={t('elbow')} value={pose.lElbow} onChange={(v) => updatePose('lElbow', v)} accentColor="cyan" theme={theme} />
-                                    <SliderControl label={t('wrist')} value={pose.lWrist} onChange={(v) => updatePose('lWrist', v)} accentColor="cyan" theme={theme} />
-                                </div>
-                            </AccordionSection>
-
-                            {/* Right Arm (Fuchsia) */}
-                            <AccordionSection title={t('rArm')} icon={User} isOpen={openSections.rArm} onToggle={() => toggleSection('rArm')} color="fuchsia" theme={theme}>
-                                <div className={`space-y-1 pt-2 border-l-2 ${theme === 'minimalist' ? 'border-neutral-600' : 'border-fuchsia-500/20'} pl-2`}>
-                                    <div className="flex items-center justify-between mb-2 pr-2">
-                                        <span className={`text-[10px] ${theme === 'minimalist' ? 'text-neutral-500' : 'text-fuchsia-400'} font-bold uppercase`}>{t('depth')}</span>
-                                        <div className={`flex ${theme === 'minimalist' ? 'bg-neutral-800 border-neutral-700' : 'bg-slate-800 border-slate-700'} rounded border p-0.5`}>
-                                            <button 
-                                                onClick={() => updatePose('rArmZ', 'back')} 
-                                                className={`px-2 py-0.5 rounded text-[9px] transition-colors ${pose.rArmZ === 'back' ? (theme === 'minimalist' ? 'bg-neutral-600 text-white' : 'bg-fuchsia-600 text-white') : 'text-slate-400 hover:text-white'}`}
-                                                title={t('back')}
-                                            >
-                                                <SendToBack size={12} />
-                                            </button>
-                                            <button 
-                                                onClick={() => updatePose('rArmZ', 'front')} 
-                                                className={`px-2 py-0.5 rounded text-[9px] transition-colors ${(!pose.rArmZ || pose.rArmZ === 'front') ? (theme === 'minimalist' ? 'bg-neutral-600 text-white' : 'bg-fuchsia-600 text-white') : 'text-slate-400 hover:text-white'}`}
-                                                title={t('front')}
-                                            >
-                                                <BringToFront size={12} />
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <SliderControl label={t('shoulder')} value={pose.rShoulder} onChange={(v) => updatePose('rShoulder', v)} accentColor="fuchsia" theme={theme} />
-                                    <SliderControl label={t('elbow')} value={pose.rElbow} onChange={(v) => updatePose('rElbow', v)} accentColor="fuchsia" theme={theme} />
-                                    <SliderControl label={t('wrist')} value={pose.rWrist} onChange={(v) => updatePose('rWrist', v)} accentColor="fuchsia" theme={theme} />
-                                </div>
-                            </AccordionSection>
-
-                            {/* Left Leg (Cyan) */}
-                            <AccordionSection title={t('lLeg')} icon={Move} isOpen={openSections.lLeg} onToggle={() => toggleSection('lLeg')} color="cyan" theme={theme}>
-                                <div className={`space-y-1 pt-2 border-l-2 ${theme === 'minimalist' ? 'border-white' : 'border-cyan-900/20'} pl-2`}>
-                                    <SliderControl label={t('hip')} value={pose.lHip ?? 90} onChange={(v) => updatePose('lHip', v)} accentColor="cyan" theme={theme} />
-                                    <SliderControl label={t('knee')} value={pose.lKnee ?? 90} onChange={(v) => updatePose('lKnee', v)} accentColor="cyan" theme={theme} />
-                                    <SliderControl label={t('ankle')} value={pose.lAnkle ?? 0} onChange={(v) => updatePose('lAnkle', v)} accentColor="cyan" theme={theme} />
-                                </div>
-                            </AccordionSection>
-
-                            {/* Right Leg (Fuchsia) */}
-                            <AccordionSection title={t('rLeg')} icon={Move} isOpen={openSections.rLeg} onToggle={() => toggleSection('rLeg')} color="fuchsia" theme={theme}>
-                                <div className={`space-y-1 pt-2 border-l-2 ${theme === 'minimalist' ? 'border-neutral-600' : 'border-fuchsia-900/20'} pl-2`}>
-                                    <SliderControl label={t('hip')} value={pose.rHip ?? 90} onChange={(v) => updatePose('rHip', v)} accentColor="fuchsia" theme={theme} />
-                                    <SliderControl label={t('knee')} value={pose.rKnee ?? 90} onChange={(v) => updatePose('rKnee', v)} accentColor="fuchsia" theme={theme} />
-                                    <SliderControl label={t('ankle')} value={pose.rAnkle ?? 180} onChange={(v) => updatePose('rAnkle', v)} accentColor="fuchsia" theme={theme} />
-                                </div>
-                            </AccordionSection>
-
-                            {/* Formation Settings */}
-                            <AccordionSection title={t('formation')} icon={Users} isOpen={openSections.formation} onToggle={() => toggleSection('formation')} color="slate" theme={theme}>
-                                <div className="pt-2 pb-4">
-                                    <select value={formationType} onChange={(e) => setFormationType(e.target.value)} className={`w-full ${theme === 'minimalist' ? 'bg-neutral-900 border-neutral-700 text-neutral-300 focus:border-white' : 'bg-slate-800 border-slate-700 text-slate-300 focus:border-slate-500'} border text-xs rounded px-2 py-2 focus:outline-none`}>
-                                        {['single', 'duo', 'trio', 'triangle', 'row', 'grid'].map(f => (
-                                            <option key={f} value={f}>{t(`f_${f}`)}</option>
-                                        ))}
-                                    </select>
-                                </div>
-                            </AccordionSection>
-
+                            <AccordionSection title={t('lArm')} icon={User} isOpen={openSections.lArm} onToggle={() => toggleSection('lArm')} color="cyan" theme={theme}><div className={`space-y-1 pt-2 border-l-2 ${theme === 'minimalist' ? 'border-white' : 'border-cyan-500/20'} pl-2`}><div className="flex items-center justify-between mb-2 pr-2"><span className={`text-[10px] ${theme === 'minimalist' ? 'text-white' : 'text-cyan-400'} font-bold uppercase`}>{t('depth')}</span><div className={`flex ${theme === 'minimalist' ? 'bg-neutral-800 border-neutral-700' : 'bg-slate-800 border-slate-700'} rounded border p-0.5`}><button onClick={() => updatePose('lArmZ', 'back')} className={`px-2 py-0.5 rounded text-[9px] transition-colors ${pose.lArmZ === 'back' ? (theme === 'minimalist' ? 'bg-white text-black' : 'bg-cyan-600 text-white') : 'text-slate-400 hover:text-white'}`} title={t('back')}><SendToBack size={12} /></button><button onClick={() => updatePose('lArmZ', 'front')} className={`px-2 py-0.5 rounded text-[9px] transition-colors ${(!pose.lArmZ || pose.lArmZ === 'front') ? (theme === 'minimalist' ? 'bg-white text-black' : 'bg-cyan-600 text-white') : 'text-slate-400 hover:text-white'}`} title={t('front')}><BringToFront size={12} /></button></div></div><SliderControl label={t('shoulder')} value={pose.lShoulder} onChange={(v) => updatePose('lShoulder', v)} accentColor="cyan" theme={theme} /><SliderControl label={t('elbow')} value={pose.lElbow} onChange={(v) => updatePose('lElbow', v)} accentColor="cyan" theme={theme} /><SliderControl label={t('wrist')} value={pose.lWrist} onChange={(v) => updatePose('lWrist', v)} accentColor="cyan" theme={theme} /></div></AccordionSection>
+                            <AccordionSection title={t('rArm')} icon={User} isOpen={openSections.rArm} onToggle={() => toggleSection('rArm')} color="fuchsia" theme={theme}><div className={`space-y-1 pt-2 border-l-2 ${theme === 'minimalist' ? 'border-neutral-600' : 'border-fuchsia-500/20'} pl-2`}><div className="flex items-center justify-between mb-2 pr-2"><span className={`text-[10px] ${theme === 'minimalist' ? 'text-neutral-500' : 'text-fuchsia-400'} font-bold uppercase`}>{t('depth')}</span><div className={`flex ${theme === 'minimalist' ? 'bg-neutral-800 border-neutral-700' : 'bg-slate-800 border-slate-700'} rounded border p-0.5`}><button onClick={() => updatePose('rArmZ', 'back')} className={`px-2 py-0.5 rounded text-[9px] transition-colors ${pose.rArmZ === 'back' ? (theme === 'minimalist' ? 'bg-neutral-600 text-white' : 'bg-fuchsia-600 text-white') : 'text-slate-400 hover:text-white'}`} title={t('back')}><SendToBack size={12} /></button><button onClick={() => updatePose('rArmZ', 'front')} className={`px-2 py-0.5 rounded text-[9px] transition-colors ${(!pose.rArmZ || pose.rArmZ === 'front') ? (theme === 'minimalist' ? 'bg-neutral-600 text-white' : 'bg-fuchsia-600 text-white') : 'text-slate-400 hover:text-white'}`} title={t('front')}><BringToFront size={12} /></button></div></div><SliderControl label={t('shoulder')} value={pose.rShoulder} onChange={(v) => updatePose('rShoulder', v)} accentColor="fuchsia" theme={theme} /><SliderControl label={t('elbow')} value={pose.rElbow} onChange={(v) => updatePose('rElbow', v)} accentColor="fuchsia" theme={theme} /><SliderControl label={t('wrist')} value={pose.rWrist} onChange={(v) => updatePose('rWrist', v)} accentColor="fuchsia" theme={theme} /></div></AccordionSection>
+                            <AccordionSection title={t('lLeg')} icon={Move} isOpen={openSections.lLeg} onToggle={() => toggleSection('lLeg')} color="cyan" theme={theme}><div className={`space-y-1 pt-2 border-l-2 ${theme === 'minimalist' ? 'border-white' : 'border-cyan-900/20'} pl-2`}><SliderControl label={t('hip')} value={pose.lHip ?? 90} onChange={(v) => updatePose('lHip', v)} accentColor="cyan" theme={theme} /><SliderControl label={t('knee')} value={pose.lKnee ?? 90} onChange={(v) => updatePose('lKnee', v)} accentColor="cyan" theme={theme} /><SliderControl label={t('ankle')} value={pose.lAnkle ?? 0} onChange={(v) => updatePose('lAnkle', v)} accentColor="cyan" theme={theme} /></div></AccordionSection>
+                            <AccordionSection title={t('rLeg')} icon={Move} isOpen={openSections.rLeg} onToggle={() => toggleSection('rLeg')} color="fuchsia" theme={theme}><div className={`space-y-1 pt-2 border-l-2 ${theme === 'minimalist' ? 'border-neutral-600' : 'border-fuchsia-900/20'} pl-2`}><SliderControl label={t('hip')} value={pose.rHip ?? 90} onChange={(v) => updatePose('rHip', v)} accentColor="fuchsia" theme={theme} /><SliderControl label={t('knee')} value={pose.rKnee ?? 90} onChange={(v) => updatePose('rKnee', v)} accentColor="fuchsia" theme={theme} /><SliderControl label={t('ankle')} value={pose.rAnkle ?? 180} onChange={(v) => updatePose('rAnkle', v)} accentColor="fuchsia" theme={theme} /></div></AccordionSection>
+                            <AccordionSection title={t('formation')} icon={Users} isOpen={openSections.formation} onToggle={() => toggleSection('formation')} color="slate" theme={theme}><div className="pt-2 pb-4"><select value={formationType} onChange={(e) => setFormationType(e.target.value)} className={`w-full ${theme === 'minimalist' ? 'bg-neutral-900 border-neutral-700 text-neutral-300 focus:border-white' : 'bg-slate-800 border-slate-700 text-slate-300 focus:border-slate-500'} border text-xs rounded px-2 py-2 focus:outline-none`}>{['single', 'duo', 'trio', 'triangle', 'row', 'grid'].map(f => (<option key={f} value={f}>{t(`f_${f}`)}</option>))}</select></div></AccordionSection>
                         </div>
-                        
-                        {/* Bottom Action Bar */}
-                        <div className={`p-3 border-t ${currentThemeConfig.borderColor} ${currentThemeConfig.headerBg} backdrop-blur-sm`}>
-                            <button onClick={updateKeyframe} className={`w-full py-2 ${theme === 'minimalist' ? 'bg-white hover:bg-neutral-200 text-black shadow-neutral-900/20' : 'bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white shadow-cyan-900/20'} rounded-md text-xs font-bold tracking-wider uppercase transition-all shadow-lg flex items-center justify-center`}>
-                                <Edit size={14} className="mr-2" /> {t('modify')}
-                            </button>
-                        </div>
+                        <div className={`p-3 border-t ${currentThemeConfig.borderColor} ${currentThemeConfig.headerBg} backdrop-blur-sm`}><button onClick={updateKeyframe} className={`w-full py-2 ${theme === 'minimalist' ? 'bg-white hover:bg-neutral-200 text-black shadow-neutral-900/20' : 'bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white shadow-cyan-900/20'} rounded-md text-xs font-bold tracking-wider uppercase transition-all shadow-lg flex items-center justify-center`}><Edit size={14} className="mr-2" /> {t('modify')}</button></div>
                     </div>
                 </div>
             );
@@ -1658,5 +1163,4 @@
         root.render(<TuttingSimulator />);
     </script>
 </body>
-
 </html>
